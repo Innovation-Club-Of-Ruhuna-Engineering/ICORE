@@ -18,7 +18,7 @@ export class AuthService {
 
     async verifyUser(email: string, password: string): Promise<any> {
         try {
-            const user = await this.userService.findOne(email);
+            const user = await this.userService.findOneByEmail(email);
             if (!user) {
                 throw new UnauthorizedException('User not found');
             }
@@ -40,6 +40,13 @@ export class AuthService {
             )
         );
 
+        const expiresRefreshToken = new Date();
+        expiresRefreshToken.setMilliseconds(
+            parseInt(
+                this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_EXPIRATION_MS')
+            )
+        );
+
         const tokenPayload: TokenPayload ={
             userId: user.id
         }
@@ -50,6 +57,18 @@ export class AuthService {
                 expiresIn: `${this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_EXPIRATION_MS')}ms`
             }
         );
+
+
+        const refreshToken = this.jwtService.sign(tokenPayload, 
+            {
+                secret: this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_SECRET'),
+                expiresIn: `${this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_EXPIRATION_MS')}ms`
+            }
+        );
+
+        await this.userService.update(user.id, {
+            
+        })
 
         response.cookie('Authentication', accessToken, {
             httpOnly: true,

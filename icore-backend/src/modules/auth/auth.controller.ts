@@ -1,3 +1,13 @@
+/**
+ * Controller responsible for handling authentication-related endpoints
+ */
+/**
+ * Handles user login authentication
+ * @param user The authenticated user object obtained from CurrentUser decorator
+ * @param response Express Response object to send HTTP responses
+ * @returns Promise that resolves when login process is complete
+ * @throws {UnauthorizedException} When credentials are invalid
+ */
 import { Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { CurrentUser } from './current-user.decorator';
