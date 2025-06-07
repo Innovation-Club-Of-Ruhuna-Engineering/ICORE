@@ -24,9 +24,9 @@ export class UserService {
     return this.databaseService.user.findMany({});
   }
 
-  async findOne(id: string) {
+  async findOne(email: string) {
     return this.databaseService.user.findUnique({
-      where: { id },
+      where: { email },
     });
   }
 

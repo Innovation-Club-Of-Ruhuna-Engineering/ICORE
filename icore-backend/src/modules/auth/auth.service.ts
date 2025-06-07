@@ -35,7 +35,6 @@ export class AuthService {
     async login(user: User, response: Response){
         const expiresAccessToken = new Date();
         expiresAccessToken.setMilliseconds(
-            expiresAccessToken.getTime() + 
             parseInt(
                 this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_EXPIRATION_MS')
             )
