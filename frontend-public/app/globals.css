@@ -6,5 +6,8 @@
 
 @theme {
   --color-icoreBlue: #0D6EFD;
+  --color-icoreDarkBlue: #26203B;
+  --color-icoreBorderBlue: #465FF1;
+  --color-icoreGray: #9C9AA5;
   
 }
