@@ -1,5 +1,5 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Prisma, User } from 'generated/prisma';
+import { BadRequestException, ConflictException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { User } from 'generated/prisma';
 import { DatabaseService } from 'src/config/database/database.service';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto, UpdatePasswordDto, UpdateUserDto, UserResponse } from './user.dto';
@@ -14,8 +14,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<UserResponse> {
 
     try {
-      // Check if user already exists
-      await this.checkUserExists(createUserDto.email, createUserDto.username, createUserDto.regNumber);
+      // TODO: Check if a user with same email, username or password already exists
 
       const hashedPassword = await this.hashPassword(createUserDto.password);
 
@@ -24,17 +23,12 @@ export class UserService {
           ...createUserDto,
           password: hashedPassword,
         },
-        select: this.getUserSelectFields(),
       });
 
       return user;
     } catch (error) {
       if (error instanceof ConflictException) {
-        throw error;
-      }
-      if (error.code === 'P2002') { // Unique constraint violation
-        const field = error.meta?.target?.[0] || 'field';
-        throw new ConflictException(`User with this ${field} already exists`);
+        throw new ConflictException(`User with similar field exists`);;
       }
       throw new InternalServerErrorException('Failed to create user');
     }
@@ -72,7 +66,6 @@ export class UserService {
     try {
       const user = await this.databaseService.user.findUnique({
         where: { id },
-        select: this.getUserSelectFields(),
       });
 
       if (!user) {
@@ -96,22 +89,7 @@ export class UserService {
       // Check if user exists
       await this.findOneById(id);
 
-      // Extract string values from possible Prisma update input format
-      // Had to do this because because Prisma gives a type error
-      const username =
-        typeof updateUserDto.username === 'string'
-          ? updateUserDto.username
-          : updateUserDto.username?.set;
-
-      const regNumber =
-        typeof updateUserDto.regNumber === 'string'
-          ? updateUserDto.regNumber
-          : updateUserDto.regNumber?.set;
-
-      // If updating unique fields, check for conflicts
-      if (username || regNumber) {
-        await this.checkUserExists(username, regNumber, id);
-      }
+      // TODO: If user is updating username or regNum check if they already exist
 
       const updatedUser = await this.databaseService.user.update({
         where: { id },
@@ -119,17 +97,12 @@ export class UserService {
           ...updateUserDto,
           updatedAt: new Date(),
         },
-        select: this.getUserSelectFields(),
       });
 
       return updatedUser;
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) {
+      if (error instanceof HttpException) {
         throw error;
-      }
-      if (error.code === 'P2002') {
-        const field = error.meta?.target?.[0] || 'field';
-        throw new ConflictException(`User with this ${field} already exists`);
       }
       throw new InternalServerErrorException('Failed to update user');
     }
@@ -170,7 +143,7 @@ export class UserService {
 
       return { message: 'Password updated successfully' };
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (error instanceof HttpException) {
         throw error;
       }
       throw new InternalServerErrorException('Failed to update password');
@@ -190,11 +163,8 @@ export class UserService {
 
     return { message: 'User permanently deleted' };
   } catch (error) {
-    if (error instanceof NotFoundException) {
+    if (error instanceof HttpException) {
       throw error;
-    }
-    if (error.code === 'P2003') {
-      throw new ConflictException('Cannot delete user with existing project associations');
     }
     throw new InternalServerErrorException('Failed to delete user');
   }
@@ -218,51 +188,5 @@ export class UserService {
   private async hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
     return await bcrypt.hash(password, saltRounds);
-  }
-
-  private async checkUserExists(
-    email?: string,
-    username?: string,
-    regNumber?: string,
-  ): Promise<void> {
-    const conditions: Prisma.UserWhereInput[] = [];
-
-    if (email) conditions.push({ email });
-    if (username) conditions.push({ username });
-    if (regNumber) conditions.push({ regNumber });
-
-    if (conditions.length === 0) return;
-
-    const where: Prisma.UserWhereInput = {
-      OR: conditions,
-    };
-
-    const existingUser = await this.databaseService.user.findFirst({ where });
-
-    if (existingUser) {
-      let conflictField = 'field';
-      if (email && existingUser.email === email) conflictField = 'email';
-      else if (username && existingUser.username === username) conflictField = 'username';
-      else if (regNumber && existingUser.regNumber === regNumber) conflictField = 'registration number';
-
-      throw new ConflictException(`User with this ${conflictField} already exists`);
-    }
-  }
-
-  private getUserSelectFields(): Prisma.UserSelect {
-    return {
-      id: true,
-      email: true,
-      username: true,
-      firstName: true,
-      lastName: true,
-      regNumber: true,
-      role: true,
-      status: true,
-      createdAt: true,
-      updatedAt: true,
-      password: false,
-      refreshToken: false,
-    };
   }
 }

@@ -12,21 +12,23 @@ export class UserController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
-    @Body(new ValidationPipe()) // Validate incoming data
+    @Body(new ValidationPipe())
     createUserDto: CreateUserDto,
   ): Promise<UserResponse> {
     return await this.userService.create(createUserDto);
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  // TODO: Add role-based guards (Only COMMITTEE can get all users)
   findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  async findOne(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<UserResponse> {
+  @UseGuards(JwtAuthGuard)
+  // TODO: Add role-based guards (Only COMMITTEE can get any user)
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserResponse> {
     return await this.userService.findOneById(id);
   }
 
@@ -38,12 +40,11 @@ export class UserController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  // TODO: Add role-based guards (Only COMMITTEE can update user)
+  // TODO: Add role-based guards (Only COMMITTEE can update any user)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserResponse> {
+    @Body(new ValidationPipe())
+    updateUserDto: UpdateUserDto): Promise<UserResponse> {
     return await this.userService.update(id, updateUserDto);
   }
 
@@ -51,7 +52,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async updateProfile(
     @CurrentUser() user: User,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body(new ValidationPipe())
     updateUserDto: UpdateUserDto,
   ): Promise<UserResponse> {
     // Remove sensitive fields
@@ -68,9 +69,9 @@ export class UserController {
     return await this.userService.updatePassword(user.id, updatePasswordDto);
   }
 
+  @Delete(':id')
   @UseGuards(JwtAuthGuard)
   // TODO: Add role-based guards (Only COMMITTEE can delete user)
-  @Delete(':id')
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return await this.userService.remove(id);
   }
