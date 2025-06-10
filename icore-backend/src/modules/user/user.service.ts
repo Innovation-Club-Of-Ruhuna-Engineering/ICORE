@@ -62,7 +62,7 @@ export class UserService {
   /**
    * Finds a user by ID
    */
-  async findOneById(id: string): Promise<UserResponse> {
+  async findOneById(id: string): Promise<User> {
     try {
       const user = await this.databaseService.user.findUnique({
         where: { id },

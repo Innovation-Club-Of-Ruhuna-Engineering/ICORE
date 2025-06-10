@@ -61,6 +61,7 @@ export class UserController {
   }
 
   @Patch('profile/password')
+  @UseGuards(JwtAuthGuard)
   async updatePassword(
     @CurrentUser() user: User,
     @Body(new ValidationPipe())

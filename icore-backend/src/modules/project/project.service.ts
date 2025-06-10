@@ -35,6 +35,7 @@ export class ProjectService {
 
       return project;
     } catch (error) {
+      console.error('Error creating project:', error);
       if (error instanceof HttpException) {
         throw error;
       }

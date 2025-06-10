@@ -42,11 +42,11 @@ enum Role {
 }
 
 model Project {
-  id            String       @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String    @unique
-  description   String
+  description   String?
   type          ProjectType // Type of the project (e.g., "Research", "Design")
-  timeline      String    // Project timeline (e.g., "6 months", "1 year")
+  timeline      String?   // Project timeline (e.g., "6 months", "1 year")
   references    String[]  // Array of reference links
   tags          String[]  // Array of tags
   status        Status    @default(PENDING)

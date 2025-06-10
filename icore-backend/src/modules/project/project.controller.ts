@@ -21,7 +21,7 @@ export class ProjectController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  // TODO: Add role-based guards (Only COMMITTEE can get all users)
+  // TODO: Add filtering based on tags, project type, etc.
   findAll() {
     return this.projectService.findAll();
   }
