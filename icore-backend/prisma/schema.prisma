@@ -45,7 +45,7 @@ model Project {
   id            String       @id @default(uuid())
   name          String    @unique
   description   String
-  type          String    // Type of project (e.g., "Research", "Design", "Development")
+  type          ProjectType // Type of the project (e.g., "Research", "Design")
   timeline      String    // Project timeline (e.g., "6 months", "1 year")
   references    String[]  // Array of reference links
   tags          String[]  // Array of tags
@@ -54,7 +54,7 @@ model Project {
   members       Member[] // List of members registered in the website
   guestMembers  GuestMember[] // List of members not regsitered in the website
 
-  owner         User     @relation(fields: [ownerId], references: [id])
+  owner         User      @relation(fields: [ownerId], references: [id])
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   @@map("projects")
@@ -67,7 +67,7 @@ enum Status {
 }
 
 model Member {
-  id            String       @id @default(uuid())
+  id            String    @id @default(uuid())
   projectId     String
   userId        String
   role          ProjectRole    // Role of the member in the project (e.g., "Leader", "Member")
@@ -95,4 +95,11 @@ enum ProjectRole {
   MEMBER
   SUPERVISOR
   CONTRIBUTOR
+}
+
+enum ProjectType {
+  RESEARCH
+  DESIGN
+  DEVELOPMENT
+  OTHER
 }
