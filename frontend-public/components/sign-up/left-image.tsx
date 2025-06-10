@@ -25,7 +25,7 @@ const LeftImage = () => {
                         <p className="text-[44px] font-black mt-2">Innovation Club Of Ruhuna Engineering</p>
                         <p className="mt-2 text-[22px]">Your Journey from Concept to Creation.</p>
                         <p className="mt-52 text-[34px] font-bold">Beyond Ideas, Into Action.</p>
-                        <p className="text-[22px] mt-2">Innovate together, inspire others, and make a difference.</p>
+                        <p className="text-[18px] mt-2">Innovate together, inspire others, and make a real difference.</p>
                     </div>
                 </div>
             </div>

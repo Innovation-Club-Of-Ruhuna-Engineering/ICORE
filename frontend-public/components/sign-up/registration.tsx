@@ -1,76 +1,88 @@
-import React from 'react'
-import { Input } from '../ui/input'
+"use client";
+import React from "react";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { cn } from "@/lib/utils";
+
 
 const Registration = () => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log("Form submitted");
+    };
     return (
-    
-        <form className="w-full max-w-md py-6 bg-white">
-
-            <div className="mb-4">
-                <div className='flex'>
-                    <label htmlFor="email" className="block text-sm font-medium mb-2 text-icoreDarkBlue">Email</label>
-                    <p className='text-red-400'>*</p>
-                </div>
-                <Input id="name" type="email" placeholder="Enter your email address" className="w-full border-2 border-icoreBlue/40" />
-            </div>
-
-            <div className="mb-4">
-                <div className='flex'>
-                    <label htmlFor="username" className="block text-sm font-medium mb-2 text-icoreDarkBlue">Username</label>
-                    <p className='text-red-400'>*</p>
-                </div>
-                <Input id="username" type="text" placeholder="Enter your username" className="w-full border-2 border-icoreBlue/40" />
-            </div>
-
-            <div className="mb-4">
-                <div className='flex'>
-                    <label htmlFor="firstname" className="block text-sm font-medium mb-2 text-icoreDarkBlue">First Name</label>
-                    <p className='text-red-400'>*</p>
-                </div>
-                <Input id="firstname" type="text" placeholder="Enter your first name" className="w-full border-2 border-icoreBlue/40" />
-            </div>
-
-            <div className="mb-4">
-                <div className='flex'>
-                    <label htmlFor="lastname" className="block text-sm font-medium mb-2 text-icoreDarkBlue">Last Name</label>
-                    <p className='text-red-400'>*</p>
-                </div>
-                <Input id="lastname" type="text" placeholder="Enter your last name" className="w-full border-2 border-icoreBlue/40" />
-            </div>
-
-            <div className="mb-4">
-                <div className='flex'>
-                    <label htmlFor="membertype" className="block text-sm font-medium mb-2 text-icoreDarkBlue">Member Type</label>
-                    <p className='text-red-400'>*</p>
-                </div>
-                <select
-                    id="membertype"
-                    className="w-full border-2 border-icoreBlue/40 rounded-md py-2 px-3 text-icoreGray focus:outline-none focus:ring-2 focus:ring-icoreBlue/40 focus:border-transparent"
-                >
-                    <option value="" disabled selected>Select your member type</option>
-                    <option value="student">Student</option>
-                    <option value="academic_staff">Academic Staff</option>
-                </select>
-            </div>
-
-            <div className="mb-4">
-                <div className='flex'>
-                    <label htmlFor="password" className="block text-sm font-medium mb-2 text-icoreDarkBlue">Password</label>
-                    <p className='text-red-400'>*</p>
-                </div>
-                <Input id="password" type="password" placeholder="Create a password" className="w-full border-2 border-icoreBlue/40" />
-            </div>
-
-            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-[8px]">
-                Create Account
-            </button>
+        <div className=" mx-auto w-full max-w-md rounded-none bg-white p-4  md:p-6 dark:bg-black">
             
-        </form>
-        
-        
-      )
-  
+
+            <form className="my-0" onSubmit={handleSubmit}>
+                <LabelInputContainer className="mb-4">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input id="email" placeholder="projectmayhem@fc.com" type="email" />
+                </LabelInputContainer>
+                <LabelInputContainer>
+                    <Label htmlFor="firstname">Username</Label>
+                    <Input id="firstname" placeholder="Tyler" type="text" />
+                </LabelInputContainer>
+                
+                    <LabelInputContainer>
+                        <Label htmlFor="firstname">First name</Label>
+                        <Input id="firstname" placeholder="Tyler" type="text" />
+                    </LabelInputContainer>
+                    <LabelInputContainer>
+                        <Label htmlFor="lastname">Last name</Label>
+                        <Input id="lastname" placeholder="Durden" type="text" />
+                    </LabelInputContainer>
+                
+                <LabelInputContainer className="mb-4">
+                    <Label htmlFor="email">Member Type</Label>
+                    <Input id="email" placeholder="projectmayhem@fc.com" type="select" />
+                </LabelInputContainer>
+                <LabelInputContainer className="mb-4">
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" placeholder="••••••••" type="password" />
+                </LabelInputContainer>
+                
+
+                <button
+                    className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-icoreBlue to-blue-300 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
+                    type="submit"
+                >
+                    Sign up &rarr;
+                    <BottomGradient />
+                </button>
+
+             
+
+                
+            </form>
+            <p className="text-sm text-gray-500 mt-2 text-center">
+                By signing up, you agree to our Terms of Service and Privacy Policy.
+            </p>
+        </div>
+    );
 }
 
-export default Registration
+const BottomGradient = () => {
+    return (
+        <>
+            <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
+            <span className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />
+        </>
+    );
+};
 
+const LabelInputContainer = ({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) => {
+    return (
+        <div className={cn("flex w-full flex-col space-y-2", className)}>
+            {children}
+        </div>
+    );
+};
+
+export default Registration;
