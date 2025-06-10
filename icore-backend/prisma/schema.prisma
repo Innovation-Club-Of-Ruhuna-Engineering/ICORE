@@ -14,21 +14,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique // student email
-  username  String   @unique
-  password  String   
-  firstName String
-  lastName  String
-  regNumber String   @unique
-  refreshToken String? 
-  role      Role     @default(GENERAL)
-  status    Status   @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(uuid())
+  email         String    @unique // student email
+  username      String    @unique
+  password      String   
+  firstName     String
+  lastName      String
+  regNumber     String    @unique
+  refreshToken  String? 
+  role          Role      @default(GENERAL)
+  status        Status    @default(PENDING)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
+  projects      Project[] // Projects created by the user
+  projectMembers Member[] // Projects where the user is a member
   @@map("users")
 }
 
@@ -36,7 +37,27 @@ enum Role {
   GENERAL 
   FULL
   COMMITTEE
-  LECTURER
+  ACADEMIC
+  INDUSTRY
+}
+
+model Project {
+  id            String       @id @default(uuid())
+  name          String    @unique
+  description   String
+  type          ProjectType // Type of the project (e.g., "Research", "Design")
+  timeline      String    // Project timeline (e.g., "6 months", "1 year")
+  references    String[]  // Array of reference links
+  tags          String[]  // Array of tags
+  status        Status    @default(PENDING)
+  ownerId       String
+  members       Member[] // List of members registered in the website
+  guestMembers  GuestMember[] // List of members not regsitered in the website
+
+  owner         User      @relation(fields: [ownerId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  @@map("projects")
 }
 
 enum Status {
@@ -45,3 +66,40 @@ enum Status {
   INACTIVE
 }
 
+model Member {
+  id            String    @id @default(uuid())
+  projectId     String
+  userId        String
+  role          ProjectRole    // Role of the member in the project (e.g., "Leader", "Member")
+  joinedAt      DateTime  @default(now())
+
+  project       Project   @relation(fields: [projectId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@map("project_members")
+}
+
+model GuestMember {
+  id        String    @id @default(uuid())
+  name      String
+  email     String
+  role      ProjectRole
+  projectId String
+  joinedAt  DateTime @default(now())
+
+  project   Project @relation(fields: [projectId], references: [id])
+}
+
+enum ProjectRole {
+  LEADER
+  MEMBER
+  SUPERVISOR
+  CONTRIBUTOR
+}
+
+enum ProjectType {
+  RESEARCH
+  DESIGN
+  DEVELOPMENT
+  OTHER
+}
