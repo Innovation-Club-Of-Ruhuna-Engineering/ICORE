@@ -3,6 +3,8 @@ import React from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+
 
 
 const Registration = () => {
@@ -11,19 +13,20 @@ const Registration = () => {
         console.log("Form submitted");
     };
     return (
-        <div className=" mx-auto w-full max-w-md rounded-none bg-white p-4  md:p-6 dark:bg-black">
+        <div className=" mx-auto w-full max-w-md rounded-none bg-white p-4  md:py-6 dark:bg-black">
             
 
             <form className="my-0" onSubmit={handleSubmit}>
-                <LabelInputContainer className="mb-4">
+                <LabelInputContainer className="mb-1">
                     <Label htmlFor="email">Email Address</Label>
                     <Input id="email" placeholder="projectmayhem@fc.com" type="email" />
                 </LabelInputContainer>
-                <LabelInputContainer>
+                <LabelInputContainer className="mb-1">
                     <Label htmlFor="firstname">Username</Label>
                     <Input id="firstname" placeholder="Tyler" type="text" />
                 </LabelInputContainer>
                 
+                <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
                     <LabelInputContainer>
                         <Label htmlFor="firstname">First name</Label>
                         <Input id="firstname" placeholder="Tyler" type="text" />
@@ -32,31 +35,64 @@ const Registration = () => {
                         <Label htmlFor="lastname">Last name</Label>
                         <Input id="lastname" placeholder="Durden" type="text" />
                     </LabelInputContainer>
+                </div>
                 
                 <LabelInputContainer className="mb-4">
-                    <Label htmlFor="email">Member Type</Label>
-                    <Input id="email" placeholder="projectmayhem@fc.com" type="select" />
+                    <Label htmlFor="membertype">Member Type</Label>
+                    <div className="flex space-x-4 mt-1">
+                        <div className="flex items-center">
+                            <Input
+                                id="membertype-student"
+                                name="membertype"
+                                value="student"
+                                type="radio"
+                                className="h-4 w-4 mr-2"
+                            />
+                            <Label
+                                htmlFor="membertype-student"
+                                className="text-sm font-normal"
+                            >
+                                Student
+                            </Label>
+                        </div>
+                        <div className="flex items-center">
+                            <Input
+                                id="membertype-academic"
+                                name="membertype"
+                                value="academic"
+                                type="radio"
+                                className="h-4 w-4 mr-2"
+                            />
+                            <Label
+                                htmlFor="membertype-academic"
+                                className="text-sm font-normal"
+                            >
+                                Academic Staff
+                            </Label>
+                        </div>
+                    </div>
                 </LabelInputContainer>
-                <LabelInputContainer className="mb-4">
+                <LabelInputContainer className="mb-8">
                     <Label htmlFor="password">Password</Label>
                     <Input id="password" placeholder="••••••••" type="password" />
                 </LabelInputContainer>
                 
 
-                <button
-                    className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-icoreBlue to-blue-300 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
+                <button className=" w-full px-8 py-2 rounded-md bg-icoreBlue text-white font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
+                   
                     type="submit"
                 >
-                    Sign up &rarr;
+                    Create Account
                     <BottomGradient />
                 </button>
+                
 
              
 
                 
             </form>
-            <p className="text-sm text-gray-500 mt-2 text-center">
-                By signing up, you agree to our Terms of Service and Privacy Policy.
+            <p className="text-[12px] text-gray-500 mt-2 text-center">
+                By signing up, you agree to our <Link href="/#" className="text-icoreBlue font-bold">Terms of Service</Link> & <Link href="/#" className="text-icoreBlue font-bold">Privacy Policy</Link>.
             </p>
         </div>
     );

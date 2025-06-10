@@ -3,16 +3,30 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import Registration from './registration'
 import SignInForm from './sign-in'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 const SignUp = () => {
   const [activeTab, setActiveTab] = useState('signup')
+  const signUpFormVariants = {
+    hidden: { opacity: 0, x: 25 },
+    visible: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -25 }
+  }
+  const signInFormVariants = {
+    hidden: { opacity: 0, x: -25 },
+    visible: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 25 }
+  }
+
 
   return (
-    <div className='flex min-h-screen w-full flex-col md:flex-row bg-slate-50 items-center justify-center'>
+    <div className='flex min-h-screen w-full flex-col md:flex-row bg-slate-50 items-start justify-center p-8'>
       {/* Left Section with Image - Hidden on small screens, visible on md and up */}
       <div className='hidden md:flex md:w-5/12 items-start justify-end p-4'>
-        <div className="relative w-full max-w-xl h-[700px]">
+        <motion.div initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeInOut", delay: 0.1 }}
+          className="relative w-[500px] max-w-xl h-[650px] p-8">
           {/* Background Image */}
           <Image
             src="/reg.png"
@@ -32,7 +46,7 @@ const SignUp = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: "easeInOut", delay: 0.2 }}
-                className="text-3xl md:text-[40px] font-bold mt-2"
+                className="text-2xl md:text-[40px] font-bold mt-2"
               >
                 Welcome to the
               </motion.h4>
@@ -82,13 +96,15 @@ const SignUp = () => {
               </motion.h4>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Right Section with Form */}
       <div className='w-full md:w-5/12 flex flex-col items-center md:items-center justify-start p-4 md:pl-8 md:pr-10 md:pt-4'>
         {/* Logo - Centered on all screen sizes */}
-        <div className='self-center w-full flex justify-center mb-4'>
+        <motion.div initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeInOut", delay: 0.1 }}  className='self-center w-full flex justify-center mb-4'>
           <Image
             src="/icore-logo.png"
             alt="Innovation Club of Ruhuna Engineering"
@@ -96,19 +112,21 @@ const SignUp = () => {
             height={30}
             priority
           />
-        </div>
+        </motion.div>
 
         {/* Mobile-only welcome text */}
         <div className="md:hidden text-center mb-6 text-gray-800">
-          <h1 className="text-2xl font-bold">Welcome to ICORE</h1>
-          <p className="mt-2">Innovation Club of Ruhuna Engineering</p>
+          
+          <h1 className="mt-2 font-bold text-3xl">Welcome to the Innovation Club Of Ruhuna Engineering</h1>
         </div>
 
         {/* Card Container */}
         <div className="w-full max-w-md bg-white rounded-xl shadow-sm px-6 md:px-8 md:py-3">
           {/* Tab Navigation */}
-          <div className="w-full max-w-md py-2">
-            <div className="flex border-b border-gray-300">
+          <motion.div initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeInOut", delay: 0.1 }} className="w-full max-w-md py-2 px-5">
+            <div className="flex  border-gray-300">
               <button
                 onClick={() => setActiveTab('signup')}
                 className={`py-2 px-4 flex-1 font-medium text-center ${activeTab === 'signup'
@@ -128,15 +146,35 @@ const SignUp = () => {
                 Sign In
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Form Content */}
-          <div className="w-full">
-            {activeTab === 'signup' ? (
-              <Registration />
-            ) : (
-              <SignInForm />
-            )}
+          <div className="w-full overflow-hidden">
+            <AnimatePresence mode="wait">
+              {activeTab === 'signup' ? (
+                <motion.div
+                  key="signup"
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={signUpFormVariants}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                >
+                  <Registration />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="signin"
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={signInFormVariants}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                >
+                  <SignInForm />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
         </div>
