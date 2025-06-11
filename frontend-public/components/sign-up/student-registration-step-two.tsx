@@ -1,264 +1,105 @@
 'use client';
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-const StudentRegStepTwo =() =>{
-  const [] = useState({
-    registrationNumber: "",
-    contactNumber: "",
-    gender: "",
-    batch: "",
-    department: ""
-  });
+const StudentRegStepTwo = () => {
+  const router = useRouter();
+  const [idea, setIdea] = useState("");
+  const maxWords = 200;
 
-  
+  const handleIdeaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const words = e.target.value.split(/\s+/).filter(word => word.length > 0);
+    if (words.length <= maxWords) {
+      setIdea(e.target.value);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8 sm:py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full md:max-w-3xl  bg-white p-6 rounded-2xl shadow-lgg"
+        className="w-full max-w-4xl bg-white p-4 sm:p-6 rounded-2xl shadow-lg sm:px-8 md:px-16"
       >
-        <div>
-           <motion.div initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, ease: "easeInOut", delay: 0.1 }}  className='self-center w-full flex justify-center mb-4'>
-                    <Image
-                      src="/icore-logo.png"
-                      alt="Innovation Club of Ruhuna Engineering"
-                      width={100}
-                      height={30}
-                      priority
-                    />
-                  </motion.div>
+        {/* Logo */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeInOut", delay: 0.1 }}
+          className='w-full flex justify-center mb-6'
+        >
+          <Image
+            src="/icore-logo.png"
+            alt="Innovation Club of Ruhuna Engineering"
+            width={90}
+            height={27}
+            priority
+          />
+        </motion.div>
+
+        {/* Header */}
+        <div className="text-center mb-6 sm:mb-10">
+          <p className="text-icoreGray text-base sm:text-lg my-2 sm:my-4">2 / 2</p>
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-600">Pitch Your Idea for the Club</h2>
+          <p className="text-sm sm:text-base text-gray-400 mt-1">Tell us one idea you believe could make a difference.</p>
         </div>
-       
-        <div className="text-center mb-26">
-          <p className="text-icoreGray text-lg my-4">1 / 2</p>
-          <h1 className="text-4xl font-semibold text-blue-700 mb-1">Hello Username,</h1>
-          <h2 className="text-gray-600 text-2xl">We&apos;re excited to have you!</h2>
-          <p className="text-xl text-gray-400">Help us set up your profile with the right details.</p>
-        </div>
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="registrationNumber">Registration Number</Label>
-            <Input id="registrationNumber" placeholder="EG/20##/####" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="firstname">Contact Number (WhatsApp Preferred)</Label>
-            <Input id="firstncontactNumberame" placeholder="+94 71 234 5678" type="text" />
-          </LabelInputContainer>
-
-           <LabelInputContainer className="mb-4">
-                              <Label htmlFor="gendertype">Gender</Label>
-                              <div className="flex space-x-4 mt-1">
-                                  <div className="flex items-center">
-                                      <Input
-                                          id="gender-male"
-                                          name="gendertype"
-                                          value="male"
-                                          type="radio"
-                                          className="h-4 w-4 mr-2"
-                                      />
-                                      <Label
-                                          htmlFor="gender-male"
-                                          className="text-sm font-normal"
-                                      >
-                                          Male
-                                      </Label>
-                                  </div>
-                                  <div className="flex items-center">
-                                      <Input
-                                          id="gendertype-female"
-                                          name="gendertype"
-                                          value="female"
-                                          type="radio"
-                                          className="h-4 w-4 mr-2"
-                                      />
-                                      <Label
-                                          htmlFor="gendertype-female"
-                                          className="text-sm font-normal"
-                                      >
-                                          Female 
-                                      </Label>
-                                  </div>
-                              </div>
-          </LabelInputContainer>
-
-           
-          
+        {/* Form */}
+        <form className="w-full">
           <LabelInputContainer className="mb-4">
-            <Label htmlFor="batch">Batch</Label>
-            <div className="flex space-x-4 mt-1">
-              <div className="flex items-center">
-                <Input
-                  id="batch-22"
-                  name="batch"
-                  value="22"
-                  type="radio"
-                  className="h-4 w-4 mr-2"
-                />
-                <Label
-                  htmlFor="gender-male"
-                  className="text-sm font-normal"
-                >
-                  22
-                </Label>
-              </div>
-              <div className="flex items-center">
-                <Input
-                  id="batch-23"
-                  name="batch"
-                  value="23"
-                  type="radio"
-                  className="h-4 w-4 mr-2"
-                />
-                <Label
-                  htmlFor="batch-23"
-                  className="text-sm font-normal"
-                >
-                  23  
-                </Label>                
-              </div>
-              
-              <div className="flex items-center">
-                <Input
-                  id="batch-24"
-                  name="batch"
-                  value="24"
-                  type="radio"
-                  className="h-4 w-4 mr-2"
-                />
-                <Label
-                  htmlFor="batch-24"
-                  className="text-sm font-normal"
-                >
-                  24  
-                </Label>
-              </div>
-
-              <div className="flex items-center">
-                <Input
-                  id="batch-25"
-                  name="batch"
-                  value="25"
-                  type="radio"
-                  className="h-4 w-4 mr-2"
-                />
-                <Label
-                  htmlFor="batch-25"
-                  className="text-sm font-normal"
-                >
-                25  
-                </Label>
-              </div>
-
+            <div className="flex justify-between items-end">
+              <Label htmlFor="idea" className="text-sm sm:text-base">
+                Innovative Idea <span className="text-red-500">*</span>
+              </Label>
+              <p className="text-xs text-gray-400">
+                Maximum: {maxWords} words
+              </p>
             </div>
+            <textarea
+              id="idea"
+              className="w-full min-h-[150px] sm:min-h-[180px] p-3 sm:p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base text-gray-700 mt-2"
+              placeholder="Describe your idea here..."
+              value={idea}
+              onChange={handleIdeaChange}
+            />
+            <p className="text-right text-xs text-gray-400 mt-1">
+              {idea.trim().split(/\s+/).filter(word => word).length} / {maxWords} words
+            </p>
           </LabelInputContainer>
-          <LabelInputContainer className="mb-4">
-            <Label htmlFor="department">Department</Label>
-            <div className="flex space-x-4 mt-1">
-              <div className="flex items-center">
-                <Input
-                  id="department-deie"
-                  name="department"
-                  value="DEIE"
-                  type="radio"
-                  className="h-4 w-4 mr-2"
-                />
-                <Label
-                  htmlFor="department-deie"
-                  className="text-sm font-normal"
-                >
-                  DEIE
-                </Label>
-              </div>
-              <div className="flex items-center">
-                <Input
-                  id="department-dmena"
-                  name="department"
-                  value="DMENA"
-                  type="radio"
-                  className="h-4 w-4 mr-2"
-                />
-                <Label
-                  htmlFor="department-dmena"
-                  className="text-sm font-normal"
-                >
-                  DMENA
-                </Label>
-              </div>
-              <div className="flex items-center">
-                <Input
-                  id="department-dcee"
-                  name="department"
-                  value="DCEE"
-                  type="radio"
-                  className="h-4 w-4 mr-2"
-                />
-                <Label
-                  htmlFor="department-dcee"
-                  className="text-sm font-normal"
-                >
-                  DCEE
-                </Label>
-              </div>
-              <div className="flex items-center">
-                <Input
-                  id="department-dmme"
-                  name="department"
-                  value="DMME"
-                  type="radio"
-                  className="h-4 w-4 mr-2"
-                />
-                <Label
-                  htmlFor="department-dmme"
-                  className="text-sm font-normal"
-                >
-                  DMME
-                </Label>
-              </div>
-            </div>
-          </LabelInputContainer>
-          
 
-          <div className="md:col-span-2 text-center mt-4">
-            <Link href="/sign-up/student-1"> <button className=" w-1/4 px-8 py-2 rounded-md bg-icoreBlue text-white font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
-
-              type="submit"
+          {/* Continue Button */}
+          <div className="text-center mt-6 sm:mt-8">
+            <button
+              onClick={() => router.push("/student-reg-3")}
+              type="button"
+              className="w-full sm:w-2/3 md:w-1/3 px-6 py-2.5 rounded-md bg-icoreBlue text-white font-medium transition duration-200 hover:bg-white hover:text-icoreBlue border-2 border-transparent hover:border-icoreBlue"
             >
               Continue
-              
-            </button></Link>
+            </button>
           </div>
         </form>
       </motion.div>
     </div>
   );
-}
-
+};
 
 const LabelInputContainer = ({
-    children,
-    className,
+  children,
+  className,
 }: {
-    children: React.ReactNode;
-    className?: string;
+  children: React.ReactNode;
+  className?: string;
 }) => {
-    return (
-        <div className={cn("flex w-full flex-col space-y-2", className)}>
-            {children}
-        </div>
-    );
+  return (
+    <div className={cn("flex w-full flex-col space-y-2", className)}>
+      {children}
+    </div>
+  );
 };
+
 export default StudentRegStepTwo;
-
-

@@ -4,10 +4,12 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 
 const Registration = () => {
+    const router = useRouter();
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log("Form submitted");
@@ -18,27 +20,27 @@ const Registration = () => {
 
             <form className="my-0" onSubmit={handleSubmit}>
                 <LabelInputContainer className="mb-1">
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email" className="flex">Email Address<p className="text-red-500">*</p></Label>
                     <Input id="email" placeholder="projectmayhem@fc.com" type="email" />
                 </LabelInputContainer>
                 <LabelInputContainer className="mb-1">
-                    <Label htmlFor="firstname">Username</Label>
-                    <Input id="firstname" placeholder="Tyler" type="text" />
+                    <Label htmlFor="username" className="flex" >Username<p className="text-red-500">*</p></Label>
+                    <Input id="username" placeholder="TylerD" type="text" />
                 </LabelInputContainer>
                 
                 <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
                     <LabelInputContainer>
-                        <Label htmlFor="firstname">First name</Label>
+                        <Label htmlFor="firstname" className="flex">First name<p className="text-red-500">*</p></Label>
                         <Input id="firstname" placeholder="Tyler" type="text" />
                     </LabelInputContainer>
                     <LabelInputContainer>
-                        <Label htmlFor="lastname">Last name</Label>
+                        <Label htmlFor="lastname" className="flex">Last name<p className="text-red-500">*</p></Label>
                         <Input id="lastname" placeholder="Durden" type="text" />
                     </LabelInputContainer>
                 </div>
                 
                 <LabelInputContainer className="mb-4">
-                    <Label htmlFor="membertype">Member Type</Label>
+                    <Label htmlFor="membertype" className="flex">Member Type<p className="text-red-500">*</p></Label>
                     <div className="flex space-x-4 mt-1">
                         <div className="flex items-center">
                             <Input
@@ -73,18 +75,18 @@ const Registration = () => {
                     </div>
                 </LabelInputContainer>
                 <LabelInputContainer className="mb-8">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password" className="flex">Password<p className="text-red-500">*</p></Label>
                     <Input id="password" placeholder="••••••••" type="password" />
                 </LabelInputContainer>
                 
 
-                <Link href="/sign-up/student-1"> <button className=" w-full px-8 py-2 rounded-md bg-icoreBlue text-white font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
-                   
+                <button className=" w-full px-8 py-2 rounded-md bg-icoreBlue text-white font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
+                    onClick={() => router.push("/student-reg-1")}
                     type="submit"
                 >
                     Create Account
                     <BottomGradient />
-                </button></Link>
+                </button>
                 
 
              

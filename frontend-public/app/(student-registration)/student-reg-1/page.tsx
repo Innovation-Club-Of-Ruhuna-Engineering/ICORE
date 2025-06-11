@@ -1,10 +1,10 @@
-import StudentRegStepTwo from '@/components/sign-up/student-registration-step-two'
+import StudentRegStepOne from '@/components/sign-up/student-registration-step-one'
 import React from 'react'
 
 const page = () => {
   return (
       <div>
-          <StudentRegStepTwo/>
+          <StudentRegStepOne/>
       
     </div>
   )
