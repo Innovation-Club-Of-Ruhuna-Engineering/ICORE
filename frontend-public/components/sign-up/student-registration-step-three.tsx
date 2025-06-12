@@ -39,7 +39,7 @@ const StudentRegStepThree = () => {
           className='w-full flex justify-center mb-8'
         >
           <Image
-            src="/succes.png"
+            src="/success.png"
             alt="Success"
             width={160}
             height={160}
