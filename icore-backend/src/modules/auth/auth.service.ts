@@ -91,9 +91,7 @@ export class AuthService {
 
         const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
-        await this.userService.update(user.id, {
-            refreshToken: hashedRefreshToken
-        })
+        await this.userService.updateRefreshToken(user.id, hashedRefreshToken);
 
         response.cookie('Authentication', accessToken, {
             httpOnly: true,

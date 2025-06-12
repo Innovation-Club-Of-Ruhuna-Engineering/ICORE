@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateProjectDto, ProjectResponse, UpdateProjectDto } from './project.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
-import { User } from 'generated/prisma';
+import { Project, User } from 'generated/prisma';
+import { CreateProjectInput } from './dto/createProject.input';
+import { UpdateProjectInput } from './dto/updateProject.input';
 
 @Controller('project')
 export class ProjectController {
@@ -12,37 +13,33 @@ export class ProjectController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(
-    @Body(new ValidationPipe())
-    createProjectDto: CreateProjectDto,
+    @Body(new ValidationPipe()) createProjectInput: CreateProjectInput,
     @CurrentUser() user: User,
-  ): Promise<ProjectResponse> {
-    return await this.projectService.create(createProjectDto, user.id);
+  ): Promise<Project> {
+    return await this.projectService.create(createProjectInput, user.id);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  // TODO: Add role-based guards (Only COMMITTEE can get all users)
   findAll() {
     return this.projectService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  // TODO: Add role-based guards (Only COMMITTEE can get any project)
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ProjectResponse> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Project> {
     return this.projectService.findOneById(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  // TODO: Add role-based guards (Only COMMITTEE can update any project)
   update(
     @Param('id', ParseUUIDPipe) id: string, 
-    @Body() updateProjectDto: UpdateProjectDto): Promise<ProjectResponse> {
-    return this.projectService.update(id, updateProjectDto);
+    @Body() updateProjectInput: UpdateProjectInput): Promise<Project> {
+    return this.projectService.update(id, updateProjectInput);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.projectService.remove(id);
   }
