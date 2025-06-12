@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpStatus, HttpCode, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from 'generated/prisma';
+import { User, Prisma } from 'generated/prisma';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { CreateUserDto, UpdatePasswordDto, UpdateUserDto, UserResponse } from './user.dto';
@@ -47,6 +47,8 @@ export class UserController {
     updateUserDto: UpdateUserDto): Promise<UserResponse> {
     return await this.userService.update(id, updateUserDto);
   }
+
+
 
   @Patch('profile')
   @UseGuards(JwtAuthGuard)

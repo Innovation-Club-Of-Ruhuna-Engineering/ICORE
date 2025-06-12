@@ -93,10 +93,8 @@ export class UserService {
 
       const updatedUser = await this.databaseService.user.update({
         where: { id },
-        data: {
-          ...updateUserDto,
-          updatedAt: new Date(),
-        },
+        data: 
+          updateUserDto
       });
 
       return updatedUser;
