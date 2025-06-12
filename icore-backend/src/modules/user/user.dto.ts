@@ -5,7 +5,7 @@
 
 import { Prisma, User } from "generated/prisma";
 
-export interface CreateUserDto extends Omit<Prisma.UserCreateInput, 'id' | 'createdAt' | 'updatedAt' | 'refreshToken' | 'Projects' | 'ProjectMembers'> {}
+export interface CreateUserDto extends Omit<Prisma.UserCreateInput, 'id' | 'createdAt' | 'updatedAt' | 'Projects' | 'ProjectMembers'> {}
 
 export interface UpdateUserDto extends Omit<Prisma.UserUpdateInput, 'id' | 'email' | 'password' | 'createdAt' | 'updatedAt'> {}
 

@@ -1,7 +1,11 @@
 import { BadRequestException, ConflictException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { AddGuestMemberDto, AddMemberDto, CreateProjectDto, ProjectResponse, UpdateMemberRoleDto, UpdateProjectDto } from './project.dto';
 import { DatabaseService } from 'src/config/database/database.service';
-import { User } from 'generated/prisma';
+import { Project, User } from 'generated/prisma';
+import { AddMemberInput } from './dto/projectMembers.dto';
+import { AddGuestMemberInput } from './dto/projectMembers.dto';
+import { UpdateMemberRoleInput } from './dto/projectMembers.dto';
+import { CreateProjectInput } from './dto/createProject.input';
+import { UpdateProjectInput } from './dto/updateProject.input';
 
 @Injectable()
 export class ProjectService {
@@ -10,27 +14,17 @@ export class ProjectService {
   /**
    * Creates a new project
    */
-  async create(createProjectDto: CreateProjectDto, ownerId: string): Promise<ProjectResponse> {
+  async create(createProjectInput: CreateProjectInput, ownerId: string): Promise<Project> {
     try {
-      // Check if project name already exists
-      const existingProject = await this.databaseService.project.findUnique({
-        where: { name: createProjectDto.name },
-      });
-
-      if (existingProject) {
-        throw new ConflictException('Project with this name already exists');
-      }
-
       const project = await this.databaseService.project.create({
         data: {
-          ...createProjectDto,
-          ownerId,
-          references: createProjectDto.references || [],
-          tags: createProjectDto.tags || [],
+          ...createProjectInput,
+          tags: createProjectInput.tags || [],
+          owner: { connect: { id: ownerId } },
         },
       });
 
-      // Ensure owner is also added as a member with 'OWNER' role
+      // add owner as a member with 'MEMBER' role
       await this.addMember(project.id, { userId: ownerId, role: 'MEMBER' });
 
       return project;
@@ -44,9 +38,9 @@ export class ProjectService {
   }
 
   /**
-   * Retrieves all projects without pagination or filtering
+   * Retrieves all projects - TODO: Add pagination and filtering 
    */
-  async findAll(): Promise<ProjectResponse[]> {
+  async findAll(): Promise<Project[]> {
     try {
       const projects = await this.databaseService.project.findMany({
         orderBy: { createdAt: 'desc' },
@@ -61,7 +55,7 @@ export class ProjectService {
   /**
    * Finds a project by ID
    */
-  async findOneById(id: string): Promise<ProjectResponse> {
+  async findOneById(id: string): Promise<Project> {
     try {
       const project = await this.databaseService.project.findUnique({
         where: { id },
@@ -81,29 +75,38 @@ export class ProjectService {
   }
 
   /**
+   * Find projects where the user is a member
+   */
+  async findUserProjects(userId: string): Promise<Project[]> {
+    try {
+      const projects = await this.databaseService.project.findMany({
+        where: {
+          members: {
+            some: {
+              userId,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' }, // get most recent projects first
+      });
+
+      return projects;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to retrieve user projects');
+    }
+  }
+
+  /**
    * Updates project information
    */
-  async update(id: string, updateProjectDto: UpdateProjectDto): Promise<ProjectResponse> {
+  async update(id: string, updateProjectInput: UpdateProjectInput): Promise<Project> {
     try {
-      const project = await this.findOneById(id);
-
       // TODO: Check if user has permission (Only owner can edit?)
-
-      // If updating name, check for conflicts
-      if (updateProjectDto.name && updateProjectDto.name !== project.name) {
-        const existingProject = await this.databaseService.project.findUnique({
-          where: { name: updateProjectDto.name },
-        });
-
-        if (existingProject) {
-          throw new ConflictException('Project with this name already exists');
-        }
-      }
 
       const updatedProject = await this.databaseService.project.update({
         where: { id },
         data: {
-          ...updateProjectDto,
+          ...updateProjectInput,
           updatedAt: new Date(),
         },
       });
@@ -138,17 +141,18 @@ export class ProjectService {
     }
   }
 
+  // ----------------------------- MEMBER RELATED FUNCTIONS ----------------------------- //
   /**
    * Add a registered user as a project member
    */
-  async addMember(projectId: string, addMemberDto: AddMemberDto): Promise<{ message: string }> {
+  async addMember(projectId: string, addMemberInput: AddMemberInput): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
 
       // Check if user exists
       const user = await this.databaseService.user.findUnique({
-        where: { id: addMemberDto.userId },
+        where: { id: addMemberInput.userId },
       });
 
       if (!user) {
@@ -159,7 +163,7 @@ export class ProjectService {
       const existingMember = await this.databaseService.member.findFirst({
         where: {
           projectId,
-          userId: addMemberDto.userId,
+          userId: addMemberInput.userId,
         },
       });
 
@@ -170,8 +174,8 @@ export class ProjectService {
       await this.databaseService.member.create({
         data: {
           projectId,
-          userId: addMemberDto.userId,
-          role: addMemberDto.role,
+          userId: addMemberInput.userId,
+          role: addMemberInput.role,
         },
       });
 
@@ -187,7 +191,7 @@ export class ProjectService {
   /**
    * Add a guest member to the project
    */
-  async addGuestMember(projectId: string, addGuestMemberDto: AddGuestMemberDto, currentUser: User): Promise<{ message: string }> {
+  async addGuestMember(projectId: string, addGuestMemberInput: AddGuestMemberInput): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
@@ -196,7 +200,7 @@ export class ProjectService {
       const existingGuestMember = await this.databaseService.guestMember.findFirst({
         where: {
           projectId,
-          email: addGuestMemberDto.email.toLowerCase(),
+          email: addGuestMemberInput.email.toLowerCase(),
         },
       });
 
@@ -206,8 +210,8 @@ export class ProjectService {
 
       await this.databaseService.guestMember.create({
         data: {
-          ...addGuestMemberDto,
-          email: addGuestMemberDto.email.toLowerCase(),
+          ...addGuestMemberInput,
+          email: addGuestMemberInput.email.toLowerCase(),
           projectId,
         },
       });
@@ -224,7 +228,7 @@ export class ProjectService {
   /**
    * Update member role
    */
-  async updateMemberRole(projectId: string, memberId: string, updateMemberRoleDto: UpdateMemberRoleDto, currentUser: User): Promise<{ message: string }> {
+  async updateMemberRole(projectId: string, memberId: string, updateMemberRoleInput: UpdateMemberRoleInput): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
@@ -240,7 +244,7 @@ export class ProjectService {
       await this.databaseService.member.update({
         where: { id: memberId },
         data: {
-          role: updateMemberRoleDto.role,
+          role: updateMemberRoleInput.role,
         },
       });
 
@@ -252,6 +256,8 @@ export class ProjectService {
       throw new InternalServerErrorException('Failed to update member role');
     }
   }
+
+  // TODO: Update references
 
   /**
    * Remove member from project
@@ -311,14 +317,54 @@ export class ProjectService {
     }
   }
 
-  // TODO: Get projects where user is a member
+  /**
+   * Get all members of a project
+   */
+  async getProjectMembers(projectId: string): Promise<User[]> {
+    try {
+      await this.findOneById(projectId);
+      const members = await this.databaseService.member.findMany({
+        where: { projectId },
+        include: { user: true }, // Include user details
+      });
+      return members.map(member => member.user);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to retrieve project members');
+    }
+  }
+
+  /**
+   * Get all guest members of a project
+   */
+  async getProjectGuestMembers(projectId: string): Promise<{ name: string; email: string; role: string }[]> {
+    try {
+      await this.findOneById(projectId);
+      const guestMembers = await this.databaseService.guestMember.findMany({
+        where: { projectId },
+      });
+      return guestMembers.map(guest => ({
+        name: guest.name,
+        email: guest.email,
+        role: guest.role,
+      }));
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to retrieve project guest members');
+    }
+  }
+
+// ------------------------------------------------------------------------------------ //
 
   /** CONSIDER: How to handle project tags?
    * SUGGESTION:
-   * When user creeates a project, they can add tags.
-   * These tags will be stored in the database in a tag table.
+   * When user creetes a project, they can add tags.
+   * These tags will be stored in the database in a tags table.
    * Each project can have upto 5 tags.
-   * */ 
+   * */
 
-  
 }

@@ -43,17 +43,22 @@ enum Role {
 
 model Project {
   id            String    @id @default(uuid())
-  name          String    @unique
+
+  // PROJECT DETAILS //
+  name          String
   description   String?
   type          ProjectType // Type of the project (e.g., "Research", "Design")
   timeline      String?   // Project timeline (e.g., "6 months", "1 year")
-  references    String[]  // Array of reference links
   tags          String[]  // Array of tags
-  status        Status    @default(PENDING)
+
+  references    String[]  // Array of reference links
+  media         String[]
+
   ownerId       String
   members       Member[] // List of members registered in the website
   guestMembers  GuestMember[] // List of members not regsitered in the website
 
+  status        Status    @default(PENDING)
   owner         User      @relation(fields: [ownerId], references: [id])
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

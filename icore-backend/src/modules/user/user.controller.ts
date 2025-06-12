@@ -18,14 +18,14 @@ export class UserController {
     return await this.userService.create(createUserDto);
   }
 
-  @Get()
+  @Get() // Only for admins
   @UseGuards(JwtAuthGuard)
   // TODO: Add role-based guards (Only COMMITTEE can get all users)
   findAll() {
     return this.userService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id') // Only for admins
   @UseGuards(JwtAuthGuard)
   // TODO: Add role-based guards (Only COMMITTEE can get any user)
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserResponse> {
@@ -38,7 +38,7 @@ export class UserController {
     return await this.userService.findOneById(user.id);
   }
 
-  @Patch(':id')
+  @Patch(':id') // Only for admins
   @UseGuards(JwtAuthGuard)
   // TODO: Add role-based guards (Only COMMITTEE can update any user)
   async update(
@@ -52,8 +52,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async updateProfile(
     @CurrentUser() user: User,
-    @Body(new ValidationPipe())
-    updateUserDto: UpdateUserDto,
+    @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
   ): Promise<UserResponse> {
     // Remove sensitive fields
     const { role, status, ...allowedUpdates } = updateUserDto;
@@ -70,13 +69,13 @@ export class UserController {
     return await this.userService.updatePassword(user.id, updatePasswordDto);
   }
 
-  @Delete(':id')
+  @Delete(':id') // Only for admins
   @UseGuards(JwtAuthGuard)
   // TODO: Add role-based guards (Only COMMITTEE can delete user)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return await this.userService.remove(id);
   }
 
-  // CONSIDER: Create function for user to delete their profile?
+  // CONSIDER: Create function for user to delete their own profile?
 
 }
