@@ -13,7 +13,7 @@ export class ProjectController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(
-    @Body(new ValidationPipe()) createProjectInput: CreateProjectInput,
+    @Body() createProjectInput: CreateProjectInput,
     @CurrentUser() user: User,
   ): Promise<Project> {
     return await this.projectService.create(createProjectInput, user.id);
