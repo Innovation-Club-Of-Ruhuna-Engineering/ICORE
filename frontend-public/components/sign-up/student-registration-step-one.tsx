@@ -1,21 +1,51 @@
 'use client';
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@/contexts/userAuthContext";
+import React from "react";
+import toast from 'react-hot-toast';
+import { studentRegApi } from "@/lib/student-onboarding/studentRegMethods";
 
 const StudentRegStepOne = () => {
   const router = useRouter();
-  const [] = useState({
-    registrationNumber: "",
+  const [formData, setFormData] = useState({
+    regNumber: "",
     contactNumber: "",
     gender: "",
     batch: "",
     department: ""
   });
+
+  const {user} = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); 
+    const loadingToast = toast.loading('Updating your account...');
+    try {
+      if(user){
+        await studentRegApi.updateProfile(user?.id, formData);
+        toast.dismiss(loadingToast);
+        toast.success('Update successful!');
+        router.push('/student-reg-2');
+      }
+    } catch (err: any) {
+      toast.dismiss(loadingToast);
+      toast.error(err.response?.data?.message || 'Update failed. Please try again.');
+  }
+  }
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [id]: value
+    }));
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8 sm:py-12">
@@ -44,19 +74,19 @@ const StudentRegStepOne = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <p className="text-icoreGray text-base sm:text-lg my-2 sm:my-4">1 / 2</p>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-blue-700 mb-1">Hello Username,</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-blue-700 mb-1">Hello {user?.username},</h1>
           <h2 className="text-lg sm:text-xl md:text-2xl text-gray-600">We&apos;re excited to have you!</h2>
           <p className="text-base sm:text-lg text-gray-400">Help us set up your profile with the right details.</p>
         </div>
 
         {/* Form */}
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" onSubmit={handleSubmit}>
           {/* Registration Number */}
           <LabelInputContainer>
-            <Label htmlFor="registrationNumber" className="flex items-center text-sm sm:text-base">
+            <Label htmlFor="regNumber" className="flex items-center text-sm sm:text-base">
               Registration Number<p className="text-red-500 ml-1">*</p>
             </Label>
-            <Input id="registrationNumber" placeholder="EG/20##/####" type="text"  />
+            <Input id="regNumber" placeholder="EG/20##/####" type="text" onChange={handleInputChange} />
           </LabelInputContainer>
 
           {/* Contact Number */}
@@ -65,7 +95,7 @@ const StudentRegStepOne = () => {
               Contact Number<p className="text-red-500 ml-1">*</p>
               <span className="ml-1 text-xs sm:text-sm text-gray-500">(WhatsApp Preferred)</span>
             </Label>
-            <Input id="contactNumber" placeholder="+94 71 234 5678" type="tel"  />
+            <Input id="contactNumber" placeholder="+94 71 234 5678" type="tel" onChange={handleInputChange} />
           </LabelInputContainer>
 
           {/* Gender */}
@@ -79,6 +109,8 @@ const StudentRegStepOne = () => {
                   id="gender-male"
                   name="gendertype"
                   value="male"
+                  checked={formData.gender === "male"}
+                  onChange={handleInputChange}
                   type="radio"
                   className="h-4 w-4 mr-2"
                 />
@@ -91,6 +123,8 @@ const StudentRegStepOne = () => {
                   id="gendertype-female"
                   name="gendertype"
                   value="female"
+                  checked={formData.gender === "female"}
+                  onChange={handleInputChange}
                   type="radio"
                   className="h-4 w-4 mr-2"
                 />
@@ -113,6 +147,8 @@ const StudentRegStepOne = () => {
                     id={`batch-${year}`}
                     name="batch"
                     value={`${year}`}
+                    checked={formData.batch === `${year}`}
+                    onChange={handleInputChange}
                     type="radio"
                     className="h-4 w-4 mr-2"
                   />
@@ -141,6 +177,8 @@ const StudentRegStepOne = () => {
                     id={`department-${dept.id}`}
                     name="department"
                     value={dept.label}
+                    checked={formData.department === dept.label}
+                    onChange={handleInputChange}
                     type="radio"
                     className="h-4 w-4 mr-2"
                   />
@@ -156,8 +194,7 @@ const StudentRegStepOne = () => {
           <div className="md:col-span-2 text-center mt-6">
             <button
               className="w-full sm:w-2/3 md:w-1/3 px-6 py-2.5 rounded-md bg-icoreBlue text-white font-medium transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
-              onClick={() => router.push("/student-reg-2")}
-              type="button"
+              type="submit"
             >
               Continue
             </button>

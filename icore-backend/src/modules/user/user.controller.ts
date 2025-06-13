@@ -21,8 +21,15 @@ export class UserController {
   @Get() // Only for admins
   @UseGuards(JwtAuthGuard)
   // TODO: Add role-based guards (Only COMMITTEE can get all users)
-  findAll() {
+  findAll(@CurrentUser() user: User) {
+    console.log(user);
     return this.userService.findAll();
+  }
+
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@CurrentUser() user: User): Promise<UserResponse> {
+    return await this.userService.findOneById(user.id);
   }
 
   @Get(':id') // Only for admins
@@ -32,11 +39,7 @@ export class UserController {
     return await this.userService.findOneById(id);
   }
 
-  @Get('profile')
-  @UseGuards(JwtAuthGuard)
-  async getProfile(@CurrentUser() user: User): Promise<UserResponse> {
-    return await this.userService.findOneById(user.id);
-  }
+
 
   @Patch(':id') // Only for admins
   @UseGuards(JwtAuthGuard)
