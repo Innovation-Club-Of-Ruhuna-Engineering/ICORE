@@ -1,68 +1,86 @@
-/**
- * Controller responsible for handling user-related HTTP requests.
- * Provides endpoints for CRUD operations on user resources.
- */
-/**
- * Creates a new user.
- * @param createUserDto - The data to create a new user.
- * @returns The created user.
- */
-/**
- * Retrieves all users.
- * @param user - The currently authenticated user.
- * @returns An array of all users.
- */
-/**
- * Retrieves a specific user by ID.
- * @param id - The unique identifier of the user.
- * @returns The requested user.
- */
-/**
- * Updates a user's information.
- * @param id - The unique identifier of the user to update.
- * @param updateUserDto - The data to update the user with.
- * @returns The updated user.
- */
-/**
- * Removes a user.
- * @param id - The unique identifier of the user to remove.
- * @returns The deleted user.
- */
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpStatus, HttpCode, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Prisma, User } from 'generated/prisma';
+import { User, Prisma } from 'generated/prisma';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
-
+import { CreateUserDto, UpdatePasswordDto, UpdateUserDto, UserResponse } from './user.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() createUserDto: Prisma.UserCreateInput) { 
-    return this.userService.create(createUserDto);
+  @HttpCode(HttpStatus.CREATED)
+  async create(
+    @Body(new ValidationPipe())
+    createUserDto: CreateUserDto,
+  ): Promise<UserResponse> {
+    return await this.userService.create(createUserDto);
   }
 
-  @Get()
+  @Get() // Only for admins
   @UseGuards(JwtAuthGuard)
+  // TODO: Add role-based guards (Only COMMITTEE can get all users)
   findAll(@CurrentUser() user: User) {
-    console.log('Current User:', user);
+    console.log(user);
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOneById(id);
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@CurrentUser() user: User): Promise<UserResponse> {
+    return await this.userService.findOneById(user.id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: Prisma.UserUpdateInput) {
-    return this.userService.update(id, updateUserDto);
+  @Get(':id') // Only for admins
+  @UseGuards(JwtAuthGuard)
+  // TODO: Add role-based guards (Only COMMITTEE can get any user)
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserResponse> {
+    return await this.userService.findOneById(id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+
+
+  @Patch(':id') // Only for admins
+  @UseGuards(JwtAuthGuard)
+  // TODO: Add role-based guards (Only COMMITTEE can update any user)
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body(new ValidationPipe())
+    updateUserDto: UpdateUserDto): Promise<UserResponse> {
+    return await this.userService.update(id, updateUserDto);
   }
+
+
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(
+    @CurrentUser() user: User,
+    @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
+  ): Promise<UserResponse> {
+    // Remove sensitive fields
+    const { role, status, ...allowedUpdates } = updateUserDto;
+    return await this.userService.update(user.id, allowedUpdates);
+  }
+
+  @Patch('profile/password')
+  @UseGuards(JwtAuthGuard)
+  async updatePassword(
+    @CurrentUser() user: User,
+    @Body(new ValidationPipe())
+    updatePasswordDto: UpdatePasswordDto,
+  ) {
+    return await this.userService.updatePassword(user.id, updatePasswordDto);
+  }
+
+  @Delete(':id') // Only for admins
+  @UseGuards(JwtAuthGuard)
+  // TODO: Add role-based guards (Only COMMITTEE can delete user)
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.userService.remove(id);
+  }
+
+  // CONSIDER: Create function for user to delete their own profile?
+
 }
