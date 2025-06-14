@@ -114,7 +114,7 @@ export default function RootLayout({
     <html lang="en" className={inter.className}>
       <body>
         <AuthProvider>
-          <Toaster position="bottom-left" />
+          <Toaster position="top-right" />
           {children}
         </AuthProvider>
       </body>
