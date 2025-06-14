@@ -24,11 +24,25 @@ const StudentRegStepOne = () => {
   const {user} = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); 
+    e.preventDefault();
+
+    // Validate all required fields
+    if (!formData.regNumber || !formData.contactNumber || !formData.gender || !formData.batch || !formData.department) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     const loadingToast = toast.loading('Updating your account...');
+    
     try {
       if(user){
-        await studentRegApi.updateProfile(user?.id, formData);
+        await studentRegApi.updateProfile(user?.id, {
+          regNumber: formData.regNumber,
+          contactNumber: formData.contactNumber,
+          gender: formData.gender,
+          batch: formData.batch,
+          department: formData.department
+        });
         toast.dismiss(loadingToast);
         toast.success('Update successful!');
         router.push('/student-reg-2');
@@ -36,14 +50,18 @@ const StudentRegStepOne = () => {
     } catch (err: any) {
       toast.dismiss(loadingToast);
       toast.error(err.response?.data?.message || 'Update failed. Please try again.');
-  }
+    }
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
+    const { name, value, type } = e.target;
+    
+    // For radio buttons, use the name attribute instead of id
+    const fieldName = type === 'radio' ? name : e.target.id;
+    
     setFormData(prevState => ({
       ...prevState,
-      [id]: value
+      [fieldName]: value
     }));
   };
 
@@ -100,35 +118,35 @@ const StudentRegStepOne = () => {
 
           {/* Gender */}
           <LabelInputContainer>
-            <Label htmlFor="gendertype" className="flex text-sm sm:text-base">
+            <Label htmlFor="gender" className="flex text-sm sm:text-base">
               Gender<p className="text-red-500 ml-1">*</p>
             </Label>
             <div className="flex flex-wrap gap-4 mt-1">
               <div className="flex items-center">
                 <Input
-                  id="gender-male"
-                  name="gendertype"
+                  id="gender"
+                  name="gender"
                   value="male"
                   checked={formData.gender === "male"}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange(e)}
                   type="radio"
                   className="h-4 w-4 mr-2"
                 />
-                <Label htmlFor="gender-male" className="text-sm font-normal">
+                <Label htmlFor="gender" className="text-sm font-normal">
                   Male
                 </Label>
               </div>
               <div className="flex items-center">
                 <Input
-                  id="gendertype-female"
-                  name="gendertype"
+                  id="gender"
+                  name="gender"
                   value="female"
                   checked={formData.gender === "female"}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange(e)}
                   type="radio"
                   className="h-4 w-4 mr-2"
                 />
-                <Label htmlFor="gendertype-female" className="text-sm font-normal">
+                <Label htmlFor="gender" className="text-sm font-normal">
                   Female
                 </Label>
               </div>

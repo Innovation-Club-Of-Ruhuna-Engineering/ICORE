@@ -1,18 +1,61 @@
 'use client';
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/userAuthContext";
 import Image from "next/image";
+import toast from "react-hot-toast";
+import { academicRegApi } from "@/lib/academic-onboarding/academicRegMethods";
 
 const AcademicStaffRegStepOne = () => {
+  const { user } = useAuth();
   const router = useRouter();
-  const [] = useState({
+  const [formData, setFormData] = useState({
     contactNumber: "",
     department: ""
   });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Validate all required fields
+    if (!formData.contactNumber || !formData.department) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    const loadingToast = toast.loading('Updating your account...');
+    
+    try {
+      if(user){
+        await academicRegApi.updateProfile(user.id, {
+          contactNumber: formData.contactNumber,
+          department: formData.department
+        });
+        toast.dismiss(loadingToast);
+        toast.success('Update successful!');
+        router.push('/academic-staff-reg-2');
+      }
+    } catch (err: any) {
+      toast.dismiss(loadingToast);
+      toast.error(err.response?.data?.message || 'Update failed. Please try again.');
+    }
+  }
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type } = e.target;
+    
+    // For radio buttons, use the name attribute instead of id
+    const fieldName = type === 'radio' ? name : e.target.id;
+    
+    setFormData(prevState => ({
+      ...prevState,
+      [fieldName]: value
+    }));
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8 sm:py-12">
@@ -41,13 +84,13 @@ const AcademicStaffRegStepOne = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <p className="text-icoreGray text-base sm:text-lg my-2 sm:my-4">1 / 2</p>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-blue-700 mb-1">Hello Username,</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-blue-700 mb-1">Hello {user?.username},</h1>
           <h2 className="text-lg sm:text-xl md:text-2xl text-gray-600">We&apos;re excited to have you!</h2>
           <p className="text-base sm:text-lg text-gray-400">Help us set up your profile with the right details.</p>
         </div>
 
         {/* Form */}
-        <form className="grid grid-cols-1 gap-6">
+        <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
           {/* Contact Number */}
           <LabelInputContainer>
             <Label htmlFor="contactNumber" className="flex items-center text-sm sm:text-base">
@@ -58,7 +101,7 @@ const AcademicStaffRegStepOne = () => {
               id="contactNumber"
               placeholder="+94 71 234 5678"
               type="tel"
-              
+              onChange={handleInputChange}
             />
           </LabelInputContainer>
 
@@ -78,8 +121,10 @@ const AcademicStaffRegStepOne = () => {
                   <Input
                     id={`department-${dept.id}`}
                     name="department"
-                    value={dept.id.toUpperCase()}
+                    value={dept.label}
                     type="radio"
+                    checked={formData.department === dept.label}
+                    onChange={handleInputChange}
                     className="h-4 w-4 mr-2"
                   />
                   <Label
@@ -93,14 +138,11 @@ const AcademicStaffRegStepOne = () => {
             </div>
           </LabelInputContainer>
 
-          
-
           {/* Continue Button */}
           <div className="text-center mt-6">
             <button
               className="w-full sm:w-2/3 md:w-1/3 px-6 py-2.5 rounded-md bg-icoreBlue text-white font-medium transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
-              onClick={() => router.push("/academic-staff-reg-2")}
-              type="button"
+              type="submit"
             >
               Continue
             </button>

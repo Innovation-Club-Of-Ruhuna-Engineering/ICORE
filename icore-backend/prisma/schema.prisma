@@ -23,9 +23,10 @@ model User {
   lastName      String
   contactNumber String? // Optional contact number
   gender        String?
-  Department    String? // Department of the user (e.g., "Computer Science", "Electrical Engineering")
+  department    String? // Department of the user (e.g., "Computer Science", "Electrical Engineering")
   batch         String? // Batch of the user (e.g., "2023", "2024")
-  regNumber     String?    @unique
+  pitch         String? // Short pitch or description of the user
+  regNumber     String?   @unique
   refreshToken  String? 
   role          Role      @default(GENERAL)
   status        Status    @default(PENDING)

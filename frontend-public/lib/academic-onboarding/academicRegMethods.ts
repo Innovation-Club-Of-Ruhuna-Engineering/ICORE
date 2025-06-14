@@ -2,12 +2,9 @@ import { AxiosResponse } from 'axios';
 import axiosInstance from "../axios/axiosInstance";
 
 interface UpdateRegisterData {
-    regNumber?: string;
     contactNumber?: string;
     gender?: string;
     department?: string; // Changed to lowercase to match convention
-    batch?: string;
-    pitch?: string;
 }
 
 interface UpdateRegisterResponse {
@@ -23,12 +20,10 @@ interface UpdateRegisterResponse {
     updatedAt: string;
 }
 
-export const studentRegApi = {
+export const academicRegApi = {
     updateProfile: async (userId: string, data: Partial<UpdateRegisterData>): Promise<AxiosResponse<UpdateRegisterResponse>> => {
         return await axiosInstance.patch(`/user/${userId}`, data);
     },
 
-    updatePitch: async (userId: string, data: Partial<UpdateRegisterData>): Promise<AxiosResponse<UpdateRegisterResponse>> => {
-        return await axiosInstance.patch(`/user/${userId}`, data);
-    }
+
 };

@@ -45,8 +45,11 @@ const Registration = () => {
             
             toast.dismiss(loadingToast);
             toast.success('Registration successful!');
+            if(formData.memberType === "student") {
             router.push('/student-reg-1'); // Redirect to login page
-            
+            } else {
+                router.push('/academic-staff-reg-1'); // Redirect to academic registration page
+            }
         } catch (err: any) {
             toast.dismiss(loadingToast);
             toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
