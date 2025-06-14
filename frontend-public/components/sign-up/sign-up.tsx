@@ -19,7 +19,7 @@ const SignUp = () => {
   }
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-white px-4 py-8 sm:py-12 lg:px-2'>
+    <div className='min-h-screen flex items-center justify-center  bg-white px-4 py-8 sm:py-12 lg:px-2'>
       {/* Left Section with Image - Hidden on small screens, visible on lg and up */}
       <div className='hidden lg:flex lg:w-[52%] xl:w-5/12 items-center lg:justify-evenly p-4 lg:pr-1'>
         <motion.div initial={{ opacity: 0, y: 20 }}
