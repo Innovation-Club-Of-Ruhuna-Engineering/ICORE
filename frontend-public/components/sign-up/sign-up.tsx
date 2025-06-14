@@ -119,12 +119,12 @@ const SignUp = () => {
         </div>
 
         {/* Card Container */}
-        <div className="w-full max-w-md lg:max-w-[460px] bg-white rounded-xl shadow-sm px-4 sm:px-6 lg:px-8 py-2 lg:py-3">
+        <div className="w-full max-w-md lg:max-w-auto bg-white rounded-xl shadow-sm px-4 sm:px-6 lg:px-8 py-2 lg:py-3">
           {/* Tab Navigation */}
           <motion.div initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeInOut", delay: 0.1 }} className="w-full max-w-md lg:max-w-[460px] py-2 px-3 sm:px-5">
-            <div className="flex border-gray-300">
+            <div className="flex  border-gray-300">
               <button
                 onClick={() => setActiveTab('signup')}
                 className={`py-2 px-3 sm:px-4 flex-1 font-medium text-center ${activeTab === 'signup'
