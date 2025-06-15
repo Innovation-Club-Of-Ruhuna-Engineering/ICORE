@@ -21,7 +21,12 @@ model User {
   password      String   
   firstName     String
   lastName      String
-  regNumber     String    @unique
+  contactNumber String? // Optional contact number
+  gender        String?
+  department    String? // Department of the user (e.g., "Computer Science", "Electrical Engineering")
+  batch         String? // Batch of the user (e.g., "2023", "2024")
+  pitch         String? // Short pitch or description of the user
+  regNumber     String?   @unique
   refreshToken  String? 
   role          Role      @default(GENERAL)
   status        Status    @default(PENDING)

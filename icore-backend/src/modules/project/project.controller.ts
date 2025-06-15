@@ -52,7 +52,7 @@ export class ProjectController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string, 
     @Body() updateProjectInput: UpdateProjectInput): Promise<Project> {
     return this.projectService.update(id, updateProjectInput);
@@ -60,7 +60,7 @@ export class ProjectController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.projectService.remove(id);
   }
 }
