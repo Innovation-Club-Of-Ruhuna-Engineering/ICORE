@@ -4,13 +4,23 @@ import { User, Prisma } from 'generated/prisma';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { CreateUserDto, UpdatePasswordDto, UpdateUserDto, UserResponse } from './user.dto';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'User successfully created',
+    type: UserResponse 
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 409, description: 'User already exists' })
   async create(
     @Body(new ValidationPipe())
     createUserDto: CreateUserDto,
@@ -20,6 +30,14 @@ export class UserController {
 
   @Get() // Only for admins
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all users (Admin only)' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'List of all users',
+    type: [UserResponse]
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   // TODO: Add role-based guards (Only COMMITTEE can get all users)
   findAll(@CurrentUser() user: User) {
     console.log(user);
@@ -28,12 +46,29 @@ export class UserController {
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'User profile retrieved successfully',
+    type: UserResponse
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getProfile(@CurrentUser() user: User): Promise<UserResponse> {
     return await this.userService.findOneById(user.id);
   }
 
   @Get(':id') // Only for admins
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user by ID (Admin only)' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'User found',
+    type: UserResponse 
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
   // TODO: Add role-based guards (Only COMMITTEE can get any user)
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserResponse> {
     return await this.userService.findOneById(id);
@@ -55,6 +90,14 @@ export class UserController {
 
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update current user profile' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Profile updated successfully',
+    type: UserResponse 
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   async updateProfile(
     @CurrentUser() user: User,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
@@ -66,6 +109,10 @@ export class UserController {
 
   @Patch('profile/password')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update current user password' })
+  @ApiResponse({ status: 200, description: 'Password updated successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid current password' })
   async updatePassword(
     @CurrentUser() user: User,
     @Body(new ValidationPipe())
@@ -76,6 +123,11 @@ export class UserController {
 
   @Delete(':id') // Only for admins
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete user (Admin only)' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @ApiResponse({ status: 200, description: 'User deleted successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   // TODO: Add role-based guards (Only COMMITTEE can delete user)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return await this.userService.remove(id);
