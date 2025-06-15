@@ -38,16 +38,52 @@ export class ProjectService {
   }
 
   /**
-   * Retrieves all projects - TODO: Add pagination and filtering 
+   * Retrieves all projects with pagination and filtering 
    */
-  async findAll(): Promise<Project[]> {
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    type?: string,
+    tags?: string[],
+  ): Promise<{ projects: Project[]}> {
     try {
-      const projects = await this.databaseService.project.findMany({
-        orderBy: { createdAt: 'desc' },
-      });
+      const where: any = {};
 
-      return projects;
+      // search for the given keyword in either the name or description of a project
+      if (search) {
+        where.OR = [
+          { name: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+        ];
+      }
+
+      if (type) {
+        where.type = type;
+      }
+
+      if (tags && tags.length > 0) {
+        where.tags = {
+          hasSome: tags,
+        };
+      }
+
+      const [projects] = await this.databaseService.$transaction([
+        this.databaseService.project.findMany({
+          where,
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: { createdAt: 'desc' }, // get most recent projects first
+        }),
+        this.databaseService.project.count({ where }),
+      ]);
+
+      return { projects };
     } catch (error) {
+      console.error('Error retrieving projects:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Failed to retrieve projects');
     }
   }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ValidationPipe, ParseUUIDPipe, Query, BadRequestException } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
@@ -21,8 +21,28 @@ export class ProjectController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.projectService.findAll();
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('type') type?: string,
+    @Query('tags') tags?: string[], // sent as repeated query params
+  ) {
+
+    if (tags && tags.length > 5) {
+      throw new BadRequestException('Too many tags provided. Maximum is 5.');
+    }
+    if (page && page < 1) {
+      throw new BadRequestException('Page number must be greater than 0.');
+    }
+
+    return this.projectService.findAll(
+      Number(page) || 1,
+      Number(limit) || 10,
+      search,
+      type,
+      tags,
+    );
   }
 
   @Get(':id')
