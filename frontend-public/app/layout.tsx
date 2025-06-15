@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from 'next/font/local'
+import { AuthProvider } from "@/contexts/userAuthContext";
+import { Toaster } from 'react-hot-toast';
 
 const inter = localFont({
   src: [
@@ -110,9 +112,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className}>
-      <body    
-      >
-        {children}
+      <body>
+        <AuthProvider>
+          <Toaster position="top-right" />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
