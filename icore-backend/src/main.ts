@@ -1,10 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+  .setTitle('ICORE API')
+  .setDescription('The API documentation for the ICORE project')
+  .setVersion('1.0')
+  .addTag('Development Version')
+  .addBearerAuth()
+  .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
+
   app.use(cookieParser());
   const corsOptions: CorsOptions = {
     origin: ['http://localhost:3001', 'https://theicore.org'], // Allow only your Next.js app to access the API
