@@ -1,9 +1,8 @@
 import { BadRequestException, ConflictException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/config/database/database.service';
 import { Project, User } from 'generated/prisma';
-import { AddMemberInput } from './dto/projectMembers.dto';
+import { AddMemberInput, UpdateMemberInput } from './dto/projectMembers.dto';
 import { AddGuestMemberInput } from './dto/projectMembers.dto';
-import { UpdateMemberRoleInput } from './dto/projectMembers.dto';
 import { CreateProjectInput } from './dto/createProject.input';
 import { UpdateProjectInput } from './dto/updateProject.input';
 
@@ -157,6 +156,28 @@ export class ProjectService {
   }
 
   /**
+   * Update project visibility
+   */
+  async updateProjectVisibility(projectId: string, isVisible: boolean): Promise<Project> {
+    try {
+      await this.databaseService.project.update({
+        where: { id: projectId },
+        data: {
+          isVisible,
+          updatedAt: new Date(),
+        },
+      });
+      const updatedProject = await this.findOneById(projectId);
+      return updatedProject;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to update project visibility');
+    }
+  }
+
+  /**
    * Delete project from database
    */
   async remove(id: string): Promise<{ message: string }> {
@@ -264,7 +285,7 @@ export class ProjectService {
   /**
    * Update member role
    */
-  async updateMemberRole(projectId: string, memberId: string, updateMemberRoleInput: UpdateMemberRoleInput): Promise<{ message: string }> {
+  async updateMemberRole(projectId: string, memberId: string, updateMemberInput: UpdateMemberInput): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
@@ -280,7 +301,7 @@ export class ProjectService {
       await this.databaseService.member.update({
         where: { id: memberId },
         data: {
-          role: updateMemberRoleInput.role,
+          role: updateMemberInput.role,
         },
       });
 
