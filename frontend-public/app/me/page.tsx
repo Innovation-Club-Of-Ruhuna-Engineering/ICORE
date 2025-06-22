@@ -37,7 +37,7 @@ function SelfProfilePage() {
     <div className="min-h-screen flex flex-col">
       <NavbarDemo />
       <div className="bg-[#ECF0FF] flex-1">
-        <div className="w-4/5 mx-auto my-12 flex flex-col gap-6">
+        <div className="w-2/3 mx-auto my-12 flex flex-col gap-6">
           <ProfileCard
             backdrop={backdrop.src}
             profilepic={profilePic.src}
