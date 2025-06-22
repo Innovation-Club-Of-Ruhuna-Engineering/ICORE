@@ -2,7 +2,10 @@ import { BadRequestException, ConflictException, HttpException, Injectable, Inte
 import { User } from 'generated/prisma';
 import { DatabaseService } from 'src/config/database/database.service';
 import * as bcrypt from 'bcryptjs';
-import { CreateUserDto, UpdatePasswordDto, UpdateUserDto, UserResponse } from './user.dto';
+import { CreateUserDto } from './dto/createUser.input';
+import { UserResponse } from './dto/user-response';
+import { UpdateUserDto } from './dto/updateUser.input';
+import { UpdatePasswordDto } from './dto/updatePassword.input';
 
 @Injectable()
 export class UserService {
