@@ -9,7 +9,7 @@ function GeneralInformation() {
   return (
     <Card className="flex flex-1">
       <Card.Header>General Information</Card.Header>
-      <div className="grid grid-cols-2 gap-x-12 gap-y-6">
+      <div className="grid grid-cols-2 not-md:grid-cols-1 not-lg:grid-cols-1 gap-x-12 gap-y-6">
         <InputWithLabal label="First Name" id="firstName" />
         <InputWithLabal label="Last Name" id="lastName" />
         <InputWithLabal label="Nick Name" id="nickName" />
@@ -164,7 +164,7 @@ function ExperienceNSkills() {
             <label className="text-xl">Skills</label>
 
             {skills.length > 0 && (
-              <div className="flex gap-2 bg-gray-200/80 rounded-lg mt-4 p-2 px-3">
+              <div className="flex flex-wrap gap-2 bg-gray-200/80 rounded-lg mt-4 p-2 px-3">
                 {skills.map((skill, i) => (
                   <Badge
                     key={i}
@@ -210,7 +210,7 @@ function Social() {
   return (
     <Card className="flex flex-1">
       <Card.Header>Social</Card.Header>
-      <div className="grid grid-cols-2 gap-x-12 gap-y-6">
+      <div className="grid not-sm:grid-cols-1 grid-cols-2 gap-x-12 gap-y-6">
         <InputWithLabal
           label="Website Link"
           id="website"

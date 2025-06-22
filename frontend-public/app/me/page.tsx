@@ -53,18 +53,18 @@ function SelfProfilePage() {
           />
           <div className="flex max-md:flex-col gap-8">
             <Card className="md:hidden h-fit max-md:p-1">
-              <div className="text-xl flex gap-2 max-md:gap-1 md:my-3">
-                <span {...changeTo(1)}>General Information</span>
-                <span {...changeTo(2)}>Experience & Skills</span>
+              <div className="text-xl grid grid-cols-4 not-xs:grid-cols-2 gap-2 max-md:gap-1 md:my-3">
+                <span {...changeTo(1)}>General</span>
+                <span {...changeTo(2)}>Expertise</span>
                 <span {...changeTo(3)}>Social</span>
                 <span {...changeTo(4)}>Biography</span>
               </div>
             </Card>
-            <Card className="max-md:hidden h-fit">
+            <Card className="max-md:hidden h-fit flex-[0.3] min-w-60">
               <Card.Header className="font-medium">Edit Profile</Card.Header>
               <div className="text-xl flex flex-col gap-2 my-3">
-                <span {...changeTo(1)}>General Information</span>
-                <span {...changeTo(2)}>Experience & Skills</span>
+                <span {...changeTo(1)}>General</span>
+                <span {...changeTo(2)}>Expertise</span>
                 <span {...changeTo(3)}>Social</span>
                 <span {...changeTo(4)}>Biography</span>
               </div>
