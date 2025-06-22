@@ -2,18 +2,20 @@
 
 import NavbarDemo from "@/components/shared/navbar";
 
-import backdrop from "./backdrop-profile.png";
-import profilePic from "./profile-pic.jpg";
+import backdrop from "@/assets/me/backdrop-profile.png"
+import profilePic from "@/assets/me/profile-pic.jpg"
 
-import ProfileCard from "./profile-card";
-import Card from "./card";
+import ProfileCard from "@/components/me/profile-card";
+import Card from "@/components/me/card";
+
 
 import {
   GeneralInformation,
   ExperienceNSkills,
   Social,
   Biography,
-} from "./settings";
+} from "@/components/me/settings";
+
 import useOption from "@/hooks/useOption";
 
 function SelfProfilePage() {
