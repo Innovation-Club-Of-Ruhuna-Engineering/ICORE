@@ -1,9 +1,8 @@
 import { BadRequestException, ConflictException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/config/database/database.service';
 import { Project, User } from 'generated/prisma';
-import { AddMemberInput } from './dto/projectMembers.dto';
+import { AddMemberInput, UpdateMemberInput } from './dto/projectMembers.dto';
 import { AddGuestMemberInput } from './dto/projectMembers.dto';
-import { UpdateMemberRoleInput } from './dto/projectMembers.dto';
 import { CreateProjectInput } from './dto/createProject.input';
 import { UpdateProjectInput } from './dto/updateProject.input';
 
@@ -38,16 +37,52 @@ export class ProjectService {
   }
 
   /**
-   * Retrieves all projects - TODO: Add pagination and filtering 
+   * Retrieves all projects with pagination and filtering 
    */
-  async findAll(): Promise<Project[]> {
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    type?: string,
+    tags?: string[],
+  ): Promise<{ projects: Project[]}> {
     try {
-      const projects = await this.databaseService.project.findMany({
-        orderBy: { createdAt: 'desc' },
-      });
+      const where: any = {};
 
-      return projects;
+      // search for the given keyword in either the name or description of a project
+      if (search) {
+        where.OR = [
+          { name: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+        ];
+      }
+
+      if (type) {
+        where.type = type;
+      }
+
+      if (tags && tags.length > 0) {
+        where.tags = {
+          hasSome: tags,
+        };
+      }
+
+      const [projects] = await this.databaseService.$transaction([
+        this.databaseService.project.findMany({
+          where,
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: { createdAt: 'desc' }, // get most recent projects first
+        }),
+        this.databaseService.project.count({ where }),
+      ]);
+
+      return { projects };
     } catch (error) {
+      console.error('Error retrieving projects:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Failed to retrieve projects');
     }
   }
@@ -117,6 +152,28 @@ export class ProjectService {
         throw error;
       }
       throw new InternalServerErrorException('Failed to update project');
+    }
+  }
+
+  /**
+   * Update project visibility
+   */
+  async updateProjectVisibility(projectId: string, isVisible: boolean): Promise<Project> {
+    try {
+      await this.databaseService.project.update({
+        where: { id: projectId },
+        data: {
+          isVisible,
+          updatedAt: new Date(),
+        },
+      });
+      const updatedProject = await this.findOneById(projectId);
+      return updatedProject;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to update project visibility');
     }
   }
 
@@ -228,7 +285,7 @@ export class ProjectService {
   /**
    * Update member role
    */
-  async updateMemberRole(projectId: string, memberId: string, updateMemberRoleInput: UpdateMemberRoleInput): Promise<{ message: string }> {
+  async updateMemberRole(projectId: string, memberId: string, updateMemberInput: UpdateMemberInput): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
@@ -244,7 +301,7 @@ export class ProjectService {
       await this.databaseService.member.update({
         where: { id: memberId },
         data: {
-          role: updateMemberRoleInput.role,
+          role: updateMemberInput.role,
         },
       });
 

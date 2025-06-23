@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
@@ -18,6 +19,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory);
 
   app.use(cookieParser());
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   const corsOptions: CorsOptions = {
     origin: ['http://localhost:3001', 'https://theicore.org'], // Allow only your Next.js app to access the API
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

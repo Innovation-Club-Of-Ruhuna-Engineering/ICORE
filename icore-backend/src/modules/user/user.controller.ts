@@ -1,10 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpStatus, HttpCode, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User, Prisma } from 'generated/prisma';
+import { User } from 'generated/prisma';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
-import { CreateUserDto, UpdatePasswordDto, UpdateUserDto, UserResponse } from './user.dto';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from './dto/createUser.input';
+import { UpdateUserDto } from './dto/updateUser.input';
+import { UserResponse } from './dto/user-response';
+import { UpdatePasswordDto } from './dto/updatePassword.input';
 
 @ApiTags('Users')
 @Controller('user')
@@ -17,7 +20,7 @@ export class UserController {
   @ApiResponse({ 
     status: 201, 
     description: 'User successfully created',
-    type: UserResponse 
+    type: UserResponse
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 409, description: 'User already exists' })
@@ -103,8 +106,7 @@ export class UserController {
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
   ): Promise<UserResponse> {
     // Remove sensitive fields
-    const { role, status, ...allowedUpdates } = updateUserDto;
-    return await this.userService.update(user.id, allowedUpdates);
+    return await this.userService.update(user.id, updateUserDto);
   }
 
   @Patch('profile/password')
