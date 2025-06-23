@@ -1,34 +1,60 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('GENERAL', 'FULL', 'COMMITTEE', 'ACADEMIC', 'INDUSTRY');
 
-  - The values [LECTURER] on the enum `Role` will be removed. If these variants are still used in the database, this will fail.
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('ACTIVE', 'PENDING', 'INACTIVE');
 
-*/
 -- CreateEnum
 CREATE TYPE "ProjectRole" AS ENUM ('LEADER', 'MEMBER', 'SUPERVISOR', 'CONTRIBUTOR');
 
--- AlterEnum
-BEGIN;
-CREATE TYPE "Role_new" AS ENUM ('GENERAL', 'FULL', 'COMMITTEE', 'ACADEMIC', 'INDUSTRY');
-ALTER TABLE "users" ALTER COLUMN "role" DROP DEFAULT;
-ALTER TABLE "users" ALTER COLUMN "role" TYPE "Role_new" USING ("role"::text::"Role_new");
-ALTER TYPE "Role" RENAME TO "Role_old";
-ALTER TYPE "Role_new" RENAME TO "Role";
-DROP TYPE "Role_old";
-ALTER TABLE "users" ALTER COLUMN "role" SET DEFAULT 'GENERAL';
-COMMIT;
+-- CreateEnum
+CREATE TYPE "ProjectType" AS ENUM ('RESEARCH', 'DESIGN', 'DEVELOPMENT', 'OTHER');
+
+-- CreateTable
+CREATE TABLE "users" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "contactNumber" TEXT,
+    "gender" TEXT,
+    "department" TEXT,
+    "batch" TEXT,
+    "pitch" TEXT,
+    "regNumber" TEXT,
+    "refreshToken" TEXT,
+    "role" "Role" NOT NULL DEFAULT 'GENERAL',
+    "status" "Status" NOT NULL DEFAULT 'PENDING',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "projects" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "about" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-    "timeline" TEXT NOT NULL,
-    "references" TEXT[],
+    "type" "ProjectType" NOT NULL,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3),
     "tags" TEXT[],
-    "status" "Status" NOT NULL DEFAULT 'PENDING',
+    "details" TEXT,
+    "technologies" TEXT[],
+    "references" TEXT[],
+    "papers" TEXT[],
+    "photos" TEXT[],
+    "documents" TEXT[],
+    "youtubeURL" TEXT,
+    "websiteURL" TEXT,
+    "githubURL" TEXT,
     "ownerId" TEXT NOT NULL,
+    "isVisible" BOOLEAN NOT NULL DEFAULT false,
+    "status" "Status" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -59,7 +85,13 @@ CREATE TABLE "GuestMember" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "projects_name_key" ON "projects"("name");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_regNumber_key" ON "users"("regNumber");
 
 -- AddForeignKey
 ALTER TABLE "projects" ADD CONSTRAINT "projects_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
