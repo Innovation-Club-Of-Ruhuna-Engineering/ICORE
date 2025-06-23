@@ -21,19 +21,19 @@ function ProfileCard({
   };
 }) {
   return (
-    <div className="h-[480px] rounded-2xl overflow-hidden bg-white">
+    <div className="h-[max(480px,fit-content)] rounded-2xl overflow-hidden bg-white">
       <div
-        className="h-1/2"
+        className="h-[240px] not-xs:h-[100px]"
         style={{ backgroundImage: `url(${backdrop})` }}
       ></div>
       <div
         className="size-44 mx-auto relative -translate-y-1/2 rounded-full bg-contain"
         style={{ backgroundImage: `url(${profilepic})` }}
       ></div>
-      <div className="mx-auto w-fit -mt-22 flex flex-col pt-2 gap-5 items-center">
-        <span className="text-3xl font-medium">{name}</span>
-        <span className="text-sm">
-          {username} &bull; {since}
+      <div className="mx-auto w-fit -mt-22 flex flex-col p-3 pb-5 gap-5 items-center">
+        <span className="text-3xl font-medium text-center px-2">{name}</span>
+        <span className="text-sm flex gap-1 not-xs:flex-col text-center">
+          <span>{username}</span> <span className="not-xs:hidden">&bull;</span> <span>{since}</span>
         </span>
         <span className="flex gap-4 items-center">
           <a href={social?.youtube || ""}>
