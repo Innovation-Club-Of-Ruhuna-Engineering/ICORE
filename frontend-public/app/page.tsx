@@ -1,16 +1,18 @@
-import React from 'react'
+import BackgroundBoxesDemo from "@/components/home/hero";
+import RecentProjectSection from "@/components/home/recentproject";
+import Footer from "@/components/shared/footer";
+import NavbarDemo from "@/components/shared/navbar";
+import { Navbar } from "@/components/ui/resizable-navbar";
+import { TracingBeam } from "@/components/ui/tracing-beam";
+import Image from "next/image";
 
-const home = () => {
+export default function Home() {
   return (
-    <div className='flex flex-col items-center justify-center h-screen bg-gray-100'>
-      <h2 className='text-2xl font-medium mb-4'>Welcome to </h2>
-      <h1 className='text-6xl text-blue-600 mb-2 font-extrabold'>The Innovation Club Of Ruhuna Engineering</h1>
-      <h1 className='text-6xl text-midnight mb-2 font-extrabold'>The ICORE</h1>
-      
-
-      
+    <div >
+        <NavbarDemo />
+        <BackgroundBoxesDemo />   
+        <RecentProjectSection/>
+        <Footer />
     </div>
-  )
+  );
 }
-
-export default home

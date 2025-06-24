@@ -5,16 +5,46 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/userAuthContext";
+import { studentRegApi } from "@/lib/student-onboarding/studentRegMethods";
+import toast from 'react-hot-toast';
 
 const StudentRegStepTwo = () => {
   const router = useRouter();
-  const [idea, setIdea] = useState("");
+  const { user } = useAuth();
+  const [pitch, setPitch] = useState("");
   const maxWords = 200;
 
-  const handleIdeaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Validate pitch length
+    const words = pitch.trim().split(/\s+/).filter(word => word.length > 0);
+    if (words.length > maxWords) {
+      alert(`Please limit your pitch to ${maxWords} words.`);
+      return;
+    }
+
+    const loadingToast = toast.loading('Submitting your idea...');
+
+    try {
+      if (user) {
+        await studentRegApi.updatePitch(user.id, { pitch });
+        toast.dismiss(loadingToast);
+        toast.success('Idea submitted successfully!');
+        router.push('/student-reg-3'); // Redirect to next step
+      }
+    } catch (err: any) {
+      toast.dismiss(loadingToast);
+      toast.error(err.response?.data?.message || 'Submission failed. Please try again.');
+    }
+
+  }
+
+  const handlePitchChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const words = e.target.value.split(/\s+/).filter(word => word.length > 0);
     if (words.length <= maxWords) {
-      setIdea(e.target.value);
+      setPitch(e.target.value);
     }
   };
 
@@ -50,7 +80,7 @@ const StudentRegStepTwo = () => {
         </div>
 
         {/* Form */}
-        <form className="w-full">
+        <form className="w-full" onSubmit={handleSubmit}>
           <LabelInputContainer className="mb-4">
             <div className="flex justify-between items-end">
               <Label htmlFor="idea" className="text-sm sm:text-base">
@@ -64,19 +94,18 @@ const StudentRegStepTwo = () => {
               id="idea"
               className="w-full min-h-[150px] sm:min-h-[180px] p-3 sm:p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base text-gray-700 mt-2"
               placeholder="Describe your idea here..."
-              value={idea}
-              onChange={handleIdeaChange}
+              value={pitch}
+              onChange={handlePitchChange}
             />
             <p className="text-right text-xs text-gray-400 mt-1">
-              {idea.trim().split(/\s+/).filter(word => word).length} / {maxWords} words
+              {pitch.trim().split(/\s+/).filter(word => word).length} / {maxWords} words
             </p>
           </LabelInputContainer>
 
           {/* Continue Button */}
           <div className="text-center mt-6 sm:mt-8">
             <button
-              onClick={() => router.push("/student-reg-3")}
-              type="button"
+              type="submit"
               className="w-full sm:w-2/3 md:w-1/3 px-6 py-2.5 rounded-md bg-icoreBlue text-white font-medium transition duration-200 hover:bg-white hover:text-icoreBlue border-2 border-transparent hover:border-icoreBlue"
             >
               Continue
