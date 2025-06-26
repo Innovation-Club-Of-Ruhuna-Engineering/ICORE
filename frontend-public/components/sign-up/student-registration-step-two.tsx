@@ -28,7 +28,7 @@ const StudentRegStepTwo = () => {
     const loadingToast = toast.loading('Submitting your idea...');
 
     try {
-      if (user) {
+      if (user && user.id) {
         await studentRegApi.updatePitch(user.id, { pitch });
         toast.dismiss(loadingToast);
         toast.success('Idea submitted successfully!');
