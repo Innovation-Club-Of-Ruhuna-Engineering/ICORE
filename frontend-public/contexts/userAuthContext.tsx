@@ -2,30 +2,26 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/auth/authMethods';
-import { AuthContextType, RegisterData, User, APIUser, UserRole, UserStatus } from '@/types/auth/userAuthTypes';
+import { AuthContextType, RegisterData, User, UserRole, UserStatus } from '@/types/auth/userAuthTypes';
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [loading, setLoading] = useState(true); // Start with loading true
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState<User | null>(null);
     const router = useRouter();
 
-    const validateAndTransformUser = (apiUser: APIUser): User | null => {
-        // Validate role
+    const validateAndTransformUser = (apiUser: User): User | null => {
         if (!['GENERAL', 'FULL', 'COMMITTEE', 'ACADEMIC', 'INDUSTRY'].includes(apiUser.role)) {
             console.error('Invalid role received from API:', apiUser.role);
             return null;
         }
-
-        // Validate status
         if (!['ACTIVE', 'PENDING', 'INACTIVE'].includes(apiUser.status)) {
             console.error('Invalid status received from API:', apiUser.status);
             return null;
         }
-
         return {
             ...apiUser,
             role: apiUser.role as UserRole,
@@ -33,7 +29,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
     };
 
-    // Function to fetch user profile
     const fetchUserProfile = async () => {
         try {
             const response = await authApi.getProfile();
@@ -54,7 +49,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    // Check auth status when component mounts
     useEffect(() => {
         fetchUserProfile();
     }, []);
@@ -63,20 +57,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             setLoading(true);
             setError(null);
-            
-            // First register the user
             const response = await authApi.register(data);
-            
-            // Then automatically log them in
-            await authApi.login({ 
-                email: data.email, 
-                password: data.password 
+            await authApi.login({
+                email: data.email,
+                password: data.password
             });
-            
-            // Fetch user profile to update context
             await fetchUserProfile();
-            
-            // Return the registration response data
             return response.data;
         } catch (error: any) {
             setError(error.response?.data?.message || 'Registration failed');
@@ -91,8 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setLoading(true);
             setError(null);
             await authApi.login({ email, password });
-            
-            // After successful login, fetch the user profile
             await fetchUserProfile();
             router.push('/');
         } catch (error: any) {
@@ -118,14 +102,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ 
+        <AuthContext.Provider value={{
             user,
             isAuthenticated,
-            loading, 
-            error, 
-            register, 
-            login, 
-            logout 
+            loading,
+            error,
+            register,
+            login,
+            logout
         }}>
             {children}
         </AuthContext.Provider>

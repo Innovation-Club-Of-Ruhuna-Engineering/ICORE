@@ -69,7 +69,7 @@ const StudentRegStepThree = () => {
         {/* Button */}
         <div className="text-center mt-6">
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/me")}
             type="button"
             className="w-full sm:w-2/3 md:w-1/3 px-6 py-2.5 rounded-md bg-icoreBlue text-white font-medium transition duration-200 hover:bg-white hover:text-icoreBlue border-2 border-transparent hover:border-icoreBlue"
           >

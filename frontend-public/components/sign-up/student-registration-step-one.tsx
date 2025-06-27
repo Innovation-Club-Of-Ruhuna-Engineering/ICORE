@@ -35,8 +35,8 @@ const StudentRegStepOne = () => {
     const loadingToast = toast.loading('Updating your account...');
     
     try {
-      if(user){
-        await studentRegApi.updateProfile(user?.id, {
+      if(user && user.id) {
+        await studentRegApi.updateProfile(user.id, {
           regNumber: formData.regNumber,
           contactNumber: formData.contactNumber,
           gender: formData.gender,

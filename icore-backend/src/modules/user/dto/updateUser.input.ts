@@ -49,4 +49,16 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   batch?: string;
+
+  @IsOptional()
+  @IsString()
+  gender?: string;
+
+  @IsOptional()
+  @IsString()
+  regNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  pitch?: string;
 }
