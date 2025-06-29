@@ -17,6 +17,7 @@ import {
 } from "@/components/me/settings";
 
 import useOption from "@/hooks/useOption";
+import { useAuth } from "@/contexts/userAuthContext";
 
 function SelfProfilePage() {
   const {
@@ -25,6 +26,8 @@ function SelfProfilePage() {
     factory,
     options: [general, skills, social, bio],
   } = useOption(4, 1);
+
+  const {user} = useAuth();
 
   const changeTo = factory((i) => ({
     className: `p-2 flex rounded-xl px-3 max-md:items-center max-md:justify-center ${
@@ -41,8 +44,8 @@ function SelfProfilePage() {
           <ProfileCard
             backdrop={backdrop.src}
             profilepic={profilePic.src}
-            name="Nimal Gunasekara"
-            username="@NimalG"
+            name={`${user?.firstName || "First"} ${user?.lastName || "Last"}`}
+            username={`@${user?.username || "username"}`}
             since="Joined Jun 2025"
             social={{
               github: "github",

@@ -73,7 +73,7 @@ model Project {
   members       Member[]  // List of members registered in the website
   guestMembers  GuestMember[] // List of members not regsitered in the website
 
-  isVisible       Boolean   @default(false) // project is visible to the public
+  isVisible     Boolean   @default(false) // project is visible to the public
   status        Status    @default(PENDING)
   owner         User      @relation(fields: [ownerId], references: [id])
   createdAt     DateTime  @default(now())

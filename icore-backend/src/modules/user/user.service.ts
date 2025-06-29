@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/createUser.input';
 import { UserResponse } from './dto/user-response';
 import { UpdateUserDto } from './dto/updateUser.input';
 import { UpdatePasswordDto } from './dto/updatePassword.input';
+import { UserProfileByUsernameResponse } from './dto/user-profile-by-username-response.dto'; // create this DTO
 
 @Injectable()
 export class UserService {
@@ -182,6 +183,40 @@ export class UserService {
       });
     } catch (error) {
       throw new InternalServerErrorException('Failed to update refresh token');
+    }
+  }
+
+  /**
+   * Finds a user by username and returns selected fields
+   */
+  async findOneByUsername(username: string): Promise<UserProfileByUsernameResponse> {
+    try {
+      const user = await this.databaseService.user.findUnique({
+        where: { username },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          department: true,
+          contactNumber: true,
+          email: true,
+          batch: true,
+          createdAt: true,
+          role: true,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with username ${username} not found`);
+      }
+
+      // Ensure all fields are present and not undefined
+      return user as UserProfileByUsernameResponse;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to find user by username');
     }
   }
 

@@ -1,28 +1,19 @@
 export type UserRole = 'GENERAL' | 'FULL' | 'COMMITTEE' | 'ACADEMIC' | 'INDUSTRY';
 export type UserStatus = 'ACTIVE' | 'PENDING' | 'INACTIVE';
 
-export interface APIUser {
-    id: string;
-    email: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    regNumber: string | null;
-    role: string;  // Keep this as string for API response
-    status: string;  // Keep this as string for API response
-    createdAt: string;
-    updatedAt: string;
-}
-
 export interface User {
-    id: string;
+    id?: string; // id may be missing in some API responses
     email: string;
     username: string;
     firstName: string;
     lastName: string;
-    regNumber: string | null;
-    role: UserRole;
-    status: UserStatus;
+    contactNumber?: string | null;
+    gender?: string | null;
+    department?: string | null;
+    batch?: string | null;
+    regNumber?: string | null;
+    role: UserRole | string;
+    status: UserStatus | string;
     createdAt: string;
     updatedAt: string;
 }

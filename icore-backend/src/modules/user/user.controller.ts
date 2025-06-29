@@ -8,6 +8,7 @@ import { CreateUserDto } from './dto/createUser.input';
 import { UpdateUserDto } from './dto/updateUser.input';
 import { UserResponse } from './dto/user-response';
 import { UpdatePasswordDto } from './dto/updatePassword.input';
+import { UserProfileByUsernameResponse } from './dto/user-profile-by-username-response.dto';
 
 @ApiTags('Users')
 @Controller('user')
@@ -59,6 +60,13 @@ export class UserController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getProfile(@CurrentUser() user: User): Promise<UserResponse> {
     return await this.userService.findOneById(user.id);
+  }
+
+  @Get('profile/:username')
+  async getProfileByUsername(
+    @Param('username') username: string,  
+  ): Promise<UserProfileByUsernameResponse> {
+    return await this.userService.findOneByUsername(username);  
   }
 
   @Get(':id') // Only for admins
