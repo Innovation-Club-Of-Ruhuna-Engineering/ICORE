@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setError(null);
             await authApi.login({ email, password });
             await fetchUserProfile();
-            router.push('/');
+            router.push('/me');
         } catch (error: any) {
             setError(error.response?.data?.message || 'Login failed');
             throw error;

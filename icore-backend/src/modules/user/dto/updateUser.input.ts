@@ -1,50 +1,50 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto {
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Username',
-    example: 'johndoe' 
+    example: 'johndoe',
   })
   @IsOptional()
   @IsString()
   username?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'First name',
-    example: 'John' 
+    example: 'John',
   })
   @IsOptional()
   @IsString()
   firstName?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Last name',
-    example: 'Doe' 
+    example: 'Doe',
   })
   @IsOptional()
   @IsString()
   lastName?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Contact number',
-    example: '+94771234567' 
+    example: '+94771234567',
   })
   @IsOptional()
   @IsString()
   contactNumber?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Department',
-    example: 'Computer Science' 
+    example: 'Computer Science',
   })
   @IsOptional()
   @IsString()
   department?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Batch year',
-    example: '2023' 
+    example: '2023',
   })
   @IsOptional()
   @IsString()

@@ -9,12 +9,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-  .setTitle('ICORE API')
-  .setDescription('The API documentation for the ICORE project')
-  .setVersion('1.0')
-  .addTag('Development Version')
-  .addBearerAuth()
-  .build();
+    .setTitle('ICORE API')
+    .setDescription('The API documentation for the ICORE project')
+    .setVersion('1.0')
+    .addTag('Development Version')
+    .addBearerAuth()
+    .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
