@@ -1,4 +1,11 @@
-import { BadRequestException, ConflictException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { DatabaseService } from 'src/config/database/database.service';
 import { Project, User } from 'generated/prisma';
 import { AddMemberInput, UpdateMemberInput } from './dto/projectMembers.dto';
@@ -13,7 +20,10 @@ export class ProjectService {
   /**
    * Creates a new project
    */
-  async create(createProjectInput: CreateProjectInput, ownerId: string): Promise<Project> {
+  async create(
+    createProjectInput: CreateProjectInput,
+    ownerId: string,
+  ): Promise<Project> {
     try {
       const project = await this.databaseService.project.create({
         data: {
@@ -37,7 +47,7 @@ export class ProjectService {
   }
 
   /**
-   * Retrieves all projects with pagination and filtering 
+   * Retrieves all projects with pagination and filtering
    */
   async findAll(
     page: number = 1,
@@ -45,7 +55,7 @@ export class ProjectService {
     search?: string,
     type?: string,
     tags?: string[],
-  ): Promise<{ projects: Project[]}> {
+  ): Promise<{ projects: Project[] }> {
     try {
       const where: any = {};
 
@@ -127,14 +137,19 @@ export class ProjectService {
 
       return projects;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to retrieve user projects');
+      throw new InternalServerErrorException(
+        'Failed to retrieve user projects',
+      );
     }
   }
 
   /**
    * Updates project information
    */
-  async update(id: string, updateProjectInput: UpdateProjectInput): Promise<Project> {
+  async update(
+    id: string,
+    updateProjectInput: UpdateProjectInput,
+  ): Promise<Project> {
     try {
       // TODO: Check if user has permission (Only owner can edit?)
 
@@ -158,7 +173,10 @@ export class ProjectService {
   /**
    * Update project visibility
    */
-  async updateProjectVisibility(projectId: string, isVisible: boolean): Promise<Project> {
+  async updateProjectVisibility(
+    projectId: string,
+    isVisible: boolean,
+  ): Promise<Project> {
     try {
       await this.databaseService.project.update({
         where: { id: projectId },
@@ -173,7 +191,9 @@ export class ProjectService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to update project visibility');
+      throw new InternalServerErrorException(
+        'Failed to update project visibility',
+      );
     }
   }
 
@@ -202,7 +222,10 @@ export class ProjectService {
   /**
    * Add a registered user as a project member
    */
-  async addMember(projectId: string, addMemberInput: AddMemberInput): Promise<{ message: string }> {
+  async addMember(
+    projectId: string,
+    addMemberInput: AddMemberInput,
+  ): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
@@ -248,21 +271,27 @@ export class ProjectService {
   /**
    * Add a guest member to the project
    */
-  async addGuestMember(projectId: string, addGuestMemberInput: AddGuestMemberInput): Promise<{ message: string }> {
+  async addGuestMember(
+    projectId: string,
+    addGuestMemberInput: AddGuestMemberInput,
+  ): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
 
       // Check if guest member with same email already exists
-      const existingGuestMember = await this.databaseService.guestMember.findFirst({
-        where: {
-          projectId,
-          email: addGuestMemberInput.email.toLowerCase(),
-        },
-      });
+      const existingGuestMember =
+        await this.databaseService.guestMember.findFirst({
+          where: {
+            projectId,
+            email: addGuestMemberInput.email.toLowerCase(),
+          },
+        });
 
       if (existingGuestMember) {
-        throw new ConflictException('Guest member with this email already exists in this project');
+        throw new ConflictException(
+          'Guest member with this email already exists in this project',
+        );
       }
 
       await this.databaseService.guestMember.create({
@@ -285,7 +314,11 @@ export class ProjectService {
   /**
    * Update member role
    */
-  async updateMemberRole(projectId: string, memberId: string, updateMemberInput: UpdateMemberInput): Promise<{ message: string }> {
+  async updateMemberRole(
+    projectId: string,
+    memberId: string,
+    updateMemberInput: UpdateMemberInput,
+  ): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
@@ -319,7 +352,11 @@ export class ProjectService {
   /**
    * Remove member from project
    */
-  async removeMember(projectId: string, memberId: string, currentUser: User): Promise<{ message: string }> {
+  async removeMember(
+    projectId: string,
+    memberId: string,
+    currentUser: User,
+  ): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
@@ -348,7 +385,11 @@ export class ProjectService {
   /**
    * Remove guest member from project
    */
-  async removeGuestMember(projectId: string, guestMemberId: string, currentUser: User): Promise<{ message: string }> {
+  async removeGuestMember(
+    projectId: string,
+    guestMemberId: string,
+    currentUser: User,
+  ): Promise<{ message: string }> {
     try {
       await this.findOneById(projectId);
       // TODO: Check if user has permission (Only owner can edit?)
@@ -384,25 +425,29 @@ export class ProjectService {
         where: { projectId },
         include: { user: true }, // Include user details
       });
-      return members.map(member => member.user);
+      return members.map((member) => member.user);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to retrieve project members');
+      throw new InternalServerErrorException(
+        'Failed to retrieve project members',
+      );
     }
   }
 
   /**
    * Get all guest members of a project
    */
-  async getProjectGuestMembers(projectId: string): Promise<{ name: string; email: string; role: string }[]> {
+  async getProjectGuestMembers(
+    projectId: string,
+  ): Promise<{ name: string; email: string; role: string }[]> {
     try {
       await this.findOneById(projectId);
       const guestMembers = await this.databaseService.guestMember.findMany({
         where: { projectId },
       });
-      return guestMembers.map(guest => ({
+      return guestMembers.map((guest) => ({
         name: guest.name,
         email: guest.email,
         role: guest.role,
@@ -411,11 +456,13 @@ export class ProjectService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to retrieve project guest members');
+      throw new InternalServerErrorException(
+        'Failed to retrieve project guest members',
+      );
     }
   }
 
-// ------------------------------------------------------------------------------------ //
+  // ------------------------------------------------------------------------------------ //
 
   /** CONSIDER: How to handle project tags?
    * SUGGESTION:
@@ -423,5 +470,4 @@ export class ProjectService {
    * These tags will be stored in the database in a tags table.
    * Each project can have upto 5 tags.
    * */
-
 }

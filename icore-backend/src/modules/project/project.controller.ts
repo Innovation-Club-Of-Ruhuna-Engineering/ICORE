@@ -1,11 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ValidationPipe, ParseUUIDPipe, Query, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  ValidationPipe,
+  ParseUUIDPipe,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { Project, User } from 'generated/prisma';
 import { CreateProjectInput } from './dto/createProject.input';
 import { UpdateProjectInput } from './dto/updateProject.input';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProjectResponse } from './dto/project-response';
 
 @ApiTags('Projects')
@@ -17,7 +37,11 @@ export class ProjectController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new project' })
-  @ApiResponse({ status: 201, description: 'Project successfully created', type: ProjectResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'Project successfully created',
+    type: ProjectResponse,
+  })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async create(
     @Body() createProjectInput: CreateProjectInput,
@@ -34,8 +58,17 @@ export class ProjectController {
   @ApiQuery({ name: 'limit', required: false, description: 'Items per page' })
   @ApiQuery({ name: 'search', required: false, description: 'Search term' })
   @ApiQuery({ name: 'type', required: false, description: 'Project type' })
-  @ApiQuery({ name: 'tags', required: false, description: 'Project tags', isArray: true })
-  @ApiResponse({ status: 200, description: 'List of projects', type: [ProjectResponse] })
+  @ApiQuery({
+    name: 'tags',
+    required: false,
+    description: 'Project tags',
+    isArray: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of projects',
+    type: [ProjectResponse],
+  })
   @ApiResponse({ status: 400, description: 'Bad request' })
   findAll(
     @Query('page') page?: number,
@@ -44,7 +77,6 @@ export class ProjectController {
     @Query('type') type?: string,
     @Query('tags') tags?: string[], // sent as repeated query params
   ) {
-
     if (tags && tags.length > 5) {
       throw new BadRequestException('Too many tags provided. Maximum is 5.');
     }
@@ -64,7 +96,11 @@ export class ProjectController {
   @Get(':id')
   @ApiOperation({ summary: 'Get project by ID' })
   @ApiParam({ name: 'id', description: 'Project ID' })
-  @ApiResponse({ status: 200, description: 'Project found', type: ProjectResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Project found',
+    type: ProjectResponse,
+  })
   @ApiResponse({ status: 404, description: 'Project not found' })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Project> {
     return this.projectService.findOneById(id);
@@ -75,12 +111,17 @@ export class ProjectController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update project by ID' })
   @ApiParam({ name: 'id', description: 'Project ID' })
-  @ApiResponse({ status: 200, description: 'Project updated successfully', type: ProjectResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Project updated successfully',
+    type: ProjectResponse,
+  })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Project not found' })
   async update(
-    @Param('id', ParseUUIDPipe) id: string, 
-    @Body() updateProjectInput: UpdateProjectInput): Promise<Project> {
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateProjectInput: UpdateProjectInput,
+  ): Promise<Project> {
     return this.projectService.update(id, updateProjectInput);
   }
 
@@ -89,12 +130,17 @@ export class ProjectController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update project members by ID' })
   @ApiParam({ name: 'id', description: 'Project ID' })
-  @ApiResponse({ status: 200, description: 'Project updated successfully', type: ProjectResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Project updated successfully',
+    type: ProjectResponse,
+  })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Project not found' })
   async updateMembers(
-    @Param('id', ParseUUIDPipe) id: string, 
-    @Body() updateProjectInput: UpdateProjectInput): Promise<Project> {
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateProjectInput: UpdateProjectInput,
+  ): Promise<Project> {
     return this.projectService.update(id, updateProjectInput);
   }
 
@@ -103,7 +149,11 @@ export class ProjectController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all projects for a user' })
   @ApiParam({ name: 'userId', description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'List of user projects', type: [ProjectResponse] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of user projects',
+    type: [ProjectResponse],
+  })
   async findUserProjects(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.projectService.findUserProjects(userId);
   }
@@ -146,7 +196,11 @@ export class ProjectController {
     @Body() updateMemberInput: any, // Should be UpdateMemberInput
     @CurrentUser() user: User,
   ) {
-    return this.projectService.updateMemberRole(id, memberId, updateMemberInput);
+    return this.projectService.updateMemberRole(
+      id,
+      memberId,
+      updateMemberInput,
+    );
   }
 
   @Delete(':id/member/:memberId')
