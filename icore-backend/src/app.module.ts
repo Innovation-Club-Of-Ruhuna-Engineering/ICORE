@@ -13,7 +13,7 @@ import { ProjectModule } from './modules/project/project.module';
     DatabaseModule,
     UserModule,
     AuthModule,
-    ProjectModule
+    ProjectModule,
   ],
   controllers: [],
   providers: [],
