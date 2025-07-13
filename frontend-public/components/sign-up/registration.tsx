@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/userAuthContext";
 import toast from 'react-hot-toast';
 
 const Registration = () => {
-    const { register, error: authError, loading} = useAuth();
+    const { register } = useAuth();
     const [formData, setFormData] = useState({
         email: "",
         username: "",
@@ -18,7 +18,6 @@ const Registration = () => {
         lastName: "",
         memberType: ""
     });
-    const [error, setError] = useState("");
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,8 +29,6 @@ const Registration = () => {
             toast.error('Please fill in all required fields');
             return;
         }
-
-        const loadingToast = toast.loading('Creating your account...');
         
         try {
             await register({
@@ -43,17 +40,15 @@ const Registration = () => {
                 role: formData.memberType === "student" ? "GENERAL" : "ACADEMIC",
             });
             
-            toast.dismiss(loadingToast);
             toast.success('Registration successful!');
             if(formData.memberType === "student") {
             router.push('/student-reg-1'); // Redirect to login page
             } else {
                 router.push('/academic-staff-reg-1'); // Redirect to academic registration page
             }
-        } catch (err: any) {
-            toast.dismiss(loadingToast);
-            toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
-            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+        } catch (err) {
+            console.error('Registration error:', err);
+            toast.error('Registration failed. Please try again.');
         }
     };
 

@@ -1,10 +1,14 @@
+import {Footer} from '@/components/shared/footer'
+import {Header} from '@/components/shared/header'
 import SignUp from '@/components/sign-up/sign-up'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
+      <Header/>
       <SignUp/>
+      <Footer/>
     </div>
   )
 }

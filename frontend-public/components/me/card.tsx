@@ -8,7 +8,7 @@ function Card({ children, className }: { children?: React.ReactNode, className?:
   );
 }
 
-Card.Header = ({
+const CardHeader = ({
   children,
   className,
 }: {
@@ -24,5 +24,8 @@ Card.Header = ({
     {children}
   </span>
 );
+
+CardHeader.displayName = "Card.Header";
+Card.Header = CardHeader;
 
 export default Card;

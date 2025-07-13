@@ -1,7 +1,7 @@
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { MdLocationOn, MdEmail, MdPhone } from 'react-icons/md';
 
-export default function Footer() {
+export const Footer = () => {
   return (
     <footer className="bg-blue-900 text-white py-10 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8">
