@@ -1,7 +1,7 @@
 import ContactSection from '@/components/about/ContactSection';
 import TeamSection from '@/components/about/TeamSection';
-import {Footer} from '@/components/shared/footer';
-import {Header} from '@/components/shared/header';
+import Footer from '@/components/shared/footer';
+import Header from '@/components/shared/header';
 import React from 'react';
 
 const AboutUsPage: React.FC = () => {

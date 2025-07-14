@@ -1,8 +1,8 @@
 'use client'
 import React, { useState } from 'react'
 import Image from 'next/image'
-import Registration from './registration'
-import SignInForm from './sign-in'
+import SignUpForm from './sign-up-form'
+import SignInForm from './sign-in-form'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const SignUp = () => {
@@ -158,7 +158,7 @@ const SignUp = () => {
                   variants={signUpFormVariants}
                   transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
-                  <Registration />
+                  <SignUpForm />
                 </motion.div>
               ) : (
                 <motion.div

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
 
-export const Header = () => {
+const Header = () => {
   const navItems = [
     {
       name: "Projects",
@@ -85,3 +85,5 @@ export const Header = () => {
     </div>
   );
 }
+
+export default Header;

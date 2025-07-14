@@ -34,7 +34,7 @@ const AcademicStaffRegStepOne = () => {
           department: formData.department
         });
         toast.success('Update successful!');
-        router.push('/academic-staff-reg-2');
+        router.push('/sign-up/academic/2');
       } else {
         toast.error('User ID is missing or invalid.');
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Header } from "@/components/shared/header";
+import Header from "@/components/shared/header";
 import backdrop from "@/assets/me/backdrop-profile.png"
 import profilePic from "@/assets/me/profile-pic.jpg"
 

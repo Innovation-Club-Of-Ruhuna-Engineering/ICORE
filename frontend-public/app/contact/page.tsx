@@ -1,6 +1,6 @@
 import ContactSection from '@/components/about/ContactSection';
-import {Footer} from '@/components/shared/footer';
-import {Header} from '@/components/shared/header';
+import Footer from '@/components/shared/footer';
+import Header from '@/components/shared/header';
 import React from 'react';
 
 const ContactUsPage: React.FC = () => {

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/userAuthContext";
 import toast from 'react-hot-toast';
 
-const Registration = () => {
+const SignUpForm = () => {
     const { register } = useAuth();
     const [formData, setFormData] = useState({
         email: "",
@@ -42,9 +42,9 @@ const Registration = () => {
             
             toast.success('Registration successful!');
             if(formData.memberType === "student") {
-            router.push('/student-reg-1'); // Redirect to login page
+            router.push('/sign-up/student/1');
             } else {
-                router.push('/academic-staff-reg-1'); // Redirect to academic registration page
+                router.push('/sign-up/academic/1');
             }
         } catch (err) {
             console.error('Registration error:', err);
@@ -170,8 +170,6 @@ const Registration = () => {
                     <BottomGradient />
                 </button>
                 
-             
-                
             </form>
             <p className="text-[12px] text-gray-500 mt-2 text-center">
                 By signing up, you agree to our <Link href="/#" className="text-icoreBlue font-bold">Terms of Service</Link> & <Link href="/#" className="text-icoreBlue font-bold">Privacy Policy</Link>.
@@ -203,4 +201,4 @@ const LabelInputContainer = ({
     );
 };
 
-export default Registration;
+export default SignUpForm;

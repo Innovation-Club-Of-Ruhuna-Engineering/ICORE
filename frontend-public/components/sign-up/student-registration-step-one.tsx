@@ -42,7 +42,7 @@ const StudentRegStepOne = () => {
           department: formData.department
         });
         toast.success('Update successful!');
-        router.push('/student-reg-2');
+        router.push('/sign-up/student/2');
       }
     } catch (err) {
       console.error('Error updating profile:', err);

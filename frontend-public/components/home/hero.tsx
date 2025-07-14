@@ -4,7 +4,7 @@ import { Boxes } from "@/components/ui/background-boxes";
 import { cn } from "@/lib/utils";
 import { ButtonM } from "@/components/shared/button";
 
-export const Hero = () => {
+const Hero = () => {
   return (
     <div className="h-120 relative w-full overflow-hidden bg-slate-900 flex flex-col items-center justify-center space-y-4">
       <div className="absolute inset-0 w-full h-full bg-slate-900 z-20 [mask-image:radial-gradient(transparent,white)] pointer-events-none" />
@@ -18,3 +18,5 @@ export const Hero = () => {
     </div>
   );
 }
+
+export default Hero;
