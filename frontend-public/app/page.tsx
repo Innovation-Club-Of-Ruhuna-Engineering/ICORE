@@ -1,14 +1,24 @@
-import Header from "@/components/shared/header";
+import { Navigation } from "@/components/shared/header";
 import Hero from "@/components/home/hero";
-import RecentProjectSection from "@/components/home/recentproject";
-import Footer from "@/components/shared/footer";
+import {Footer} from "@/components/shared/footer";
+import { AboutSection } from "@/components/home/about-section";
+import { FeaturedProjects } from "@/components/home/featured-projects";
+import { HowToJoin } from "@/components/home/how-to-join";
+import { TechStack } from "@/components/home/tech-stack";
+import { Testimonials } from "@/components/home/testimonials";
+import { NewsletterCTA } from "@/components/home/newsletter-cts";
 
 export default function Home() {
   return (
     <div >
-        <Header />
+        <Navigation />
         <Hero />   
-        <RecentProjectSection/>
+        <AboutSection />
+        <FeaturedProjects />
+        <HowToJoin />
+        <TechStack />
+        <Testimonials />
+        <NewsletterCTA />
         <Footer />
     </div>
   );
