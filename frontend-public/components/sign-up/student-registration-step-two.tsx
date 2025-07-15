@@ -25,18 +25,15 @@ const StudentRegStepTwo = () => {
       return;
     }
 
-    const loadingToast = toast.loading('Submitting your idea...');
-
     try {
       if (user && user.id) {
         await studentRegApi.updatePitch(user.id, { pitch });
-        toast.dismiss(loadingToast);
         toast.success('Idea submitted successfully!');
-        router.push('/student-reg-3'); // Redirect to next step
+        router.push('/sign-up/student/3'); // direct to next step
       }
-    } catch (err: any) {
-      toast.dismiss(loadingToast);
-      toast.error(err.response?.data?.message || 'Submission failed. Please try again.');
+    } catch (err) {
+      console.error('Error submitting pitch:', err);
+      toast.error('Submission failed. Please try again.');
     }
 
   }
