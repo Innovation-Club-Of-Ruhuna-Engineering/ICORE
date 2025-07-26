@@ -14,29 +14,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique // student email
-  username  String   @unique
-  password  String   
-  firstName String
-  lastName  String
-  regNumber String   @unique
-  refreshToken String? 
-  role      Role     @default(GENERAL)
-  status    Status   @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(uuid())
+  email         String    @unique // student email
+  username      String    @unique
+  password      String   
+  firstName     String
+  lastName      String
+  contactNumber String? // Optional contact number
+  gender        String?
+  department    String? // Department of the user (e.g., "Computer Science", "Electrical Engineering")
+  batch         String? // Batch of the user (e.g., "2023", "2024")
+  pitch         String? // Short pitch or description of the user
+  regNumber     String?   @unique
+  refreshToken  String? 
+  role          Role      @default(GENERAL)
+  status        Status    @default(PENDING)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
+  projects      Project[] // Projects created by the user
+  projectMembers Member[] // Projects where the user is a member
   @@map("users")
 }
 
 enum Role {
-  GENERAL 
+  GENERAL
   FULL
   COMMITTEE
-  LECTURER
+  ACADEMIC
+  INDUSTRY
+}
+
+model Project {
+  id            String    @id @default(uuid())
+
+  // PROJECT DETAILS //
+  name          String
+  about         String   // Short PUBLIC description of the project
+  description   String   // Detailed description of the project
+  type          ProjectType // Type of the project (e.g., "Research", "Design")
+  startDate     DateTime
+  endDate       DateTime? // (optional, if ongoing)
+  tags          String[]  // Array of tags
+
+  details       String?  // Technical details about the project
+  technologies  String[] // Array of technologies used in the project
+
+  references    String[]
+  papers        String[]  // Array of research paper links
+  photos        String[]  // Array of photo links in storage bucket
+  documents     String[]  // Array of document links in storage bucket
+  youtubeURL    String?
+  websiteURL    String?
+  githubURL     String?
+
+  ownerId       String
+  members       Member[]  // List of members registered in the website
+  guestMembers  GuestMember[] // List of members not regsitered in the website
+
+  isVisible       Boolean   @default(false) // project is visible to the public
+  status        Status    @default(PENDING)
+  owner         User      @relation(fields: [ownerId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  @@map("projects")
 }
 
 enum Status {
@@ -45,3 +87,40 @@ enum Status {
   INACTIVE
 }
 
+model Member {
+  id            String    @id @default(uuid())
+  projectId     String
+  userId        String
+  role          ProjectRole    // Role of the member in the project (e.g., "Leader", "Member")
+  joinedAt      DateTime  @default(now())
+
+  project       Project   @relation(fields: [projectId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@map("project_members")
+}
+
+model GuestMember {
+  id        String    @id @default(uuid())
+  name      String
+  email     String
+  role      ProjectRole
+  projectId String
+  joinedAt  DateTime @default(now())
+
+  project   Project @relation(fields: [projectId], references: [id])
+}
+
+enum ProjectRole {
+  LEADER
+  MEMBER
+  SUPERVISOR
+  CONTRIBUTOR
+}
+
+enum ProjectType {
+  RESEARCH
+  DESIGN
+  DEVELOPMENT
+  OTHER
+}
