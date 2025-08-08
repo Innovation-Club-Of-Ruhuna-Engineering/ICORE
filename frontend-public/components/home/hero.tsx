@@ -2,7 +2,8 @@
 import React from "react";
 import { Boxes } from "@/components/ui/background-boxes";
 import { cn } from "@/lib/utils";
-import { ButtonM } from "@/components/shared/button";
+import BorderGlowButton from "./borderGlowButton";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -13,8 +14,9 @@ const Hero = () => {
      <h1 className={cn("md:text-5xl text-4xl text-white relative z-20 text-center")}>
         Innovation Club of Ruhuna Engineering
       </h1>
-
-      <ButtonM  />      
+      <Link href={"/sign-up"}>
+        <BorderGlowButton />
+      </Link>
     </div>
   );
 }

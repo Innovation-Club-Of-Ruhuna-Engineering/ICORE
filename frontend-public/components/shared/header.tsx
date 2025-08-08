@@ -10,27 +10,10 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
+import navItems from "@/constants/shared";
 import { useState } from "react";
 
 const Header = () => {
-  const navItems = [
-    {
-      name: "Projects",
-      link: "projects",
-    },
-    {
-      name: "Shop",
-      link: "shop",
-    },
-    {
-      name: "About",
-      link: "about",
-    },
-    {
-      name: "Contact",
-      link: "contact",
-    },
-  ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -42,7 +25,7 @@ const Header = () => {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            <NavbarButton variant="primary">Get Started</NavbarButton>
+            <NavbarButton variant="primary" href="/sign-up">Get Started</NavbarButton>
           </div>
         </NavBody>
 
