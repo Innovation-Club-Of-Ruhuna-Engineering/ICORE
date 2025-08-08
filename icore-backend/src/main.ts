@@ -20,11 +20,15 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+
+  const frontendPublicUrl = process.env.FRONTEND_PUBLIC_URL || 'http://localhost:3000';
+  const frontendAdminUrl = process.env.FRONTEND_ADMIN_URL || 'http://localhost:3001';
+
   const corsOptions: CorsOptions = {
-    origin: ['http://localhost:3001', 'https://theicore.org'], // Allow only your Next.js app to access the API
+    origin: [frontendPublicUrl, frontendAdminUrl],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // Allow cookies to be sent with requests
-    optionsSuccessStatus: 204, // Some legacy browsers choke on 204
+    credentials: true,
+    optionsSuccessStatus: 204,
   };
 
   app.enableCors(corsOptions);

@@ -163,7 +163,7 @@ const SignUpForm = () => {
                     />
                 </LabelInputContainer>
                 
-                <button className=" w-full px-8 py-2 rounded-md bg-icoreBlue text-white font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
+                <button className="cursor-pointer w-full px-8 py-2 rounded-md bg-icoreBlue text-white font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
                     type="submit"
                 >
                     Create Account
