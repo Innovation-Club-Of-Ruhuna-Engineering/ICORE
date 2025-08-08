@@ -1,12 +1,12 @@
 import ContactSection from '@/components/about/ContactSection';
-import Footer from '@/components/shared/footer';
-import Header from '@/components/shared/header';
+import {Footer} from '@/components/shared/footer';
+import {Navigation} from '@/components/shared/header';
 import React from 'react';
 
 const ContactUsPage: React.FC = () => {
   return (
     <div >
-      <Header />
+      <Navigation />
       <div className="bg-white text-gray-800">
       {/* GET IN TOUCH SECTION */}
       <section className="bg-blue-800 text-white py-16 px-6">
