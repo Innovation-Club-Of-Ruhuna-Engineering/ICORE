@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+
 const axiosInstance = axios.create({
-  baseURL: process.env.NEST_BACKEND_URL, // get from .env
+  baseURL, 
   headers: {
     'Content-Type': 'application/json',
   },
