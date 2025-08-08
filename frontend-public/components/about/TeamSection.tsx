@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 
 const teamMembers = [
@@ -13,7 +14,7 @@ const TeamSection = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
       {teamMembers.map((member, idx) => (
         <div key={idx} className="bg-white shadow-md rounded-lg p-6">
-          <img
+          <Image
             src={member.image}
             alt={member.name}
             className="w-24 h-24 mx-auto rounded-full object-cover mb-4"
