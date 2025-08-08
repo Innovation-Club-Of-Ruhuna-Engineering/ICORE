@@ -1,41 +1,41 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:18-alpine AS base
+FROM node:20-slim AS base
 
 ARG NEXT_PUBLIC_BACKEND_URL
-
 ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
-
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
+
+# Install production tools needed by native modules like `sharp`
+RUN apt-get update && apt-get install -y \
+  python3 make g++ \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy only necessary files and install dependencies
 COPY package.json package-lock.json .npmrc* ./
-RUN npm ci
+RUN npm ci --include=optional
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-
 COPY . .
-
 RUN npm run build
 
-# Production image, copy all the files and run next
+# Production image
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-# Runtime environment variables will be provided by docker compose
-# ENV NEXT_TELEMETRY_DISABLED=1  # Uncomment to disable telemetry
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Create user for runtime
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
+# Copy required files
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
