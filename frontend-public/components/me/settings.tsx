@@ -157,7 +157,7 @@ function ExperienceStack() {
   );
 }
 
-function ExperienceNSkills({ user }: UserProps) {
+function ExperienceNSkills({}: UserProps) {
   // You can use user data to prefill skills/experience if you store them in user
   const [skillsStr, setSkillsStr] = useState("");
 
@@ -214,7 +214,7 @@ function ExperienceNSkills({ user }: UserProps) {
   );
 }
 
-function Social({ user }: UserProps) {
+function Social({}: UserProps) {
   return (
     <Card className="flex flex-1">
       <Card.Header>Social</Card.Header>
@@ -248,7 +248,7 @@ function Social({ user }: UserProps) {
   );
 }
 
-function Biography({ user }: UserProps) {
+function Biography({}: UserProps) {
   return (
     <Card className="flex flex-1">
       <Card.Header>Biography</Card.Header>

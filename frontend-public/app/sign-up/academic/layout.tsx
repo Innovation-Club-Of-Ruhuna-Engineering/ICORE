@@ -1,6 +1,6 @@
 import React from 'react';
-import { Navigation } from '@/components/shared/header';
-import { Footer } from '@/components/shared/footer';
+import Header from '@/components/shared/header';
+import Footer from '@/components/shared/footer';
 
 export default function AcademicLayout({
   children,
@@ -9,7 +9,7 @@ export default function AcademicLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+      <Header />
       <main className="flex-1 pt-16">
         {children}
       </main>
