@@ -40,7 +40,7 @@ export function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="p-6">
               <CardContent className="pt-6">
-                <p className="text-gray-600 mb-4 italic">"{testimonial.quote}"</p>
+                <p className="text-gray-600 mb-4 italic">&quot;{testimonial.quote}&quot;</p>
                 <div className="flex items-center">
                   <div className={`w-12 h-12 ${testimonial.color} rounded-full flex items-center justify-center mr-4`}>
                     <span className="text-white font-semibold">{testimonial.initials}</span>

@@ -1,6 +1,6 @@
-import { Navigation } from "@/components/shared/header";
+import Header from "@/components/shared/header";
 import Hero from "@/components/home/hero";
-import {Footer} from "@/components/shared/footer";
+import Footer from "@/components/shared/footer";
 import { AboutSection } from "@/components/home/about-section";
 import { FeaturedProjects } from "@/components/home/featured-projects";
 import { HowToJoin } from "@/components/home/how-to-join";
@@ -11,7 +11,7 @@ import { NewsletterCTA } from "@/components/home/newsletter-cts";
 export default function Home() {
   return (
     <div >
-        <Navigation />
+        <Header />
         <Hero />   
         <AboutSection />
         <FeaturedProjects />

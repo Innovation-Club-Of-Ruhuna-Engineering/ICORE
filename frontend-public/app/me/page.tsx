@@ -1,6 +1,6 @@
 "use client";
 
-import {Navigation} from "@/components/shared/header";
+import Header from "@/components/shared/header";
 import backdrop from "@/assets/me/backdrop-profile.png"
 import profilePic from "@/assets/me/profile-pic.jpg"
 
@@ -37,7 +37,7 @@ function SelfProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+      <Header />
       <div className="bg-[#ECF0FF] flex-1">
         <div className="w-2/3 mx-auto my-12 flex flex-col gap-6">
           <ProfileCard

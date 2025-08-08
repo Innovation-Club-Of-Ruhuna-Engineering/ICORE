@@ -8,7 +8,7 @@ export function HowToJoin() {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-6">How to Join</h2>
           <p className="text-xl text-gray-600">
-            Ready to be part of our innovation community? Here's how to get started
+            Ready to be part of our innovation community? Here&apos;s how to get started
           </p>
         </div>
 
