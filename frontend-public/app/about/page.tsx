@@ -1,15 +1,14 @@
 import ContactSection from '@/components/about/ContactSection';
 import TeamSection from '@/components/about/TeamSection';
-import Footer from '@/components/shared/footer';
-import NavbarDemo from '@/components/shared/navbar';
+import {Footer} from '@/components/shared/footer';
+import {Navigation} from '@/components/shared/header';
 import React from 'react';
 
 const AboutUsPage: React.FC = () => {
   return (
-      <div>
-      {/* Navbar */}
-      <NavbarDemo />
-    <div className="bg-white text-gray-800">
+    <div>
+      <Navigation />
+      <div className="bg-white text-gray-800">
 
       {/* Mission Statement */}
       <section className="bg-gradient-to-r from-indigo-100 to-blue-200 py-16 px-6 text-center">

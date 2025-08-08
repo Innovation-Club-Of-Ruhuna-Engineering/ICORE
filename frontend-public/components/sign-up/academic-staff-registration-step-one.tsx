@@ -26,22 +26,21 @@ const AcademicStaffRegStepOne = () => {
       toast.error('Please fill in all required fields');
       return;
     }
-
-    const loadingToast = toast.loading('Updating your account...');
     
     try {
-      if(user){
+      if(user && typeof user.id === 'string'){
         await academicRegApi.updateProfile(user.id, {
           contactNumber: formData.contactNumber,
           department: formData.department
         });
-        toast.dismiss(loadingToast);
         toast.success('Update successful!');
-        router.push('/academic-staff-reg-2');
+        router.push('/sign-up/academic/2');
+      } else {
+        toast.error('User ID is missing or invalid.');
       }
-    } catch (err: any) {
-      toast.dismiss(loadingToast);
-      toast.error(err.response?.data?.message || 'Update failed. Please try again.');
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      toast.error('Update failed. Please try again.');
     }
   }
 

@@ -1,17 +1,24 @@
-import BackgroundBoxesDemo from "@/components/home/hero";
-import RecentProjectSection from "@/components/home/recentproject";
-import Footer from "@/components/shared/footer";
-import NavbarDemo from "@/components/shared/navbar";
-import { Navbar } from "@/components/ui/resizable-navbar";
-import { TracingBeam } from "@/components/ui/tracing-beam";
-import Image from "next/image";
+import { Navigation } from "@/components/shared/header";
+import Hero from "@/components/home/hero";
+import {Footer} from "@/components/shared/footer";
+import { AboutSection } from "@/components/home/about-section";
+import { FeaturedProjects } from "@/components/home/featured-projects";
+import { HowToJoin } from "@/components/home/how-to-join";
+import { TechStack } from "@/components/home/tech-stack";
+import { Testimonials } from "@/components/home/testimonials";
+import { NewsletterCTA } from "@/components/home/newsletter-cts";
 
 export default function Home() {
   return (
     <div >
-        <NavbarDemo />
-        <BackgroundBoxesDemo />   
-        <RecentProjectSection/>
+        <Navigation />
+        <Hero />   
+        <AboutSection />
+        <FeaturedProjects />
+        <HowToJoin />
+        <TechStack />
+        <Testimonials />
+        <NewsletterCTA />
         <Footer />
     </div>
   );

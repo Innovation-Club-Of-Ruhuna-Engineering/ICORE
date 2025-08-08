@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/userAuthContext";
 import toast from 'react-hot-toast';
 
-const Registration = () => {
-    const { register, error: authError, loading} = useAuth();
+const SignUpForm = () => {
+    const { register } = useAuth();
     const [formData, setFormData] = useState({
         email: "",
         username: "",
@@ -18,7 +18,6 @@ const Registration = () => {
         lastName: "",
         memberType: ""
     });
-    const [error, setError] = useState("");
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,8 +29,6 @@ const Registration = () => {
             toast.error('Please fill in all required fields');
             return;
         }
-
-        const loadingToast = toast.loading('Creating your account...');
         
         try {
             await register({
@@ -43,17 +40,15 @@ const Registration = () => {
                 role: formData.memberType === "student" ? "GENERAL" : "ACADEMIC",
             });
             
-            toast.dismiss(loadingToast);
             toast.success('Registration successful!');
             if(formData.memberType === "student") {
-            router.push('/student-reg-1'); // Redirect to login page
+            router.push('/sign-up/student/1');
             } else {
-                router.push('/academic-staff-reg-1'); // Redirect to academic registration page
+                router.push('/sign-up/academic/1');
             }
-        } catch (err: any) {
-            toast.dismiss(loadingToast);
-            toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
-            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+        } catch (err) {
+            console.error('Registration error:', err);
+            toast.error('Registration failed. Please try again.');
         }
     };
 
@@ -168,14 +163,12 @@ const Registration = () => {
                     />
                 </LabelInputContainer>
                 
-                <button className=" w-full px-8 py-2 rounded-md bg-icoreBlue text-white font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
+                <button className="cursor-pointer w-full px-8 py-2 rounded-md bg-icoreBlue text-white font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-icoreBlue"
                     type="submit"
                 >
                     Create Account
                     <BottomGradient />
                 </button>
-                
-             
                 
             </form>
             <p className="text-[12px] text-gray-500 mt-2 text-center">
@@ -208,4 +201,4 @@ const LabelInputContainer = ({
     );
 };
 
-export default Registration;
+export default SignUpForm;

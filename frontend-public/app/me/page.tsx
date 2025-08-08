@@ -1,7 +1,6 @@
 "use client";
 
-import NavbarDemo from "@/components/shared/navbar";
-
+import {Navigation} from "@/components/shared/header";
 import backdrop from "@/assets/me/backdrop-profile.png"
 import profilePic from "@/assets/me/profile-pic.jpg"
 
@@ -27,7 +26,7 @@ function SelfProfilePage() {
     options: [general, skills, social, bio],
   } = useOption(4, 1);
 
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const changeTo = factory((i) => ({
     className: `p-2 flex rounded-xl px-3 max-md:items-center max-md:justify-center ${
@@ -38,7 +37,7 @@ function SelfProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <NavbarDemo />
+      <Navigation />
       <div className="bg-[#ECF0FF] flex-1">
         <div className="w-2/3 mx-auto my-12 flex flex-col gap-6">
           <ProfileCard
@@ -46,7 +45,7 @@ function SelfProfilePage() {
             profilepic={profilePic.src}
             name={`${user?.firstName || "First"} ${user?.lastName || "Last"}`}
             username={`@${user?.username || "username"}`}
-            since="Joined Jun 2025"
+            since={user?.createdAt ? `Joined ${new Date(user.createdAt).toLocaleString('default', { month: 'short', year: 'numeric' })}` : ""}
             social={{
               github: "github",
               linkedin: "linkedin",
@@ -106,10 +105,10 @@ function SelfProfilePage() {
                 <span {...changeTo(4)}>Biography</span>
               </div>
             </Card>
-            {general && <GeneralInformation />}
-            {skills && <ExperienceNSkills />}
-            {social && <Social />}
-            {bio && <Biography />}
+            {general && <GeneralInformation user={user} />}
+            {skills && <ExperienceNSkills user={user} />}
+            {social && <Social user={user} />}
+            {bio && <Biography user={user} />}
           </div>
         </div>
       </div>

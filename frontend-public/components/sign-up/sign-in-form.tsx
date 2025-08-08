@@ -34,8 +34,9 @@ const SignInForm = () => {
       await login(formData.email, formData.password);
       toast.success("Login successful!");
       
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Login failed");
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed");
     }
   };
 

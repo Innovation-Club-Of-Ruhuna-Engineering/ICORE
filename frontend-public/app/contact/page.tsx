@@ -1,13 +1,13 @@
 import ContactSection from '@/components/about/ContactSection';
-import Footer from '@/components/shared/footer';
-import NavbarDemo from '@/components/shared/navbar';
+import {Footer} from '@/components/shared/footer';
+import {Navigation} from '@/components/shared/header';
 import React from 'react';
 
 const ContactUsPage: React.FC = () => {
   return (
     <div >
-      <NavbarDemo />
-    <div className="bg-white text-gray-800">
+      <Navigation />
+      <div className="bg-white text-gray-800">
       {/* GET IN TOUCH SECTION */}
       <section className="bg-blue-800 text-white py-16 px-6">
         <h2 className="text-4xl font-bold text-center mb-12">GET IN TOUCH</h2>
@@ -20,7 +20,7 @@ const ContactUsPage: React.FC = () => {
           <div>
             <div className="text-3xl mb-4">📞</div>
             <h3 className="text-xl font-semibold mb-2">PHONE</h3>
-            <p>+94 71 234 5678<br />Mon – Fri: 9AM – 6PM</p>
+            <p>+94 71 234 5678<br />Mon - Fri: 9AM - 6PM</p>
           </div>
           <div>
             <div className="text-3xl mb-4">📧</div>

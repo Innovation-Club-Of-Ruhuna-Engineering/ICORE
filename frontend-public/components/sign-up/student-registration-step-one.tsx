@@ -31,8 +31,6 @@ const StudentRegStepOne = () => {
       toast.error('Please fill in all required fields');
       return;
     }
-
-    const loadingToast = toast.loading('Updating your account...');
     
     try {
       if(user && user.id) {
@@ -43,13 +41,12 @@ const StudentRegStepOne = () => {
           batch: formData.batch,
           department: formData.department
         });
-        toast.dismiss(loadingToast);
         toast.success('Update successful!');
-        router.push('/student-reg-2');
+        router.push('/sign-up/student/2');
       }
-    } catch (err: any) {
-      toast.dismiss(loadingToast);
-      toast.error(err.response?.data?.message || 'Update failed. Please try again.');
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      toast.error('Update failed. Please try again.');
     }
   }
 
