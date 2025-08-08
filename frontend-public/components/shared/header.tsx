@@ -10,30 +10,17 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
+import navItems from "@/constants/shared";
 import { useState } from "react";
 
 const Header = () => {
-  const navItems = [
-    {
-      name: "Projects",
-      link: "projects",
-    },
-    {
-      name: "Shop",
-      link: "shop",
-    },
-    {
-      name: "About",
-      link: "about",
-    },
-    {
-      name: "Contact",
-      link: "contact",
-    },
-  ];
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+export function Navigation() {
+  const router = useRouter();
+  const handleButtonCLick = () => {
+    // Handle button click logic here
+    router.push('/sign-up'); // Example: Navigate to the join page
+  };
   return (
     <div className="relative w-full">
       <Navbar>
@@ -42,7 +29,7 @@ const Header = () => {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            <NavbarButton variant="primary">Get Started</NavbarButton>
+            <NavbarButton variant="primary" href="/sign-up">Get Started</NavbarButton>
           </div>
         </NavBody>
 
@@ -79,11 +66,25 @@ const Header = () => {
                 Get Started
               </NavbarButton>
             </div>
-          </MobileNavMenu>
-        </MobileNav>
-      </Navbar>
-    </div>
-  );
+            <span className="text-xl font-bold text-gray-900">ICORE</span>
+          </div>
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="#about" className="text-gray-600 hover:text-blue-600 transition-colors">
+              About
+            </a>
+            <a href="#projects" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Projects
+            </a>
+            <a href="#join" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Join Us
+            </a>
+            <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Contact
+            </a>
+            <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleButtonCLick}>Get Started</Button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  )
 }
-
-export default Header;

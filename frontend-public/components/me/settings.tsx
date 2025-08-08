@@ -4,24 +4,31 @@ import { InputWithLabal } from "./input";
 import { SelectWithLabel } from "./select";
 import { Badge } from "@/components/ui/badge";
 import { CirclePlus } from "lucide-react";
+import { User } from "@/types/auth/userAuthTypes";
 
-function GeneralInformation() {
+type UserProps = { user?: User | null };
+
+function GeneralInformation({ user }: UserProps) {
+  console.log(user?.regNumber);
   return (
     <Card className="flex flex-1">
       <Card.Header>General Information</Card.Header>
       <div className="grid grid-cols-2 not-md:grid-cols-1 not-lg:grid-cols-1 gap-x-12 gap-y-6">
-        <InputWithLabal label="First Name" id="firstName" />
-        <InputWithLabal label="Last Name" id="lastName" />
-        <InputWithLabal label="Nick Name" id="nickName" />
+        <InputWithLabal label="First Name" id="firstName" defaultValue={user?.firstName || ""} />
+        <InputWithLabal label="Last Name" id="lastName" defaultValue={user?.lastName || ""} />
+        <InputWithLabal label="Nick Name" id="nickName" defaultValue={user?.username || ""} />
         <InputWithLabal
           label="Registration Number"
           id="registrationNumber"
-          placeholder="XX/20XX/XXXX"
+          placeholder="EG/20XX/XXXX"
+          defaultValue={user?.regNumber || ""}
         />
+        
         <InputWithLabal
           label="Phone Number"
           id="phoneNumber"
           placeholder="+947XXXXXXXX"
+          defaultValue={user?.contactNumber || ""}
         />
         <SelectWithLabel
           id="gender"
@@ -31,6 +38,7 @@ function GeneralInformation() {
             ["male", "Male"],
             ["female", "Female"],
           ]}
+          defaultValue={user?.gender || ""}
         />
         <SelectWithLabel
           id="department"
@@ -41,6 +49,7 @@ function GeneralInformation() {
             ["com", "COM"],
             ["civil", "Civil"],
           ]}
+          defaultValue={user?.department || ""}
         />
         <SelectWithLabel
           id="batch"
@@ -50,6 +59,7 @@ function GeneralInformation() {
             ["22", "22 Batch"],
             ["23", "23 Batch"],
           ]}
+          defaultValue={user?.batch || ""}
         />
       </div>
     </Card>
@@ -147,7 +157,8 @@ function ExperienceStack() {
   );
 }
 
-function ExperienceNSkills() {
+function ExperienceNSkills({ user }: UserProps) {
+  // You can use user data to prefill skills/experience if you store them in user
   const [skillsStr, setSkillsStr] = useState("");
 
   const skills = skillsStr
@@ -162,7 +173,6 @@ function ExperienceNSkills() {
         <div className="flex flex-col gap-y-6">
           <div className="flex flex-col justify-between">
             <label className="text-xl">Skills</label>
-
             {skills.length > 0 && (
               <div className="flex flex-wrap gap-2 bg-gray-200/80 rounded-lg mt-4 p-2 px-3">
                 {skills.map((skill, i) => (
@@ -175,7 +185,6 @@ function ExperienceNSkills() {
                 ))}
               </div>
             )}
-
             <textarea
               placeholder={'"/" Seperated Skills'}
               value={
@@ -195,7 +204,6 @@ function ExperienceNSkills() {
               className="resize-none mt-4 w-full outline outline-black/20 hover:outline-sky-300 focus:outline-sky-400 focus:outline-2 rounded-md p-2 placeholder-gray-500/90"
             />
           </div>
-
           <div className="flex flex-col justify-between">
             <label className="text-xl">Experiences</label>
             <ExperienceStack />
@@ -206,7 +214,7 @@ function ExperienceNSkills() {
   );
 }
 
-function Social() {
+function Social({ user }: UserProps) {
   return (
     <Card className="flex flex-1">
       <Card.Header>Social</Card.Header>
@@ -215,32 +223,39 @@ function Social() {
           label="Website Link"
           id="website"
           placeholder="https://example.com"
+          //defaultValue={user?.websiteURL || ""}
         />
         <InputWithLabal
           label="YouTube Link"
           id="youtube"
           placeholder="youtube"
+          //defaultValue={user?.youtubeURL || ""}
         />
         <InputWithLabal
           label="Linkedin Link"
           id="linkedin"
           placeholder="in/profile"
+          //defaultValue={user?.linkedinURL || ""}
         />
         <InputWithLabal
           label="GitHub Link"
           id="github"
           placeholder="https://github.com/profile"
+          //defaultValue={user?.githubURL || ""}
         />
       </div>
     </Card>
   );
 }
 
-function Biography() {
+function Biography({ user }: UserProps) {
   return (
     <Card className="flex flex-1">
       <Card.Header>Biography</Card.Header>
-      <div className="grid grid-cols-2 gap-x-12 gap-y-6"></div>
+      <div className="grid grid-cols-2 gap-x-12 gap-y-6">
+        {/* Add biography fields here, e.g. */}
+        {/* <InputWithLabal label="Bio" id="bio" defaultValue={user?.bio || ""} /> */}
+      </div>
     </Card>
   );
 }

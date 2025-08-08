@@ -176,16 +176,18 @@ function SelectWithLabel({
   label,
   placeholder,
   items = [],
+  defaultValue,
 }: {
   id: string;
   label: string;
   placeholder: string;
   items?: [string, string][];
+  defaultValue?: string;
 }) {
   return (
     <div className="flex flex-col justify-between">
       <label htmlFor={id}>{label}</label>
-      <Select>
+      <Select defaultValue={defaultValue}>
         <SelectTrigger className="w-full mt-4" id={id}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

@@ -1,79 +1,95 @@
-import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
-import { MdLocationOn, MdEmail, MdPhone } from 'react-icons/md';
+import { Lightbulb, Github, Linkedin, Twitter, Mail } from "lucide-react"
 
-const Footer = () => {
+export function Footer() {
   return (
-    <footer className="bg-blue-900 text-white py-10 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8">
-        {/* Logo and Contact */}
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold">ICORE</h1>
-          <div className="flex items-center space-x-2">
-            <MdPhone className="text-yellow-400" />
-            <span>+94-91-XXXXXXX</span>
-          </div>
-          <div className="flex items-start space-x-2">
-            <MdLocationOn className="text-yellow-400 mt-1" />
-            <span>University of Ruhuna, Faculty of Engineering, Hapugala, Galle, Sri Lanka</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <MdEmail className="text-yellow-400" />
-            <span>icore@eng.ruh.ac.lk</span>
+    <footer id="contact" className="bg-gray-900 text-white py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Lightbulb className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold">ICORE</span>
+            </div>
+            <p className="text-gray-400 mb-4">
+              Innovation Club of Ruhuna Engineering - Building the future through technology and collaboration.
+            </p>
+            <div className="flex space-x-4">
+              <Github className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer transition-colors" />
+              <Linkedin className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer transition-colors" />
+              <Twitter className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer transition-colors" />
+              <Mail className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer transition-colors" />
+            </div>
           </div>
 
-          <div className="flex space-x-4 mt-4 text-yellow-400 text-lg">
-            <a href="https://facebook.com" target="_blank"><FaFacebookF /></a>
-            <a href="https://twitter.com" target="_blank"><FaTwitter /></a>
-            <a href="https://instagram.com" target="_blank"><FaInstagram /></a>
-            <a href="https://youtube.com" target="_blank"><FaYoutube /></a>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2 text-gray-400">
+              <li>
+                <a href="#about" className="hover:text-white transition-colors">
+                  About
+                </a>
+              </li>
+              <li>
+                <a href="#projects" className="hover:text-white transition-colors">
+                  Projects
+                </a>
+              </li>
+              <li>
+                <a href="#join" className="hover:text-white transition-colors">
+                  Join Us
+                </a>
+              </li>
+              <li>
+                <a href="#contact" className="hover:text-white transition-colors">
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Resources</h3>
+            <ul className="space-y-2 text-gray-400">
+              <li>
+                <a href="#" className="hover:text-white transition-colors">
+                  Documentation
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white transition-colors">
+                  Tutorials
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white transition-colors">
+                  GitHub
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white transition-colors">
+                  Blog
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
+            <div className="space-y-2 text-gray-400">
+              <p>Faculty of Engineering</p>
+              <p>University of Ruhuna</p>
+              <p>Hapugala, Galle, Sri Lanka</p>
+              <p>icore@eng.ruh.ac.lk</p>
+            </div>
           </div>
         </div>
 
-        {/* Company */}
-        <div>
-          <h2 className="font-bold mb-2">Company</h2>
-          <ul className="space-y-1 text-gray-300">
-            <li><a href="#">About</a></li>
-            <li><a href="#">Awards & Recognition</a></li>
-            <li><a href="#">Contact</a></li>
-          </ul>
-        </div>
-
-        {/* IEEE Projects */}
-        <div>
-          <h2 className="font-bold mb-2">IEEE Projects</h2>
-          <ul className="space-y-1 text-gray-300">
-            <li><a href="#">Python IEEE Projects</a></li>
-            <li><a href="#">Java IEEE Projects</a></li>
-            <li><a href="#">Matlab Projects</a></li>
-            <li><a href="#">Dotnet IEEE Projects</a></li>
-          </ul>
-        </div>
-
-        {/* Final Year Projects */}
-        <div>
-          <h2 className="font-bold mb-2">Final Year Projects</h2>
-          <ul className="space-y-1 text-gray-300">
-            <li><a href="#">IEEE Projects</a></li>
-            <li><a href="#">MCA Projects</a></li>
-            <li><a href="#">Mini Projects for CSE</a></li>
-            <li><a href="#">Shop</a></li>
-          </ul>
-        </div>
-
-        {/* Project Services */}
-        <div>
-          <h2 className="font-bold mb-2">Project Services</h2>
-          <ul className="space-y-1 text-gray-300">
-            <li><a href="#">Python Projects</a></li>
-            <li><a href="#">Java Projects</a></li>
-            <li><a href="#">Dot Net Projects</a></li>
-            <li><a href="#">PHP Projects</a></li>
-          </ul>
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+          <p>&copy; 2024 Innovation Club of Ruhuna Engineering. All rights reserved.</p>
         </div>
       </div>
     </footer>
-  );
+  )
 }
-
-export default Footer;

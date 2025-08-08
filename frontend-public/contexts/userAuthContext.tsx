@@ -78,9 +78,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setError(null);
             await authApi.login({ email, password });
             await fetchUserProfile();
+            console.log('Login successful, user:', user);
+            setIsAuthenticated(true);
             router.push('/me');
         } catch (error: any) {
             setError(error.response?.data?.message || 'Login failed');
+            setIsAuthenticated(false);
+            setUser(null);
             throw error;
         } finally {
             setLoading(false);
