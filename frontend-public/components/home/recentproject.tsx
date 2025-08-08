@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Project {
   id: number;
@@ -64,7 +65,7 @@ const RecentProjectSection: React.FC = () => (
           key={project.id}
           className="relative rounded-lg overflow-hidden shadow-md group"
         >
-          <img
+          <Image
             src={project.imageUrl}
             alt={project.title}
             className="w-full h-48 object-cover transition-transform group-hover:scale-105 duration-300"

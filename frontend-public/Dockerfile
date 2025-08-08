@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy only necessary files and install dependencies
 COPY package.json package-lock.json .npmrc* ./
-RUN npm ci --include=optional
+RUN npm ci --include=optional --ignore-scripts=false
 
 # Rebuild the source code only when needed
 FROM base AS builder
