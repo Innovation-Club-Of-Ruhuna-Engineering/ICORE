@@ -25,13 +25,13 @@ async function bootstrap() {
   const frontendAdminUrl = process.env.FRONTEND_ADMIN_URL || 'http://localhost:3001';
 
   const corsOptions: CorsOptions = {
-    origin: [frontendPublicUrl, frontendAdminUrl],
+    origin: ['http://localhost:3001', 'https://theicore.org', 'https://dev-portal.theicore.org'], // Allow only your Next.js app to access the API
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204,
   };
 
   app.enableCors(corsOptions);
-  await app.listen(process.env.PORT ?? 4000);
+  await app.listen(process.env.PORT ?? 5000);
 }
 bootstrap();
