@@ -9,14 +9,16 @@ ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 FROM base AS deps
 WORKDIR /app
 
-# Install production tools needed by native modules like `sharp`
+# Install production tools needed by native modules
 RUN apt-get update && apt-get install -y \
-  python3 make g++ \
+  python3 make g++ gcc \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy only necessary files and install dependencies
 COPY package.json package-lock.json .npmrc* ./
+# Force rebuild of native modules and install dependencies
 RUN npm ci --include=optional --ignore-scripts=false
+RUN npm rebuild
 
 # Rebuild the source code only when needed
 FROM base AS builder
