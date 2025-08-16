@@ -1,24 +1,29 @@
-"use client";
-import React from "react";
-import { Boxes } from "@/components/ui/background-boxes";
-import { cn } from "@/lib/utils";
-import BorderGlowButton from "./borderGlowButton";
-import Link from "next/link";
+import { Button } from "@/components/ui/button"
+import { ArrowRight } from "lucide-react"
 
-const Hero = () => {
+export default function Hero() {
   return (
-    <div className="h-120 relative w-full overflow-hidden bg-slate-900 flex flex-col items-center justify-center space-y-4">
-      <div className="absolute inset-0 w-full h-full bg-slate-900 z-20 [mask-image:radial-gradient(transparent,white)] pointer-events-none" />
-
-      <Boxes />
-     <h1 className={cn("md:text-5xl text-4xl text-white relative z-20 text-center")}>
-        Innovation Club of Ruhuna Engineering
-      </h1>
-      <Link href={"/sign-up"}>
-        <BorderGlowButton />
-      </Link>
-    </div>
-  );
+    <center><section className="container flex min-h-[calc(100vh-3.5rem)] w-full flex-col items-center justify-center space-y-8 py-24 text-center md:py-32">
+      <div className="space-y-4">
+        <h1
+          className="bg-gradient-to-br from-foreground from-30% via-foreground/90 to-foreground/70 bg-clip-text text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
+          style={{ color: "#2549d5" }}
+        >
+          Innovation Club of Rhununa Engineering
+        </h1>
+        <p className="mx-auto max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
+          The ICORE tagline
+        </p>
+      </div>
+      <div className="flex gap-4">
+        <Button size="lg" >
+          Explore Projects
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+        <Button variant="outline" size="lg">
+          Join ICORE
+        </Button>
+      </div>
+    </section></center>
+  )
 }
-
-export default Hero;
