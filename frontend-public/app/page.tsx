@@ -1,7 +1,8 @@
-import Navbar from "@/components/navbar"
-import Hero from "@/components/home/hero"
-import Features from "@/components/home/features"
-import Footer from "@/components/home/footer"
+import Navbar from "@/components/navbar";
+import Hero from "@/components/home/hero";
+import Features from "@/components/home/features";
+import Footer from "@/components/home/footer";
+import HalfToneWaves from "@/components/halftone-waves";
 
 export default function Home() {
   return (
@@ -15,10 +16,13 @@ export default function Home() {
 
       <div className="relative z-10">
         <Navbar />
+        <div className="fixed -translate-y-75 -z-10 opacity-5">
+          <HalfToneWaves />
+        </div>
         <Hero />
         <Features />
         <Footer />
       </div>
     </div>
-  )
+  );
 }
