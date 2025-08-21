@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import MouseMoveEffect from "@/components/mouse-move-effect"
 
 
 const geistSans = Geist({
@@ -43,7 +42,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} bg-background text-foreground antialiased`}>
-          <MouseMoveEffect />
           {children}
       </body>
     </html>
