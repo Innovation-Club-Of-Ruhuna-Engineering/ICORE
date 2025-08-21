@@ -57,6 +57,7 @@ jobs:
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "cooperjsk" --password-stdin
             cd ~/icore/frontend
             echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}" >> .env
+            docker compose down
             docker compose pull
             docker compose up -d --build
 
@@ -74,5 +75,6 @@ jobs:
             echo "JWT_ACCESS_TOKEN_EXPIRATION=${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION }}" >> .env
             echo "JWT_REFRESH_TOKEN_EXPIRATION=${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}" >> .env
             echo "PORT=${{ secrets.PORT }}" >> .env
+            docker compose down
             docker compose pull
             docker compose up -d --build
