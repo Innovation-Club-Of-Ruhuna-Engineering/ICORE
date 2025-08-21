@@ -1,9 +1,28 @@
-import React from 'react'
+import Navbar from "@/components/navbar";
+import Hero from "@/components/home/hero";
+import Features from "@/components/home/features";
+import Footer from "@/components/home/footer";
+import HalfToneWaves from "@/components/halftone-waves";
 
-const page = () => {
+export default function Home() {
   return (
-    <div>public dashboard</div>
-  )
-}
+    <div className="relative min-h-screen">
+      {/* Background gradients */}
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
+        <div className="absolute right-0 top-0 h-[500px] w-[500px] bg-blue-500/10 blur-[100px]" />
+        <div className="absolute bottom-0 left-0 h-[500px] w-[500px] bg-purple-500/10 blur-[100px]" />
+      </div>
 
-export default page
+      <div className="relative z-10">
+        <Navbar />
+        <div className="fixed -translate-y-75 -z-10 opacity-5">
+          <HalfToneWaves />
+        </div>
+        <Hero />
+        <Features />
+        <Footer />
+      </div>
+    </div>
+  );
+}
