@@ -1,8 +1,8 @@
 "use client";
 import React, { ChangeEvent, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
@@ -143,7 +143,7 @@ const SignUpForm = () => {
             !errors.lastName;
 
         setFormComplete(isComplete);
-    }, [formData, touched]);
+    }, [formData, touched, errors.email, errors.username, errors.password, errors.firstName, errors.lastName]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

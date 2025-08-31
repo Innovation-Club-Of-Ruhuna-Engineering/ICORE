@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: process.env.NEST_PUBLIC_BACKEND_URL, // get from .env
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL, // get from .env
     headers: {
         'Content-Type': 'application/json',
     },

@@ -64,7 +64,7 @@ export function HeroSection() {
         const y = e.clientY - rect.top
 
         const dots = heroRef.current.querySelectorAll(".dot")
-        dots.forEach((dot: Element, index: number) => {
+        dots.forEach((dot: Element) => {
           const dotElement = dot as HTMLElement
           const dotRect = dotElement.getBoundingClientRect()
           const dotX = dotRect.left + dotRect.width / 2 - rect.left
