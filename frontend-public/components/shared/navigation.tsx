@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Sun, Moon } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useTheme } from "next-themes"
 
 const navigation = [
-  { name: "Home", href: "#home" },
+  { name: "Home", href: "/" },
   { name: "Projects", href: "#projects" },
+  { name: "Blog", href: "/blog" },
   { name: "About", href: "#about" },
   { name: "Contact", href: "#contact" },
   { name: "Shop", href: "#shop" },
@@ -51,9 +51,8 @@ export function Navigation() {
             </div>
           </div>
 
-          {/* Theme Toggle and Sign In Buttons */}
-          <div className="hidden md:flex items-center gap-4">
-            <ThemeToggle />
+          {/* Sign In Button */}
+          <div className="hidden md:flex">
             <Button size="sm">Sign In</Button>
           </div>
 
@@ -82,30 +81,11 @@ export function Navigation() {
               {item.name}
             </a>
           ))}
-          <div className="flex gap-2 mt-4">
-            <ThemeToggle />
-            <Button size="sm" className="flex-1">
-              Sign In
-            </Button>
-          </div>
+          <Button size="sm" className="w-full mt-4">
+            Sign In
+          </Button>
         </div>
       </nav>
     </header>
-  )
-}
-
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
-
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-    >
-      <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-      <span className="sr-only">Toggle theme</span>
-    </Button>
   )
 }

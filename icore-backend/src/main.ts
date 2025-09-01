@@ -25,7 +25,7 @@ async function bootstrap() {
   const frontendAdminUrl = process.env.FRONTEND_ADMIN_URL || 'http://localhost:3001';
 
   const corsOptions: CorsOptions = {
-    origin: ['http://localhost:3000', 'https://theicore.org', 'https://dev-portal.theicore.org'], // Allow only your Next.js app to access the API
+    origin: ['http://localhost:3000', 'https://theicore.org', 'https://dev-portal.theicore.org','https://icore-steel.vercel.app'], // Allow only your Next.js app to access the API
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204,
