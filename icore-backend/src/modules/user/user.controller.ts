@@ -32,8 +32,9 @@ import { UserProfileByUsernameResponse } from './dto/user-profile-by-username-re
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
+  // Create new user endpoint
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new user' })
@@ -88,33 +89,6 @@ export class UserController {
     return await this.userService.findOneByUsername(username);
   }
 
-  @Get(':id') // Only for admins
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get user by ID (Admin only)' })
-  @ApiParam({ name: 'id', description: 'User ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'User found',
-    type: UserResponse,
-  })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  // TODO: Add role-based guards (Only COMMITTEE can get any user)
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserResponse> {
-    return await this.userService.findOneById(id);
-  }
-
-  @Patch(':id') // Only for admins
-  @UseGuards(JwtAuthGuard)
-  // TODO: Add role-based guards (Only COMMITTEE can update any user)
-  async update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body(new ValidationPipe())
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserResponse> {
-    return await this.userService.update(id, updateUserDto);
-  }
-
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -145,6 +119,33 @@ export class UserController {
     updatePasswordDto: UpdatePasswordDto,
   ) {
     return await this.userService.updatePassword(user.id, updatePasswordDto);
+  }
+
+  @Get(':id') // Only for admins
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user by ID (Admin only)' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'User found',
+    type: UserResponse,
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  // TODO: Add role-based guards (Only COMMITTEE can get any user)
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserResponse> {
+    return await this.userService.findOneById(id);
+  }
+
+  @Patch(':id') // Only for admins
+  @UseGuards(JwtAuthGuard)
+  // TODO: Add role-based guards (Only COMMITTEE can update any user)
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body(new ValidationPipe())
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponse> {
+    return await this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id') // Only for admins

@@ -73,12 +73,12 @@ const AcademicStaffRegStepOne = () => {
             setLoading(true);
 
             if (user && typeof user.id === 'string') {
-                await academicRegApi.updateProfile(user.id, {
+                await academicRegApi.updateProfile({
                     contactNumber: formData.contactNumber,
                     department: formData.department
                 });
                 toast.success('Profile updated successfully!');
-                router.push('/sign-up/academic/2');
+                router.push('/signup/academic/2');
             } else {
                 toast.error('User ID is missing or invalid.');
             }
@@ -130,7 +130,7 @@ const AcademicStaffRegStepOne = () => {
                 transition={{ duration: 0.6 }}
                 className="w-full max-w-4xl bg-white dark:bg-gray-950 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800"
             >
-                
+
 
                 {/* Logo */}
                 <motion.div

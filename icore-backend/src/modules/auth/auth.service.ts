@@ -14,7 +14,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async verifyUser(email: string, password: string): Promise<User> {
     try {
@@ -101,6 +101,24 @@ export class AuthService {
       httpOnly: true,
       secure: this.configService.get('NODE_ENV') === 'production',
       expires: expiresRefreshToken,
+      sameSite: 'strict',
+    });
+  }
+
+  async logout(user: User, response: Response) {
+    // Clear the refresh token from the database
+    await this.userService.updateRefreshToken(user.id, null);
+
+    // Clear the authentication cookies
+    response.clearCookie('Authentication', {
+      httpOnly: true,
+      secure: this.configService.get('NODE_ENV') === 'production',
+      sameSite: 'strict',
+    });
+
+    response.clearCookie('Refresh', {
+      httpOnly: true,
+      secure: this.configService.get('NODE_ENV') === 'production',
       sameSite: 'strict',
     });
   }

@@ -58,9 +58,9 @@ const StudentRegStepTwo = () => {
         try {
             setLoading(true);
             if (user && user.id) {
-                await studentRegApi.updatePitch(user.id, { pitch });
+                await studentRegApi.updatePitch( { pitch });
                 toast.success('Your idea was submitted successfully!');
-                router.push('/sign-up/student/3');
+                router.push('/signup/student/3');
             }
         } catch (err) {
             console.error('Error submitting pitch:', err);

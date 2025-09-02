@@ -58,7 +58,7 @@ const SignUpForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    
+
 
     // Password strength indicators
     const [passwordStrength, setPasswordStrength] = useState(0); // 0-3 (weak to strong)
@@ -176,9 +176,9 @@ const SignUpForm = () => {
 
             toast.success("Account created successfully!");
             if (formData.memberType === "student") {
-                router.push("/sign-up/student/1");
+                router.push("/signup/student/1");
             } else {
-                router.push("/sign-up/academic/1");
+                router.push("/signup/academic/1");
             }
         } catch (err) {
             console.error("Registration error:", err);
@@ -255,78 +255,78 @@ const SignUpForm = () => {
                 >
 
                     <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-5 sm:space-y-0">
-                    {/* Email field */}
-                    <LabelInputContainer>
-                        <Label htmlFor="email" className="flex items-center text-sm font-medium">
-                            Email Address <span className="text-red-500 ml-1">*</span>
-                        </Label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <Mail className="h-4 w-4 text-gray-400" />
-                            </div>
-                            <Input
-                                id="email"
-                                name="email"
-                                placeholder="you@example.com"
-                                type="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('email')}
-                                className={cn(
-                                    "pl-10 pr-10",
-                                    errors.email && touched.email ? "border-red-300 focus:ring-red-500" :
-                                        formData.email && !errors.email ? "border-green-300 focus:ring-green-500" : ""
+                        {/* Email field */}
+                        <LabelInputContainer>
+                            <Label htmlFor="email" className="flex items-center text-sm font-medium">
+                                Email Address <span className="text-red-500 ml-1">*</span>
+                            </Label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <Mail className="h-4 w-4 text-gray-400" />
+                                </div>
+                                <Input
+                                    id="email"
+                                    name="email"
+                                    placeholder="you@example.com"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    onBlur={() => handleBlur('email')}
+                                    className={cn(
+                                        "pl-10 pr-10",
+                                        errors.email && touched.email ? "border-red-300 focus:ring-red-500" :
+                                            formData.email && !errors.email ? "border-green-300 focus:ring-green-500" : ""
+                                    )}
+                                />
+                                {touched.email && (
+                                    errors.email ? (
+                                        <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-500" />
+                                    ) : formData.email ? (
+                                        <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
+                                    ) : null
                                 )}
-                            />
-                            {touched.email && (
-                                errors.email ? (
-                                    <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-500" />
-                                ) : formData.email ? (
-                                    <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
-                                ) : null
-                            )}
-                        </div>
-                        {touched.email && errors.email && (
-                            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-                        )}
-                    </LabelInputContainer>
-
-                    {/* Username field */}
-                    <LabelInputContainer>
-                        <Label htmlFor="username" className="flex items-center text-sm font-medium">
-                            Username <span className="text-red-500 ml-1">*</span>
-                        </Label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <User className="h-4 w-4 text-gray-400" />
                             </div>
-                            <Input
-                                id="username"
-                                name="username"
-                                placeholder="johnsmith"
-                                type="text"
-                                value={formData.username}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('username')}
-                                className={cn(
-                                    "pl-10 pr-10",
-                                    errors.username && touched.username ? "border-red-300 focus:ring-red-500" :
-                                        formData.username && !errors.username ? "border-green-300 focus:ring-green-500" : ""
-                                )}
-                            />
-                            {touched.username && (
-                                errors.username ? (
-                                    <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-500" />
-                                ) : formData.username ? (
-                                    <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
-                                ) : null
+                            {touched.email && errors.email && (
+                                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
                             )}
-                        </div>
-                        {touched.username && errors.username && (
-                            <p className="text-red-500 text-xs mt-1">{errors.username}</p>
-                        )}
                         </LabelInputContainer>
-                        </div>
+
+                        {/* Username field */}
+                        <LabelInputContainer>
+                            <Label htmlFor="username" className="flex items-center text-sm font-medium">
+                                Username <span className="text-red-500 ml-1">*</span>
+                            </Label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <User className="h-4 w-4 text-gray-400" />
+                                </div>
+                                <Input
+                                    id="username"
+                                    name="username"
+                                    placeholder="johnsmith"
+                                    type="text"
+                                    value={formData.username}
+                                    onChange={handleInputChange}
+                                    onBlur={() => handleBlur('username')}
+                                    className={cn(
+                                        "pl-10 pr-10",
+                                        errors.username && touched.username ? "border-red-300 focus:ring-red-500" :
+                                            formData.username && !errors.username ? "border-green-300 focus:ring-green-500" : ""
+                                    )}
+                                />
+                                {touched.username && (
+                                    errors.username ? (
+                                        <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-500" />
+                                    ) : formData.username ? (
+                                        <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
+                                    ) : null
+                                )}
+                            </div>
+                            {touched.username && errors.username && (
+                                <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+                            )}
+                        </LabelInputContainer>
+                    </div>
 
                     {/* Name fields */}
                     <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-5 sm:space-y-0">
@@ -566,7 +566,7 @@ const SignUpForm = () => {
                 <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-6">
                     Already have an account?{" "}
                     <Link
-                        href="/sign-in"
+                        href="/signin"
                         className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
                     >
                         Sign In
