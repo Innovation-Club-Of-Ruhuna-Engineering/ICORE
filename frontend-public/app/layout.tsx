@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/userAuthContext";
 import { Toaster } from "react-hot-toast";
+import { Navigation } from "@/components/shared/navigation";
 
 
 const outfit = Outfit({
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.variable} bg-background text-foreground antialiased`}>
+        <Navigation />
         <AuthProvider>
           <Toaster position="top-right" />
   

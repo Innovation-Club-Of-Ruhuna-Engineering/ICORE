@@ -1,113 +1,195 @@
 "use client";
 
-//import { Navigation } from "@/components/shared/header";
-import backdrop from "@/public/backdrop-profile.png"
-import profilePic from "@/public/profile-pic.png"
-
-import ProfileCard from "@/components/me/profile-card";
-import Card from "@/components/me/card";
-import ProjectCard from "@/components/project/project-card";
-
-import {
-  GeneralInformation,
-  ExperienceNSkills,
-  Social,
-  Biography,
-} from "@/components/me/settings";
-
-import useOption from "@/hooks/useOption";
+import { useState, useEffect } from "react";
+import { toast, Toaster } from "react-hot-toast";
 import { useAuth } from "@/contexts/userAuthContext";
+import { profileApi } from "@/lib/profile/profileMethods";
+
+// New Modular Components
+import ProfileCard from "@/components/me/profile-card";
+import { ProfileNavigation } from "@/components/me/profile-navigation";
+import { GeneralInfoSection } from "@/components/me/general-info-section";
+import { ExperienceSkillsSection } from "@/components/me/experience-skills-section";
+import { SocialSection } from "@/components/me/social-section";
+import { SettingsSection } from "@/components/me/settings-section";
+import { ProjectsSection } from "@/components/me/projects-section";
+
+// Skeleton Loaders
+import {
+  ProfileCardSkeleton,
+  SettingsPanelSkeleton,
+} from "@/components/ui/skeleton";
+
+// Hooks
+import useOption from "@/hooks/useOption";
+
+type TabType = 'general' | 'experience' | 'social' | 'settings';
 
 function SelfProfilePage() {
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [currentUser, setCurrentUser] = useState(user);
+
   const {
     active,
     select,
     factory,
-    options: [general, skills, social, bio],
+    options: [general, experience, social, settings],
   } = useOption(4, 1);
 
-  const { user } = useAuth();
+  // Update local user state when auth user changes
+  useEffect(() => {
+    setCurrentUser(user);
+  }, [user]);
 
-  const changeTo = factory((i) => ({
-    className: `p-2 flex rounded-xl px-3 max-md:items-center max-md:justify-center ${active == i ? "bg-gray-300/50" : "bg-transparent hover:bg-gray-300/20"
-      }`,
-    onClick: () => select(i),
-  }));
+  // Refresh user profile data
+  const refreshProfile = async () => {
+    try {
+      setRefreshing(true);
+      const response = await profileApi.getProfile();
+      setCurrentUser(response.data);
+      toast.success("Profile refreshed!");
+    } catch (error) {
+      console.error("Error refreshing profile:", error);
+      toast.error("Failed to refresh profile");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const getTabContent = () => {
+    if (!currentUser) return null;
+
+    switch (active) {
+      case 1:
+        return <GeneralInfoSection user={currentUser} onUpdate={refreshProfile} />;
+      case 2:
+        return <ExperienceSkillsSection user={currentUser} onUpdate={refreshProfile} />;
+      case 3:
+        return <SocialSection user={currentUser} onUpdate={refreshProfile} />;
+      case 4:
+        return <SettingsSection user={currentUser} onUpdate={refreshProfile} />;
+      default:
+        return <GeneralInfoSection user={currentUser} onUpdate={refreshProfile} />;
+    }
+  };
+
+  if (authLoading) {
+    return <ProfilePageSkeleton />;
+  }
+
+  if (!isAuthenticated || !currentUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Access Denied</h2>
+          <p className="text-gray-600">Please sign in to view your profile.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* <Navigation /> */}
-      <div className="bg-[#ECF0FF] flex-1">
-        <div className="w-2/3 mx-auto my-12 flex flex-col gap-6">
-          <ProfileCard
-            backdrop={backdrop.src}
-            profilepic={profilePic.src}
-            name={`${user?.firstName || "First"} ${user?.lastName || "Last"}`}
-            username={`@${user?.username || "username"}`}
-            since={user?.createdAt ? `Joined ${new Date(user.createdAt).toLocaleString('default', { month: 'short', year: 'numeric' })}` : ""}
-            social={{
-              github: "github",
-              linkedin: "linkedin",
-              website: "web",
-              youtube: "youtube",
-            }}
+    <div className="min-h-screen bg-gray-50 mt-10">
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
+
+          {/* Full-Width LinkedIn-Style Profile Card */}
+          <div className="w-full">
+            {profileLoading ? (
+              <ProfileCardSkeleton />
+            ) : (
+              <ProfileCard user={currentUser} onUpdate={refreshProfile} />
+            )}
+          </div>
+
+          {/* Projects Section - Full Width */}
+          <ProjectsSection
+            loading={profileLoading}
+            onCreateProject={() => toast.success("Create project feature coming soon!")}
+            onEditProject={(project) => toast.success(`Edit ${project.title} coming soon!`)}
+            onDeleteProject={(projectId) => toast.success("Delete project feature coming soon!")}
           />
 
-          {/* Projects Section */}
-          <div className="bg-white rounded-2xl shadow-[0_0_4px_rgba(0,0,0,0.25)] py-6 px-5">
-            <div className="flex justify-between items-center border-b border-gray-300 pb-4 mb-4">
-              <h2 className="text-2xl font-semibold">My Projects</h2>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700">
-                + New Project
-              </button>
+          {/* Profile Management Section */}
+          <div className="grid lg:grid-cols-5 gap-8">
+
+            {/* Left Sidebar Navigation */}
+            <div className="lg:col-span-1">
+              <div className="lg:sticky lg:top-8">
+                <ProfileNavigation
+                  activeTab={active || 1}
+                  onTabChange={select}
+                />
+              </div>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <ProjectCard
-                project={{
-                  title: "Portfolio Website",
-                  description: "A modern portfolio built using React and TailwindCSS.",
-                  image: "https://source.unsplash.com/random/800x600?website",
-                }}
-              />
-              <ProjectCard
-                project={{
-                  title: "Task Manager",
-                  description: "A productivity app to manage daily tasks efficiently.",
-                  image: "https://source.unsplash.com/random/800x600?productivity",
-                }}
-              />
-              <ProjectCard
-                project={{
-                  title: "E-commerce Template",
-                  description: "A responsive shopping UI built with Next.js.",
-                  image: "https://source.unsplash.com/random/800x600?ecommerce",
-                }}
-              />
+
+            {/* Main Content Area - 4 columns for spacious layout */}
+            <div className="lg:col-span-4">
+              {profileLoading || refreshing ? (
+                <SettingsPanelSkeleton />
+              ) : (
+                <div className="w-full">
+                  {getTabContent()}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Loading skeleton for the entire page
+function ProfilePageSkeleton() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
+          {/* Profile Card Skeleton */}
+          <div className="w-full">
+            <ProfileCardSkeleton />
+          </div>
+
+          {/* Projects Section Skeleton */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <div className="animate-pulse">
+              <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-48 bg-gray-200 rounded-lg"></div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="flex max-md:flex-col gap-8">
-            <Card className="md:hidden h-fit max-md:p-1">
-              <div className="text-xl grid grid-cols-4 not-xs:grid-cols-2 gap-2 max-md:gap-1 md:my-3">
-                <span {...changeTo(1)}>General</span>
-                <span {...changeTo(2)}>Expertise</span>
-                <span {...changeTo(3)}>Social</span>
-                <span {...changeTo(4)}>Biography</span>
+          {/* Settings Section Skeleton */}
+          <div className="grid lg:grid-cols-5 gap-8">
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                <div className="animate-pulse space-y-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-10 bg-gray-200 rounded"></div>
+                  ))}
+                </div>
               </div>
-            </Card>
-            <Card className="max-md:hidden h-fit flex-[0.3] min-w-60">
-              <Card.Header className="font-medium">Edit Profile</Card.Header>
-              <div className="text-xl flex flex-col gap-2 my-3">
-                <span {...changeTo(1)}>General</span>
-                <span {...changeTo(2)}>Expertise</span>
-                <span {...changeTo(3)}>Social</span>
-                <span {...changeTo(4)}>Biography</span>
-              </div>
-            </Card>
-            {general && <GeneralInformation user={user} />}
-            {skills && <ExperienceNSkills user={user} />}
-            {social && <Social user={user} />}
-            {bio && <Biography user={user} />}
+            </div>
+            <div className="lg:col-span-4">
+              <SettingsPanelSkeleton />
+            </div>
           </div>
         </div>
       </div>
