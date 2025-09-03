@@ -32,7 +32,7 @@ import { UserProfileByUsernameResponse } from './dto/user-profile-by-username-re
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   // Create new user endpoint
   @Post()
@@ -158,6 +158,16 @@ export class UserController {
   // TODO: Add role-based guards (Only COMMITTEE can delete user)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return await this.userService.remove(id);
+  }
+
+  @Delete('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete current user profile' })
+  @ApiResponse({ status: 200, description: 'Profile deleted successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async removeProfile(@CurrentUser() user: User) {
+    return await this.userService.remove(user.id);
   }
 
   // CONSIDER: Create function for user to delete their own profile?

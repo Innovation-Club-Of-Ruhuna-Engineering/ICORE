@@ -14,7 +14,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async verifyUser(email: string, password: string): Promise<User> {
     try {
