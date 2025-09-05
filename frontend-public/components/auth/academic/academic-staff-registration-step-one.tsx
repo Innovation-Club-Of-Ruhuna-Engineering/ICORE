@@ -189,7 +189,9 @@ const AcademicStaffRegStepOne = () => {
                     <LabelInputContainer>
                         <Label htmlFor="contactNumber" className="flex items-center text-sm sm:text-base font-medium">
                             Contact Number <span className="text-red-500 ml-1">*</span>
-                            <span className="ml-1 text-xs text-gray-500">(WhatsApp Preferred)</span>
+                            <span className="ml-2 text-xs text-gray-500">
+                                (A number where you can be reached if needed, such as your office or cabin line.)
+                            </span>
                         </Label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">

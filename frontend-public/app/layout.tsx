@@ -28,12 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.variable} bg-background text-foreground antialiased`}>
-        <Navigation />
         <AuthProvider>
+          <Navigation />
           <Toaster position="top-right" />
-  
           {children}
-         
         </AuthProvider>
       </body>
     </html>

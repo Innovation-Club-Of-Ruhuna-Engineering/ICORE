@@ -212,16 +212,16 @@ const SignUpForm = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-500 to-white dark:from-gray-900 dark:to-black px-4 py-10">
+        <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 px-4 py-10">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="w-full max-w-3xl rounded-3xl shadow-2xl bg-white dark:bg-gray-950 p-8 relative border border-gray-100 dark:border-gray-800"
+                className="w-full max-w-3xl rounded-2xl shadow-xl bg-white dark:bg-gray-950 p-8 relative border border-gray-200 dark:border-gray-800"
             >
-                {/* Decorative elements */}
-                <div className="absolute -top-10 -right-10 w-20 h-20 bg-blue-200 dark:bg-blue-900/30 rounded-full opacity-50 blur-xl"></div>
-                <div className="absolute -bottom-8 -left-8 w-16 h-16 bg-green-200 dark:bg-green-900/30 rounded-full opacity-40 blur-xl"></div>
+                {/* Subtle decorative elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full opacity-60 blur-3xl -z-10"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-emerald-50 to-teal-100 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-full opacity-40 blur-2xl -z-10"></div>
 
                 {/* Logo + Heading */}
                 <motion.div
