@@ -73,12 +73,12 @@ const AcademicStaffRegStepOne = () => {
             setLoading(true);
 
             if (user && typeof user.id === 'string') {
-                await academicRegApi.updateProfile(user.id, {
+                await academicRegApi.updateProfile({
                     contactNumber: formData.contactNumber,
                     department: formData.department
                 });
                 toast.success('Profile updated successfully!');
-                router.push('/sign-up/academic/2');
+                router.push('/signup/academic/2');
             } else {
                 toast.error('User ID is missing or invalid.');
             }
@@ -130,7 +130,7 @@ const AcademicStaffRegStepOne = () => {
                 transition={{ duration: 0.6 }}
                 className="w-full max-w-4xl bg-white dark:bg-gray-950 p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800"
             >
-                
+
 
                 {/* Logo */}
                 <motion.div
@@ -189,7 +189,9 @@ const AcademicStaffRegStepOne = () => {
                     <LabelInputContainer>
                         <Label htmlFor="contactNumber" className="flex items-center text-sm sm:text-base font-medium">
                             Contact Number <span className="text-red-500 ml-1">*</span>
-                            <span className="ml-1 text-xs text-gray-500">(WhatsApp Preferred)</span>
+                            <span className="ml-2 text-xs text-gray-500">
+                                (A number where you can be reached if needed, such as your office or cabin line.)
+                            </span>
                         </Label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">

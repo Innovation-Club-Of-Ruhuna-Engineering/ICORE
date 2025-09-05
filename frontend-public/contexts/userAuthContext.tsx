@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await authApi.logout();
             setIsAuthenticated(false);
             setUser(null);
-            router.push('/sign-in');
+            router.push('/signin');
         } catch (error: any) {
             setError(error.response?.data?.message || 'Logout failed');
         } finally {

@@ -10,6 +10,7 @@
  */
 import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
 import { User } from 'generated/prisma';
 import { Response } from 'express';
@@ -66,5 +67,23 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     await this.authService.login(user, response);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Logout user' })
+  @ApiResponse({
+    status: 200,
+    description: 'User successfully logged out',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  async logout(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.authService.logout(user, response);
   }
 }

@@ -29,6 +29,7 @@ const StudentRegStepOne = () => {
   const [errors, setErrors] = useState({
     regNumber: "",
     contactNumber: "",
+    batch: "",
   });
 
   const [touched, setTouched] = useState({
@@ -66,6 +67,18 @@ const StudentRegStepOne = () => {
       }
     }
 
+    // Validate batch format (01-99)
+    if (touched.batch) {
+      const batchPattern = /^(0[1-9]|[1-9][0-9])$/;
+      if (!formData.batch) {
+        setErrors(prev => ({ ...prev, batch: "Batch is required" }));
+      } else if (!batchPattern.test(formData.batch)) {
+        setErrors(prev => ({ ...prev, batch: "Batch must be a two-digit number (01-99)" }));
+      } else {
+        setErrors(prev => ({ ...prev, batch: "" }));
+      }
+    }
+
     // Check if form is complete
     const isComplete =
       formData.regNumber !== "" &&
@@ -74,10 +87,11 @@ const StudentRegStepOne = () => {
       formData.batch !== "" &&
       formData.department !== "" &&
       !errors.regNumber &&
-      !errors.contactNumber;
+      !errors.contactNumber &&
+      !errors.batch;
 
     setFormComplete(isComplete);
-  }, [formData, touched, errors.regNumber, errors.contactNumber]);
+  }, [formData, touched, errors.regNumber, errors.contactNumber, errors.batch]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -100,7 +114,7 @@ const StudentRegStepOne = () => {
       setLoading(true);
 
       if (user && user.id) {
-        await studentRegApi.updateProfile(user.id, {
+        await studentRegApi.updateProfile({
           regNumber: formData.regNumber,
           contactNumber: formData.contactNumber,
           gender: formData.gender,
@@ -108,7 +122,7 @@ const StudentRegStepOne = () => {
           department: formData.department
         });
         toast.success('Update successful!');
-        router.push('/sign-up/student/2');
+        router.push('/signup/student/2');
       }
     } catch (err) {
       console.error('Error updating profile:', err);
@@ -334,39 +348,45 @@ const StudentRegStepOne = () => {
 
           {/* Batch */}
           <LabelInputContainer>
-            <Label className="flex text-sm sm:text-base font-medium">
+            <Label htmlFor="batch" className="flex items-center text-sm sm:text-base font-medium">
               Batch <span className="text-red-500 ml-1">*</span>
             </Label>
-            <div className="flex flex-wrap gap-3 mt-1">
-              {[22, 23, 24, 25].map((year) => (
-                <label
-                  key={year}
-                  className={cn(
-                    "flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer transition-all border min-w-[80px]",
-                    formData.batch === `${year}`
-                      ? "bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                      : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-                  )}
-                >
-                  <input
-                    id={`batch-${year}`}
-                    name="batch"
-                    value={`${year}`}
-                    checked={formData.batch === `${year}`}
-                    onChange={handleInputChange}
-                    type="radio"
-                    className="sr-only"
-                  />
-                  <span className="text-sm font-medium">20{year}</span>
-                  {formData.batch === `${year}` && (
-                    <CheckCircle className="ml-2 h-4 w-4 text-blue-500 dark:text-blue-400" />
-                  )}
-                </label>
-              ))}
+            <div className="relative">
+              <Input
+                id="batch"
+                placeholder="23"
+                type="text"
+                value={formData.batch}
+                onChange={handleInputChange}
+                onBlur={() => handleBlur('batch')}
+                maxLength={2}
+                className={cn(
+                  "pr-10 text-left",
+                  errors.batch && touched.batch ? "border-red-500 focus:ring-red-500" :
+                    formData.batch && !errors.batch ? "border-green-500 focus:ring-green-500" : ""
+                )}
+              />
+              {touched.batch && (
+                errors.batch ? (
+                  <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-500" />
+                ) : formData.batch ? (
+                  <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
+                ) : null
+              )}
             </div>
-            {touched.batch && !formData.batch && (
-              <p className="text-red-500 text-xs mt-1">Please select your batch</p>
+            {touched.batch && errors.batch && (
+              <p className="text-red-500 text-xs mt-1">{errors.batch}</p>
             )}
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-xs text-gray-500">
+                Enter two-digit batch number (01-99)
+              </p>
+              {formData.batch && !errors.batch && (
+                <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                  Batch 20{formData.batch}
+                </p>
+              )}
+            </div>
           </LabelInputContainer>
 
           {/* Department */}

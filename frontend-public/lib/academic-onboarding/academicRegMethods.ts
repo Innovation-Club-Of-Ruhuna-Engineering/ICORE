@@ -21,9 +21,7 @@ interface UpdateRegisterResponse {
 }
 
 export const academicRegApi = {
-    updateProfile: async (userId: string, data: Partial<UpdateRegisterData>): Promise<AxiosResponse<UpdateRegisterResponse>> => {
-        return await axiosInstance.patch(`/user/${userId}`, data);
+    updateProfile: async (data: Partial<UpdateRegisterData>): Promise<AxiosResponse<UpdateRegisterResponse>> => {
+        return await axiosInstance.patch(`/user/profile`, data);
     },
-
-
 };
