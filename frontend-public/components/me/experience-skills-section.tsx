@@ -51,7 +51,7 @@ export function ExperienceSkillsSection({ user, onUpdate }: ExperienceSkillsSect
             // Save experiences and skills as JSON to the backend
             await profileApi.updateProfile({
                 experiences: experiences,
-                skills: skills,
+                skills: skills.map(skill => skill.name),
             });
             toast.success("Experience & Skills updated successfully!");
             onUpdate();
@@ -77,7 +77,7 @@ export function ExperienceSkillsSection({ user, onUpdate }: ExperienceSkillsSect
         setExperiences(prev => [...prev, newExperience]);
     };
 
-    const updateExperience = (id: string, field: keyof Experience, value: any) => {
+    const updateExperience = (id: string, field: keyof Experience, value: Experience[keyof Experience]) => {
         setExperiences(prev =>
             prev.map(exp =>
                 exp.id === id ? { ...exp, [field]: value } : exp

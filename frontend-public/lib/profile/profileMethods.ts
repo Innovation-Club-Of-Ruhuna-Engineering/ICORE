@@ -1,6 +1,14 @@
 import { AxiosResponse } from 'axios';
 import axiosInstance from '../axios/axiosInstance';
 
+interface Experience {
+    title: string;
+    company: string;
+    startDate: string;
+    endDate?: string;
+    description?: string;
+}
+
 interface User {
     id: string;
     email: string;
@@ -30,8 +38,8 @@ interface User {
     youtube?: string;
     instagram?: string;
     twitter?: string;
-    experiences?: any[];
-    skills?: any[];
+    experiences?: Experience[];
+    skills?: string[];
     role: string;
     status: string;
     createdAt: string;
@@ -66,8 +74,8 @@ export interface UpdateProfileData {
     youtube?: string;
     instagram?: string;
     twitter?: string;
-    experiences?: any[]; // JSON array of experiences
-    skills?: any[]; // JSON array of skills
+    experiences?: Experience[]; // JSON array of experiences
+    skills?: string[]; // JSON array of skills
 }
 
 export interface UpdatePasswordData {

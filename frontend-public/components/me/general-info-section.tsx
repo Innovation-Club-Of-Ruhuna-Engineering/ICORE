@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { User2, Mail, GraduationCap, Save, Loader2, IdCard, Phone, Users } from "lucide-react";
+import { User2, GraduationCap, Save, Loader2,  Phone } from "lucide-react";
 import { User } from "@/types/auth/userAuthTypes";
 import { profileApi } from "@/lib/profile/profileMethods";
 import Card from "@/components/me/card";

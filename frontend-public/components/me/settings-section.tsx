@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { Lock, Trash2, Save, Loader2, AlertTriangle, Shield, Settings as SettingsIcon } from "lucide-react";
+import { Lock, Trash2, Save, Loader2, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/contexts/userAuthContext";
 import { profileApi } from "@/lib/profile/profileMethods";
 import Card from "@/components/me/card";
@@ -150,7 +150,7 @@ export function SettingsSection({ user, onUpdate }: SettingsSectionProps) {
                                             />
                                         </div>
                                         <span className={`text-xs font-medium ${passwordStrength < 2 ? 'text-red-600' :
-                                                passwordStrength < 4 ? 'text-yellow-600' : 'text-green-600'
+                                            passwordStrength < 4 ? 'text-yellow-600' : 'text-green-600'
                                             }`}>
                                             {getStrengthText(passwordStrength)}
                                         </span>
@@ -175,7 +175,7 @@ export function SettingsSection({ user, onUpdate }: SettingsSectionProps) {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                             />
                             {passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword && (
-                                <p className="mt-1 text-xs text-red-600">Passwords don't match</p>
+                                <p className="mt-1 text-xs text-red-600">Passwords don&apos;t match</p>
                             )}
                         </div>
                     </div>
@@ -246,9 +246,9 @@ export function SettingsSection({ user, onUpdate }: SettingsSectionProps) {
                     ) : (
                         <div className="space-y-4">
                             <div className="p-4 bg-white border-2 border-red-300 rounded-lg">
-                                <p className="font-semibold text-red-800 mb-2">⚠️ Are you absolutely sure?</p>
+                                    <p className="font-semibold text-red-800 mb-2">⚠️ Are you absolutely sure&quot;</p>
                                 <p className="text-red-700 text-sm mb-3">
-                                    This action cannot be undone. Type <strong>"DELETE"</strong> to confirm:
+                                        This action cannot be undone. Type <strong>&quot;DELETE&quot;</strong> to confirm:
                                 </p>
                                 <input
                                     type="text"

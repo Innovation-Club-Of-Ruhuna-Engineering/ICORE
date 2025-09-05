@@ -5,7 +5,6 @@ import { toast } from "react-hot-toast";
 import { Globe, Github, Linkedin, Youtube, Instagram, Twitter, Save, Loader2 } from "lucide-react";
 import { profileApi } from "@/lib/profile/profileMethods";
 import Card from "@/components/me/card";
-import { InputWithLabal } from "@/components/me/input";
 import { User } from "@/types/auth/userAuthTypes";
 
 interface SocialSectionProps {

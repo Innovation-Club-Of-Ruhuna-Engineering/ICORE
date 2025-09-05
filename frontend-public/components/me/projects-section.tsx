@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Plus, ExternalLink, Github, Edit, Trash2 } from "lucide-react";
-import ProjectCard from "@/components/project/project-card";
 import { ProjectCardSkeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
 
 interface Project {
     id: string;
@@ -152,10 +152,12 @@ function EnhancedProjectCard({ project, showActions, onEdit, onDelete }: Enhance
             )}
 
             <div className="relative">
-                <img
+                <Image
                     src={project.image}
                     alt={project.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    width={640}
+                    height={192}
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
             </div>

@@ -289,7 +289,7 @@ export function PasswordSection({ user, onUpdate }: ProfileSectionProps) {
     );
 }
 
-export function DangerZoneSection({ user, onUpdate }: ProfileSectionProps) {
+export function DangerZoneSection({user, onUpdate }: ProfileSectionProps) {
     const [loading, setLoading] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const { logout } = useAuth();

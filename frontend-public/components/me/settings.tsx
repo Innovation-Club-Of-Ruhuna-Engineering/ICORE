@@ -223,25 +223,25 @@ function Social({ user }: UserProps) {
                     label="Website Link"
                     id="website"
                     placeholder="https://example.com"
-                //defaultValue={user?.websiteURL || ""}
+                defaultValue={user?.website || ""}
                 />
                 <InputWithLabal
                     label="YouTube Link"
                     id="youtube"
                     placeholder="youtube"
-                //defaultValue={user?.youtubeURL || ""}
+                defaultValue={user?.youtube || ""}
                 />
                 <InputWithLabal
                     label="Linkedin Link"
                     id="linkedin"
                     placeholder="in/profile"
-                //defaultValue={user?.linkedinURL || ""}
+                defaultValue={user?.linkedin || ""}
                 />
                 <InputWithLabal
                     label="GitHub Link"
                     id="github"
                     placeholder="https://github.com/profile"
-                //defaultValue={user?.githubURL || ""}
+                defaultValue={user?.github || ""}
                 />
             </div>
         </Card>
@@ -254,7 +254,7 @@ function Biography({ user }: UserProps) {
             <Card.Header>Biography</Card.Header>
             <div className="grid grid-cols-2 gap-x-12 gap-y-6">
                 {/* Add biography fields here, e.g. */}
-                {/* <InputWithLabal label="Bio" id="bio" defaultValue={user?.bio || ""} /> */}
+                <InputWithLabal label="Bio" id="bio" defaultValue={user?.bio || ""} /> 
             </div>
         </Card>
     );

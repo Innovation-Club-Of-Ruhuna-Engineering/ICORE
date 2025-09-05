@@ -1,12 +1,13 @@
 "use clt";
 
 import { User } from "@/types/auth/userAuthTypes";
-import { Camera, MapPin, Calendar, Globe, Mail, Phone, GraduationCap, Briefcase, Star } from "lucide-react";
+import { Camera, MapPin, Calendar, GraduationCap, Briefcase } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { profileApi } from "@/lib/profile/profileMethods";
 import { FaLinkedin, FaGithub, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import Image from "next/image";
 
 interface ProfileCardProps {
     user: User;
@@ -117,10 +118,12 @@ export default function ProfileCard({ user, onUpdate }: ProfileCardProps) {
             {/* Cover Image Section */}
             <div className="relative h-48 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-800">
                 {user.coverImageUrl && (
-                    <img
+                    <Image
                         src={user.coverImageUrl}
                         alt="Cover"
                         className="w-full h-full object-cover"
+                        width={1280}
+                        height={720}
                     />
                 )}
 
@@ -160,10 +163,12 @@ export default function ProfileCard({ user, onUpdate }: ProfileCardProps) {
                     <div className="relative mb-4">
                         <div className="relative">
                             {user.avatarUrl ? (
-                                <img
+                                <Image
                                     src={user.avatarUrl}
                                     alt={`${user.firstName} ${user.lastName}`}
                                     className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
+                                    width={128}
+                                    height={128}
                                 />
                             ) : (
                                 <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">

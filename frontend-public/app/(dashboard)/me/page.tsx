@@ -23,19 +23,15 @@ import {
 // Hooks
 import useOption from "@/hooks/useOption";
 
-type TabType = 'general' | 'experience' | 'social' | 'settings';
-
 function SelfProfilePage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [currentUser, setCurrentUser] = useState(user);
 
   const {
     active,
-    select,
-    factory,
-    options: [general, experience, social, settings],
+    select
   } = useOption(4, 1);
 
   // Update local user state when auth user changes
