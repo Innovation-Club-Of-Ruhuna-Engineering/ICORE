@@ -45,7 +45,7 @@ function SelfProfilePage() {
       setRefreshing(true);
       const response = await profileApi.getProfile();
       setCurrentUser(response.data);
-      toast.success("Profile refreshed!");
+      //toast.success("Profile refreshed!");
     } catch (error) {
       console.error("Error refreshing profile:", error);
       toast.error("Failed to refresh profile");
@@ -128,6 +128,7 @@ function SelfProfilePage() {
                 <ProfileNavigation
                   activeTab={active || 1}
                   onTabChange={select}
+                  user={currentUser}
                 />
               </div>
             </div>

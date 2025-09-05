@@ -1,7 +1,7 @@
 "use clt";
 
 import { User } from "@/types/auth/userAuthTypes";
-import { Camera, MapPin, Calendar, GraduationCap, Briefcase } from "lucide-react";
+import { Camera, MapPin, Calendar, GraduationCap, BookOpen, Users, Clock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { profileApi } from "@/lib/profile/profileMethods";
@@ -203,21 +203,23 @@ export default function ProfileCard({ user, onUpdate }: ProfileCardProps) {
                     </div>
 
                     {/* Name and Title */}
-                    <div className="mb-4">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                    <div className="mb-3">
+                        <h1 className="text-2xl font-bold text-gray-900 mb-1">
                             {user.firstName} {user.lastName}
                         </h1>
-                        <p className="text-lg text-gray-600 mb-1">@{user.username}</p>
+                        <p className="text-base text-gray-600 mb-1">@{user.username}</p>
                         {user.title && (
-                            <p className="text-xl text-blue-600 mb-2">{user.title}</p>
+                            <p className="text-lg text-blue-600 mb-2">{user.title}</p>
                         )}
                         {user.bio && (
-                            <p className="text-gray-700 mb-3 leading-relaxed max-w-2xl">{user.bio}</p>
+                            <p className="text-gray-700 mb-2 leading-relaxed max-w-xl text-sm">
+                                {user.bio.length > 120 ? `${user.bio.substring(0, 120)}...` : user.bio}
+                            </p>
                         )}
                     </div>
 
                     {/* Key Info Row */}
-                    <div className="flex flex-wrap items-center justify-center gap-6 mb-4 text-sm text-gray-600">
+                    <div className="flex flex-wrap items-center justify-center gap-4 mb-2 text-xs text-gray-600">
                         <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-gray-400" />
                             <span>Joined {formatDate(user.createdAt)}</span>
@@ -228,16 +230,34 @@ export default function ProfileCard({ user, onUpdate }: ProfileCardProps) {
                                 <span>{user.location}</span>
                             </div>
                         )}
-                        {user.company && (
-                            <div className="flex items-center gap-2">
-                                <Briefcase className="h-4 w-4 text-gray-400" />
-                                <span>{user.company}</span>
-                            </div>
-                        )}
                         {user.institution && (
                             <div className="flex items-center gap-2">
                                 <GraduationCap className="h-4 w-4 text-gray-400" />
                                 <span>{user.institution}</span>
+                            </div>
+                        )}
+                        {user.department && ['GENERAL', 'FULL', 'COMMITTEE'].includes(user.role) && (
+                            <div className="flex items-center gap-2">
+                                <BookOpen className="h-4 w-4 text-gray-400" />
+                                <span>{user.department}</span>
+                            </div>
+                        )}
+                        {user.batch && ['GENERAL', 'FULL', 'COMMITTEE'].includes(user.role) && (
+                            <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4 text-gray-400" />
+                                <span>Batch {user.batch}</span>
+                            </div>
+                        )}
+                        {user.yearsOfExperience && ['ACADEMIC', 'INDUSTRY'].includes(user.role) && (
+                            <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-gray-400" />
+                                <span>{user.yearsOfExperience} years experience</span>
+                            </div>
+                        )}
+                        {user.fieldOfStudy && (
+                            <div className="flex items-center gap-2">
+                                <BookOpen className="h-4 w-4 text-gray-400" />
+                                <span>{user.fieldOfStudy}</span>
                             </div>
                         )}
                     </div>

@@ -9,6 +9,12 @@ interface Experience {
     description?: string;
 }
 
+interface Skill {
+    id: string;
+    name: string;
+    level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
+}
+
 interface User {
     id: string;
     email: string;
@@ -39,7 +45,7 @@ interface User {
     instagram?: string;
     twitter?: string;
     experiences?: Experience[];
-    skills?: string[];
+    skills?: Skill[];
     role: string;
     status: string;
     createdAt: string;
@@ -65,7 +71,7 @@ export interface UpdateProfileData {
     institution?: string; // Educational institution
     fieldOfStudy?: string; // Field of study
     graduationYear?: string; // Graduation year
-    yearsOfExperience?: number; // Years of professional experience
+    yearsOfExperience?: number | null; // Years of professional experience
     avatarUrl?: string; // Profile picture URL
     coverImageUrl?: string; // Cover image URL
     website?: string;
@@ -75,7 +81,7 @@ export interface UpdateProfileData {
     instagram?: string;
     twitter?: string;
     experiences?: Experience[]; // JSON array of experiences
-    skills?: string[]; // JSON array of skills
+    skills?: Skill[]; // JSON array of skills with levels
 }
 
 export interface UpdatePasswordData {

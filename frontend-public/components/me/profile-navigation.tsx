@@ -2,25 +2,31 @@
 
 import { User2, Briefcase, Share2, Settings } from "lucide-react";
 import Card from "@/components/me/card";
+import { User } from "@/types/auth/userAuthTypes";
 
 interface ProfileNavigationProps {
     activeTab: number | null;
     onTabChange: (tabIndex: number) => void;
+    user: User; // Add user prop for role-based navigation
 }
 
-export function ProfileNavigation({ activeTab, onTabChange }: ProfileNavigationProps) {
+export function ProfileNavigation({ activeTab, onTabChange, user }: ProfileNavigationProps) {
+    // Check if user is a student or professional
+    const isStudent = ['GENERAL', 'FULL', 'COMMITTEE'].includes(user.role);
+    const isProfessional = ['ACADEMIC', 'INDUSTRY'].includes(user.role);
+
     const tabs = [
         {
             id: 1,
             name: "General Info",
             icon: User2,
-            description: "Basic information and contact details"
+            description: isStudent ? "Personal and academic information" : "Personal and professional information"
         },
         {
             id: 2,
-            name: "Experience & Skills",
+            name: isProfessional ? "Experience & Skills" : "Academic & Skills",
             icon: Briefcase,
-            description: "Professional background and expertise"
+            description: isProfessional ? "Professional background and expertise" : "Academic progress and skills"
         },
         {
             id: 3,
@@ -49,8 +55,8 @@ export function ProfileNavigation({ activeTab, onTabChange }: ProfileNavigationP
                             key={tab.id}
                             onClick={() => onTabChange(tab.id)}
                             className={`p-3 flex items-start space-x-3 rounded-xl px-4 cursor-pointer transition-all duration-200 group ${isActive
-                                    ? "bg-blue-50 text-blue-700 border-l-4 border-blue-500"
-                                    : "bg-transparent hover:bg-gray-50 text-gray-700 hover:text-gray-900"
+                                ? "bg-blue-50 text-blue-700 border-l-4 border-blue-500"
+                                : "bg-transparent hover:bg-gray-50 text-gray-700 hover:text-gray-900"
                                 }`}
                         >
                             <Icon className={`h-5 w-5 mt-0.5 transition-colors ${isActive ? "text-blue-600" : "text-gray-500 group-hover:text-gray-700"

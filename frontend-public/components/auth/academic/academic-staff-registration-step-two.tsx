@@ -150,7 +150,7 @@ const AcademicStaffRegStepTwo = () => {
                         transition={{ duration: 0.5, delay: 0.9 }}
                     >
                         <Button
-                            onClick={() => router.push("/")}
+                            onClick={() => router.push("/me")}
                             className="relative overflow-hidden group bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg"
                         >
                             <span className="flex items-center justify-center gap-2">

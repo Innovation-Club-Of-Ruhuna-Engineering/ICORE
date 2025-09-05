@@ -35,6 +35,10 @@ export function ExperienceSkillsSection({ user, onUpdate }: ExperienceSkillsSect
     const [skills, setSkills] = useState<Skill[]>([]);
     const [skillInput, setSkillInput] = useState("");
 
+    // Check if user is a student or professional
+    //const isStudent = ['GENERAL', 'FULL', 'COMMITTEE'].includes(user.role);
+    const isProfessional = ['ACADEMIC', 'INDUSTRY'].includes(user.role);
+
     // Load existing experiences and skills from user data
     useEffect(() => {
         if (user.experiences && Array.isArray(user.experiences)) {
@@ -51,7 +55,7 @@ export function ExperienceSkillsSection({ user, onUpdate }: ExperienceSkillsSect
             // Save experiences and skills as JSON to the backend
             await profileApi.updateProfile({
                 experiences: experiences,
-                skills: skills.map(skill => skill.name),
+                skills: skills, // Send the full skill objects with name and level
             });
             toast.success("Experience & Skills updated successfully!");
             onUpdate();
@@ -124,9 +128,14 @@ export function ExperienceSkillsSection({ user, onUpdate }: ExperienceSkillsSect
         <Card className="flex flex-1">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <Card.Header>Experience & Skills</Card.Header>
+                    <Card.Header>
+                        {isProfessional ? "Experience & Skills" : "Academic Activities & Skills"}
+                    </Card.Header>
                     <p className="text-gray-600 text-sm mt-1">
-                        Showcase your professional background and technical expertise
+                        {isProfessional
+                            ? "Showcase your professional background and technical expertise"
+                            : "Share your academic projects, activities, and developing skills"
+                        }
                     </p>
                 </div>
                 <button
@@ -149,14 +158,16 @@ export function ExperienceSkillsSection({ user, onUpdate }: ExperienceSkillsSect
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                             <Briefcase className="h-5 w-5 text-gray-600" />
-                            <h3 className="text-lg font-semibold text-gray-900">Work Experience</h3>
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                {isProfessional ? "Work Experience" : "Academic Projects & Activities"}
+                            </h3>
                         </div>
                         <button
                             onClick={addExperience}
                             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
                         >
                             <Plus className="h-4 w-4" />
-                            Add Experience
+                            {isProfessional ? "Add Experience" : "Add Project/Activity"}
                         </button>
                     </div>
 
@@ -166,22 +177,26 @@ export function ExperienceSkillsSection({ user, onUpdate }: ExperienceSkillsSect
                                 <div className="flex justify-between items-start">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                {isProfessional ? "Job Title" : "Project/Activity Title"}
+                                            </label>
                                             <input
                                                 type="text"
                                                 value={experience.title}
                                                 onChange={(e) => updateExperience(experience.id, 'title', e.target.value)}
-                                                placeholder="Software Engineer"
+                                                placeholder={isProfessional ? "Software Engineer" : "IoT Smart Home Project"}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                {isProfessional ? "Company" : "Organization/Course"}
+                                            </label>
                                             <input
                                                 type="text"
                                                 value={experience.company}
                                                 onChange={(e) => updateExperience(experience.id, 'company', e.target.value)}
-                                                placeholder="Tech Company Inc."
+                                                placeholder={isProfessional ? "Tech Company Inc." : "Engineering Design Course"}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
