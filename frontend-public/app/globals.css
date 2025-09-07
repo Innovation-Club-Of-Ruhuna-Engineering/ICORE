@@ -3,19 +3,293 @@
 
 @custom-variant dark (&:is(.dark *));
 
+:root {
+  /* Updated to white and blue color scheme */
+  --dot-color: #93c5fd;
+  --background: oklch(1 0 0); /* Pure white background */
+  --foreground: oklch(0.2 0.05 250); /* Dark blue text */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.05 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.05 250);
+  --primary: oklch(0.45 0.2 260); /* More bluish blue primary */
+  --primary-foreground: oklch(1 0 0); /* White text on blue */
+  --secondary: oklch(0.96 0.01 250); /* Very light blue */
+  --secondary-foreground: oklch(0.2 0.05 250);
+  --muted: oklch(0.96 0.01 250);
+  --muted-foreground: oklch(0.45 0.05 250); /* Medium blue for muted text */
+  --accent: oklch(0.45 0.2 260); /* More bluish blue accent */
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.9 0.01 250); /* Light blue border */
+  --input: oklch(0.9 0.01 250);
+  --ring: oklch(0.45 0.2 260 / 0.5); /* More bluish blue focus ring */
+  --chart-1: oklch(0.45 0.2 260);
+  --chart-2: oklch(0.6 0.12 220);
+  --chart-3: oklch(0.4 0.08 280);
+  --chart-4: oklch(0.7 0.1 240);
+  --chart-5: oklch(0.3 0.1 260);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.98 0.01 250);
+  --sidebar-foreground: oklch(0.2 0.05 250);
+  --sidebar-primary: oklch(0.45 0.2 260);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.96 0.01 250);
+  --sidebar-accent-foreground: oklch(0.2 0.05 250);
+  --sidebar-border: oklch(0.9 0.01 250);
+  --sidebar-ring: oklch(0.45 0.2 260);
+}
 
-@theme {
-  --breakpoint-xs: 30rem;
-  --color-icoreBlue: #0D6EFD;
-  --color-icoreDarkBlue: #26203B;
-  --color-icoreBorderBlue: #465FF1;
-  --color-icoreGray: #9C9AA5;
-  
+.dark {
+  /* Updated dark theme colors with blue and white scheme */
+  --dot-color: #3b82f6;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.6 0.2 260);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.985 0 0);
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.439 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.45 0.2 260);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.68 0.15 85 / 0.5);
+  --chart-1: oklch(0.68 0.15 85);
+  --chart-2: oklch(0.269 0 0);
+  --chart-3: oklch(0.985 0 0);
+  --chart-4: oklch(0.145 0 0);
+  --chart-5: oklch(0.396 0.141 25.723);
+  --sidebar: oklch(0.145 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.68 0.15 85);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
+  --sidebar-accent: oklch(0.205 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.68 0.15 85 / 0.5);
 }
 
 @theme inline {
-  --shadow-input:
-    0px 2px 3px -1px rgba(0, 0, 0, 0.1),
-    0px 1px 0px 0px rgba(25, 28, 33, 0.02),
-    0px 0px 0px 1px rgba(25, 28, 33, 0.08);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Added custom dotted pattern background */
+.dotted-pattern {
+  background-image: radial-gradient(circle, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  transition: background-position 0.3s ease;
+}
+
+.dotted-pattern-dark {
+  background-image: radial-gradient(circle, rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Added mouse pointer animation effect */
+.mouse-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.mouse-animation::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(59, 130, 246, 0.05) 0%,
+    transparent 40%
+  );
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.dark .mouse-animation::before {
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(96, 165, 250, 0.15) 0%,
+    transparent 40%
+  );
+}
+
+.mouse-animation:hover::before {
+  opacity: 1;
+}
+
+/* Updated sticky header to blend with hero section on initial load */
+.sticky-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0);
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.sticky-header.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+  box-shadow: 0 1px 3px 0 rgba(59, 130, 246, 0.1), 0 1px 2px 0 rgba(59, 130, 246, 0.06);
+}
+
+/* Added dot matrix background pattern */
+.dot-matrix {
+  background-image: radial-gradient(circle, rgba(37, 99, 235, 0.15) 2px, transparent 2px);
+  background-size: 30px 30px;
+  animation: matrix-shift 20s linear infinite;
+}
+
+.dark .dot-matrix {
+  background-image: radial-gradient(circle, rgba(96, 165, 250, 0.2) 2px, transparent 2px);
+}
+
+@keyframes matrix-shift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 30px 30px;
+  }
+}
+
+/* Added click ripple effect styles */
+.dot-ripple {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.3) 0%, rgba(37, 99, 235, 0.1) 50%, transparent 100%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple-expand 1s ease-out forwards;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dark .dot-ripple {
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.4) 0%, rgba(96, 165, 250, 0.15) 50%, transparent 100%);
+}
+
+@keyframes ripple-expand {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes dot-wiggle {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-2px) translateX(1px);
+  }
+  50% {
+    transform: translateY(0) translateX(-1px);
+  }
+  75% {
+    transform: translateY(2px) translateX(1px);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+}
+
+/* Enhanced mouse animation with dot matrix interaction */
+.dot-matrix-bg {
+  position: relative;
+}
+
+.dot-matrix-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(37, 99, 235, 0.08) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.dark .dot-matrix-bg::before {
+  background: radial-gradient(
+    400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(96, 165, 250, 0.15) 0%,
+    transparent 50%
+  );
+}
+
+.dot-matrix-bg:hover::before {
+  opacity: 1;
 }

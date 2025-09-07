@@ -1,4 +1,11 @@
-import { BadRequestException, ConflictException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from 'generated/prisma';
 import { DatabaseService } from 'src/config/database/database.service';
 import * as bcrypt from 'bcryptjs';
@@ -6,6 +13,7 @@ import { CreateUserDto } from './dto/createUser.input';
 import { UserResponse } from './dto/user-response';
 import { UpdateUserDto } from './dto/updateUser.input';
 import { UpdatePasswordDto } from './dto/updatePassword.input';
+import { UserProfileByUsernameResponse } from './dto/user-profile-by-username-response.dto'; // create this DTO
 
 @Injectable()
 export class UserService {
@@ -15,7 +23,6 @@ export class UserService {
    * Creates a new user with hashed password
    */
   async create(createUserDto: CreateUserDto): Promise<UserResponse> {
-
     try {
       // TODO: Check if a user with same email, username or password already exists
 
@@ -31,7 +38,7 @@ export class UserService {
       return user;
     } catch (error) {
       if (error instanceof ConflictException) {
-        throw new ConflictException(`User with similar field exists`);;
+        throw new ConflictException(`User with similar field exists`);
       }
       throw new InternalServerErrorException('Failed to create user');
     }
@@ -43,10 +50,9 @@ export class UserService {
   async findAll(): Promise<UserResponse[]> {
     try {
       return this.databaseService.user.findMany({});
-
     } catch (error) {
       throw new InternalServerErrorException('Failed to retrieve users');
-    } 
+    }
   }
 
   /**
@@ -87,7 +93,10 @@ export class UserService {
   /**
    * Updates user
    */
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponse> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponse> {
     try {
       // Check if user exists
       await this.findOneById(id);
@@ -96,8 +105,7 @@ export class UserService {
 
       const updatedUser = await this.databaseService.user.update({
         where: { id },
-        data: 
-          updateUserDto
+        data: updateUserDto,
       });
 
       return updatedUser;
@@ -112,7 +120,10 @@ export class UserService {
   /**
    * Updates user password
    */
-  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto): Promise<{ message: string }> {
+  async updatePassword(
+    id: string,
+    updatePasswordDto: UpdatePasswordDto,
+  ): Promise<{ message: string }> {
     try {
       const user = await this.databaseService.user.findUnique({
         where: { id },
@@ -125,14 +136,16 @@ export class UserService {
 
       const isCurrentPasswordValid = await bcrypt.compare(
         updatePasswordDto.currentPassword,
-        user.password
+        user.password,
       );
 
       if (!isCurrentPasswordValid) {
         throw new BadRequestException('Current password is incorrect');
       }
 
-      const hashedNewPassword = await this.hashPassword(updatePasswordDto.newPassword);
+      const hashedNewPassword = await this.hashPassword(
+        updatePasswordDto.newPassword,
+      );
 
       await this.databaseService.user.update({
         where: { id },
@@ -155,26 +168,29 @@ export class UserService {
    * Delete user from database
    */
   async remove(id: string): Promise<{ message: string }> {
-  try {
-    await this.findOneById(id);
+    try {
+      await this.findOneById(id);
 
-    await this.databaseService.user.delete({
-      where: { id },
-    });
+      await this.databaseService.user.delete({
+        where: { id },
+      });
 
-    return { message: 'User permanently deleted' };
-  } catch (error) {
-    if (error instanceof HttpException) {
-      throw error;
+      return { message: 'User permanently deleted' };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to delete user');
     }
-    throw new InternalServerErrorException('Failed to delete user');
   }
-}
 
   /**
    * Update refresh token
    */
-  async updateRefreshToken(id: string, refreshToken: string | null): Promise<void> {
+  async updateRefreshToken(
+    id: string,
+    refreshToken: string | null,
+  ): Promise<void> {
     try {
       await this.databaseService.user.update({
         where: { id },
@@ -182,6 +198,42 @@ export class UserService {
       });
     } catch (error) {
       throw new InternalServerErrorException('Failed to update refresh token');
+    }
+  }
+
+  /**
+   * Finds a user by username and returns selected fields
+   */
+  async findOneByUsername(
+    username: string,
+  ): Promise<UserProfileByUsernameResponse> {
+    try {
+      const user = await this.databaseService.user.findUnique({
+        where: { username },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          department: true,
+          contactNumber: true,
+          email: true,
+          batch: true,
+          createdAt: true,
+          role: true,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with username ${username} not found`);
+      }
+
+      // Ensure all fields are present and not undefined
+      return user as UserProfileByUsernameResponse;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to find user by username');
     }
   }
 

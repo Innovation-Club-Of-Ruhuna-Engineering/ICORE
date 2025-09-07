@@ -1,84 +1,93 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEmail, IsOptional, IsString, Length } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsOptional, IsString, Length, IsEnum } from 'class-validator';
 
 export class CreateUserDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'User email address',
-    example: 'john.doe@example.com' 
+    example: 'john.doe@example.com',
   })
   @IsEmail()
   email: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Username for login',
     example: 'johndoe',
     minLength: 3,
-    maxLength: 20 
+    maxLength: 20,
   })
   @IsString()
   @Length(3, 20)
   username: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'User password',
     example: 'password123',
-    minLength: 6 
+    minLength: 6,
   })
   @IsString()
   @Length(6)
   password: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'User first name',
-    example: 'John' 
+    example: 'John',
   })
   @IsString()
   firstName: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'User last name',
-    example: 'Doe' 
+    example: 'Doe',
   })
   @IsString()
   lastName: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Contact phone number',
-    example: '+94771234567' 
+    example: '+94771234567',
   })
   @IsOptional()
   @IsString()
   contactNumber?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'User gender',
-    example: 'Male' 
+    example: 'Male',
   })
   @IsOptional()
   @IsString()
   gender?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Academic department',
-    example: 'DEIE' 
+    example: 'DEIE',
   })
   @IsOptional()
   @IsString()
   department?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Academic batch year',
-    example: '23' 
+    example: '23',
   })
   @IsOptional()
   @IsString()
   batch?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Registration number',
-    example: 'EG/2021/8940' 
+    example: 'EG/2021/8940',
   })
   @IsOptional()
   @IsString()
   regNumber?: string;
+
+  @ApiPropertyOptional({
+    description: 'User role in the system',
+    example: 'GENERAL',
+    enum: ['GENERAL', 'FULL', 'COMMITTEE', 'ACADEMIC', 'INDUSTRY'],
+  })
+  @IsOptional()
+  @IsEnum(['GENERAL', 'FULL', 'COMMITTEE', 'ACADEMIC', 'INDUSTRY'])
+  role?: 'GENERAL' | 'FULL' | 'COMMITTEE' | 'ACADEMIC' | 'INDUSTRY';
 }
