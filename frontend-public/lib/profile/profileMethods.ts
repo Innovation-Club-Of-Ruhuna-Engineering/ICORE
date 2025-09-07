@@ -1,21 +1,112 @@
-import axiosInstance from "../axios/axiosInstance";
+import { AxiosResponse } from 'axios';
+import axiosInstance from '../axios/axiosInstance';
 
-export interface UserProfileByUsernameResponse {
-  id:string;
-  firstName: string;
-  lastName: string;
-  department: string | null;
-  contactNumber: string | null;
-  email: string;
-  batch: string | null;
-  createdAt: string;
-  role: string;
+interface Experience {
+    title: string;
+    company: string;
+    startDate: string;
+    endDate?: string;
+    description?: string;
+}
+
+interface Skill {
+    id: string;
+    name: string;
+    level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
+}
+
+interface User {
+    id: string;
+    email: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    regNumber?: string;
+    contactNumber?: string;
+    gender?: string;
+    department?: string;
+    batch?: string;
+    pitch?: string;
+    bio?: string;
+    title?: string;
+    company?: string;
+    location?: string;
+    dateOfBirth?: string;
+    institution?: string;
+    fieldOfStudy?: string;
+    graduationYear?: string;
+    yearsOfExperience?: number;
+    avatarUrl?: string;
+    coverImageUrl?: string;
+    website?: string;
+    github?: string;
+    linkedin?: string;
+    youtube?: string;
+    instagram?: string;
+    twitter?: string;
+    experiences?: Experience[];
+    skills?: Skill[];
+    role: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface UpdateProfileData {
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    regNumber?: string;
+    contactNumber?: string;
+    phone?: string; // Alternative phone field
+    gender?: string;
+    department?: string;
+    batch?: string;
+    pitch?: string;
+    bio?: string; // Biography/description
+    title?: string; // Professional title
+    company?: string; // Current company
+    location?: string; // Geographic location
+    dateOfBirth?: string; // Date of birth
+    institution?: string; // Educational institution
+    fieldOfStudy?: string; // Field of study
+    graduationYear?: string; // Graduation year
+    yearsOfExperience?: number | null; // Years of professional experience
+    avatarUrl?: string; // Profile picture URL
+    coverImageUrl?: string; // Cover image URL
+    website?: string;
+    github?: string;
+    linkedin?: string;
+    youtube?: string;
+    instagram?: string;
+    twitter?: string;
+    experiences?: Experience[]; // JSON array of experiences
+    skills?: Skill[]; // JSON array of skills with levels
+}
+
+export interface UpdatePasswordData {
+    currentPassword: string;
+    newPassword: string;
 }
 
 export const profileApi = {
-  getProfileByUsername: async (username: string) => {
-    const response = await axiosInstance.get<UserProfileByUsernameResponse>(`/user/profile/${username}`);
-    return response.data;
-  }
-};
+    // Get current user profile
+    getProfile: async (): Promise<AxiosResponse<User>> => {
+        return await axiosInstance.get('/user/profile');
+    },
 
+    // Update current user profile
+    updateProfile: async (data: UpdateProfileData): Promise<AxiosResponse<User>> => {
+        return await axiosInstance.patch('/user/profile', data);
+    },
+
+    // Update password
+    updatePassword: async (data: UpdatePasswordData): Promise<AxiosResponse<{ message: string }>> => {
+        return await axiosInstance.patch('/user/profile/password', data);
+    },
+
+    // Delete current user profile
+    deleteProfile: async (): Promise<AxiosResponse<{ message: string }>> => {
+        return await axiosInstance.delete('/user/profile');
+    }
+};

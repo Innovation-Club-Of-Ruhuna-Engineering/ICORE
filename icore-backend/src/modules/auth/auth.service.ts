@@ -104,4 +104,22 @@ export class AuthService {
       sameSite: 'strict',
     });
   }
+
+  async logout(user: User, response: Response) {
+    // Clear the refresh token from the database
+    await this.userService.updateRefreshToken(user.id, null);
+
+    // Clear the authentication cookies
+    response.clearCookie('Authentication', {
+      httpOnly: true,
+      secure: this.configService.get('NODE_ENV') === 'production',
+      sameSite: 'strict',
+    });
+
+    response.clearCookie('Refresh', {
+      httpOnly: true,
+      secure: this.configService.get('NODE_ENV') === 'production',
+      sameSite: 'strict',
+    });
+  }
 }
