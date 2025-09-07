@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/shared/navigation";
 import committees from "@/constants/committee";
+import Image from "next/image";
 
 
 export default function AboutPage() {
@@ -52,7 +53,7 @@ export default function AboutPage() {
                 {committee.committee.map((member) => (
                   <div key={member.name} className="flex flex-col items-center">
                     <div className="w-40 h-40 rounded-full overflow-hidden mb-4">
-                      <img
+                      <Image
                         src={member.image}
                         alt={member.name}
                         className="w-full h-full object-cover"

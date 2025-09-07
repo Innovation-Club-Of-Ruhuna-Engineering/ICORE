@@ -13,7 +13,7 @@ interface SettingsSectionProps {
     onUpdate: () => void;
 }
 
-export function SettingsSection({ user, onUpdate }: SettingsSectionProps) {
+export function SettingsSection({ onUpdate }: SettingsSectionProps) {
     const [passwordLoading, setPasswordLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
