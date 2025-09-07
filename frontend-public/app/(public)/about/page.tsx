@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <Navigation />
 
       <section className="bg-gradient-to-b from-blue-50 to-white pt-28">
@@ -69,6 +69,6 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }
