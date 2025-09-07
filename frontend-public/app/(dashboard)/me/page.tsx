@@ -116,7 +116,7 @@ function SelfProfilePage() {
             loading={profileLoading}
             onCreateProject={() => toast.success("Create project feature coming soon!")}
             onEditProject={(project) => toast.success(`Edit ${project.title} coming soon!`)}
-            onDeleteProject={(projectId) => toast.success("Delete project feature coming soon!")}
+            onDeleteProject={() => toast.success("Delete project feature coming soon!")}
           />
 
           {/* Profile Management Section */}

@@ -11,8 +11,8 @@ const navigation = [
   { name: "Home", href: "/" },
   { name: "Projects", href: "#projects" },
   { name: "Blog", href: "/blog" },
-  { name: "About", href: "#about" },
-  { name: "Contact", href: "#contact" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
   { name: "Shop", href: "#shop" },
 ]
 
@@ -55,7 +55,7 @@ export function Navigation() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <span className="text-xl font-bold text-primary">ICORE</span>
+            <span className="text-xl font-bold text-primary [text-shadow:none] [filter:none]">ICORE</span>
           </div>
 
           {/* Desktop Navigation - Centered */}
@@ -65,7 +65,7 @@ export function Navigation() {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors [text-shadow:none] [filter:none]"
                 >
                   {item.name}
                 </a>
@@ -74,7 +74,7 @@ export function Navigation() {
           </div>
 
           {/* Sign In Button or User Menu */}
-          <div className="hidden md:flex">
+          <div className="hidden md:flex [filter:none]">
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <Button
@@ -140,7 +140,7 @@ export function Navigation() {
               </div>
             ) : (
               <Link href="/signin">
-                <Button size="sm">Sign In</Button>
+                <Button size="sm" className="shadow-none [filter:none] [text-shadow:none]">Sign In</Button>
               </Link>
             )}
           </div>
@@ -216,7 +216,7 @@ export function Navigation() {
             </div>
           ) : (
             <Link href="/signin">
-              <Button size="sm" className="w-full mt-4">
+              <Button size="sm" className="w-full mt-4 shadow-none [filter:none] [text-shadow:none]">
                 Sign In
               </Button>
             </Link>

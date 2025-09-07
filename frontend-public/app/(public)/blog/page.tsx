@@ -27,7 +27,7 @@ const mockBlogs = [
       avatar: "/diverse-professor-lecturing.png",
       role: "Faculty Advisor",
     },
-    image: "/iot-project.png",
+    image: "/blog/iot-project.webp",
     publishedAt: "2024-01-15",
     readTime: "5 min read",
   },
@@ -42,7 +42,7 @@ const mockBlogs = [
       avatar: "/professor-male.png",
       role: "Department Head",
     },
-    image: "/ai-lab.png",
+    image: "/blog/ai-lab.png",
     publishedAt: "2024-01-12",
     readTime: "3 min read",
   },
@@ -57,7 +57,7 @@ const mockBlogs = [
       avatar: "/diverse-students-studying.png",
       role: "Final Year Student",
     },
-    image: "/smart-home.png",
+    image: "/blog/smart-home.webp",
     publishedAt: "2024-01-10",
     readTime: "4 min read",
   },
@@ -72,7 +72,7 @@ const mockBlogs = [
       avatar: "/diverse-engineers-meeting.png",
       role: "Research Assistant",
     },
-    image: "/solar-panels.png",
+    image: "/blog/solar-panel.jpg",
     publishedAt: "2024-01-08",
     readTime: "6 min read",
   },
@@ -114,7 +114,7 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-blue-50 to-white py-16">
+      <section className="bg-gradient-to-b from-blue-50 to-white pt-24 pb-16 md:pt-32 md:pb-20">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold text-balance mb-6">
