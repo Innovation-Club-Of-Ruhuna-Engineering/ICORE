@@ -1,6 +1,9 @@
+import { Navigation } from '@/components/shared/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import React from 'react'
 
-const page = () => {
+export default function Page() {
   return (
     <main className="min-h-screen">
       <Navigation />
@@ -57,10 +60,10 @@ const page = () => {
               <label htmlFor="message" className="text-sm font-medium">
                 Message
               </label>
-              <Textarea
+              <textarea
                 id="message"
                 placeholder="Your message here..."
-                className="min-h-[150px]"
+                className="min-h-[150px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 required
               />
             </div>

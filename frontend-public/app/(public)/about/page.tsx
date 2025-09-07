@@ -2,7 +2,7 @@ import { Navigation } from "@/components/shared/navigation";
 import committees from "@/constants/committee";
 import Image from "next/image";
 
-const page = () => {
+export default function Page() {
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -55,6 +55,8 @@ const page = () => {
                       <Image
                         src={member.image}
                         alt={member.name}
+                        width={160}
+                        height={160}
                         className="w-full h-full object-cover"
                         loading="lazy"
                       />
