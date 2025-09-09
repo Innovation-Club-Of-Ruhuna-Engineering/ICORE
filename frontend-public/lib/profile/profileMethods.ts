@@ -108,5 +108,10 @@ export const profileApi = {
     // Delete current user profile
     deleteProfile: async (): Promise<AxiosResponse<{ message: string }>> => {
         return await axiosInstance.delete('/user/profile');
+    },
+
+    // Get public profile by username
+    getPublicProfile: async (username: string): Promise<AxiosResponse<User>> => {
+        return await axiosInstance.get(`/user/profile/${username}`);
     }
 };
