@@ -13,6 +13,7 @@ interface SettingsSectionProps {
     onUpdate: () => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function SettingsSection({ user, onUpdate }: SettingsSectionProps) {
     const [passwordLoading, setPasswordLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
