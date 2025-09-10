@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/config/database/database.service';
-import { Project, User } from 'generated/prisma';
+import { Project, Status, User } from 'generated/prisma';
 import { AddMemberInput, UpdateMemberInput } from './dto/projectMembers.dto';
 import { AddGuestMemberInput } from './dto/projectMembers.dto';
 import { CreateProjectInput } from './dto/createProject.input';
@@ -29,6 +29,13 @@ export class ProjectService {
         data: {
           ...createProjectInput,
           tags: createProjectInput.tags || [],
+          technologies: createProjectInput.technologies || [],
+          references: createProjectInput.references || [],
+          papers: createProjectInput.papers || [],
+          photos: createProjectInput.photos || [],
+          documents: createProjectInput.documents || [],
+          isVisible: createProjectInput.isVisible || false,
+          status: createProjectInput.status || Status.PENDING,
           owner: { connect: { id: ownerId } },
         },
       });
