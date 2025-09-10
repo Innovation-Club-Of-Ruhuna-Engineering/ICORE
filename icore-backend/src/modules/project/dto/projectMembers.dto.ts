@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { ProjectRole } from 'generated/prisma';
+import { ProjectRole } from '@prisma/client';
 
 export class AddMemberInput {
   @IsString({ message: 'User ID must be a string' })

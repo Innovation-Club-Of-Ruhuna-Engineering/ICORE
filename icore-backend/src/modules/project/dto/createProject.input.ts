@@ -1,4 +1,4 @@
-import { ProjectType, Status } from 'generated/prisma';
+import { ProjectType, Status } from '@prisma/client';
 import {
   ArrayMaxSize,
   IsArray,
@@ -191,4 +191,37 @@ export class CreateProjectInput {
   @IsOptional()
   @IsString({ message: 'Status must be a string' })
   status?: Status;
+
+  @ApiProperty({
+    description: 'Array of member user IDs and their roles',
+    type: 'array',
+    required: false,
+    items: {
+      type: 'object',
+      properties: {
+        userId: { type: 'string' },
+        role: { type: 'string', enum: ['LEADER', 'MEMBER', 'SUPERVISOR', 'CONTRIBUTOR'] }
+      }
+    }
+  })
+  @IsOptional()
+  @IsArray({ message: 'Members must be an array' })
+  members?: { userId: string; role: 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR' }[];
+
+  @ApiProperty({
+    description: 'Array of guest members with their details',
+    type: 'array',
+    required: false,
+    items: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        email: { type: 'string' },
+        role: { type: 'string', enum: ['LEADER', 'MEMBER', 'SUPERVISOR', 'CONTRIBUTOR'] }
+      }
+    }
+  })
+  @IsOptional()
+  @IsArray({ message: 'Guest members must be an array' })
+  guestMembers?: { name: string; email: string; role: 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR' }[];
 }

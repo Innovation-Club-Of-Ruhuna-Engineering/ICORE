@@ -6,7 +6,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from 'generated/prisma';
+import { User } from '@prisma/client';
 import { DatabaseService } from 'src/config/database/database.service';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/createUser.input';

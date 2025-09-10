@@ -15,7 +15,7 @@ import {
 import { ProjectService } from './project.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
-import { Project, User } from 'generated/prisma';
+import { Project, User } from '@prisma/client';
 import { CreateProjectInput } from './dto/createProject.input';
 import { UpdateProjectInput } from './dto/updateProject.input';
 import {
@@ -27,11 +27,99 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ProjectResponse } from './dto/project-response';
+import { PublicProjectResponse } from './dto/public-project.response';
 
 @ApiTags('Projects')
 @Controller('project')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
+
+  private mapToPublicResponse(project: Project & { owner: { id: string; username: string }, members: any[], guestMembers: any[] }): PublicProjectResponse {
+    return {
+      id: project.id,
+      name: project.name,
+      about: project.about,
+      description: project.description,
+      type: project.type,
+      startDate: project.startDate,
+      endDate: project.endDate || undefined,
+      tags: project.tags,
+      details: project.details || undefined,
+      technologies: project.technologies,
+      photos: project.photos,
+      youtubeURL: project.youtubeURL || undefined,
+      websiteURL: project.websiteURL || undefined,
+      isVisible: project.isVisible,
+      status: project.status,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      owner: {
+        id: project.owner.id,
+        username: project.owner.username
+      },
+      membersCount: project.members.length,
+      guestMembersCount: project.guestMembers.length
+    };
+  }
+
+  @Get('public/all')
+  @ApiOperation({ summary: 'Get all public projects' })
+  @ApiQuery({ name: 'page', required: false, description: 'Page number' })
+  @ApiQuery({ name: 'limit', required: false, description: 'Items per page' })
+  @ApiQuery({ name: 'search', required: false, description: 'Search term' })
+  @ApiQuery({ name: 'type', required: false, description: 'Project type' })
+  @ApiQuery({
+    name: 'tags',
+    required: false,
+    description: 'Project tags',
+    isArray: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of public projects',
+    type: [PublicProjectResponse],
+  })
+  async findAllPublic(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('type') type?: string,
+    @Query('tags') tags?: string[],
+  ) {
+    if (tags && tags.length > 5) {
+      throw new BadRequestException('Too many tags provided. Maximum is 5.');
+    }
+    if (page && page < 1) {
+      throw new BadRequestException('Page number must be greater than 0.');
+    }
+
+    const result = await this.projectService.findAllPublicProjects(
+      Number(page) || 1,
+      Number(limit) || 10,
+      search,
+      type,
+      tags,
+    );
+
+    return {
+      projects: result.projects.map(project => this.mapToPublicResponse(project)),
+      total: result.total,
+      hasMore: result.hasMore
+    };
+  }
+
+  @Get('public/user/:username')
+  @ApiOperation({ summary: 'Get public projects by username' })
+  @ApiParam({ name: 'username', description: 'Username' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of public projects by user',
+    type: [PublicProjectResponse],
+  })
+  async findPublicByUsername(@Param('username') username: string) {
+    const projects = await this.projectService.findPublicProjectsByUsername(username);
+    return projects.map(project => this.mapToPublicResponse(project));
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)

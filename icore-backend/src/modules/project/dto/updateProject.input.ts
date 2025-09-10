@@ -1,43 +1,47 @@
-import { ArrayMaxSize, IsArray, IsString, Length } from 'class-validator';
+import { ProjectType, Status } from '@prisma/client';
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateProjectInput } from './createProject.input';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+} from 'class-validator';
 
 export class UpdateProjectInput extends PartialType(CreateProjectInput) {
   @ApiPropertyOptional({
-    description: 'Technical details of the project',
-    minLength: 10,
-    maxLength: 500,
-    type: String,
+    description: 'Array of member user IDs and their roles',
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        userId: { type: 'string' },
+        role: { type: 'string', enum: ['LEADER', 'MEMBER', 'SUPERVISOR', 'CONTRIBUTOR'] }
+      }
+    }
   })
-  @IsString({ message: 'Project technical details must be a string' })
-  @Length(10, 500, {
-    message: 'Project technical details must be between 10 and 500 characters',
-  })
-  details?: string;
+  @IsOptional()
+  @IsArray({ message: 'Members must be an array' })
+  members?: { userId: string; role: 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR' }[];
 
   @ApiPropertyOptional({
-    description: 'Array of Technologies for the project',
-    type: [String],
-    example: ['Python', 'Sprinboot', 'Arduino'],
-    maxItems: 10,
+    description: 'Array of guest members with their details',
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        email: { type: 'string' },
+        role: { type: 'string', enum: ['LEADER', 'MEMBER', 'SUPERVISOR', 'CONTRIBUTOR'] }
+      }
+    }
   })
-  @IsArray({ message: 'Technologies must be an array' })
-  @IsString({ each: true, message: 'Technologies must be an array of strings' })
-  @ArrayMaxSize(10, { message: 'You can add up to 10 Technologies' })
-  technologies?: string[];
-
-  @ApiPropertyOptional({
-    description: 'Array of references for the project',
-    type: [String],
-    example: [
-      'https://example.com/reference1',
-      'https://example.com/reference2',
-    ],
-    maxItems: 10,
-  })
-  @IsArray()
-  @IsString({ each: true, message: 'References must be an array of strings' })
-  references?: string[];
+  @IsOptional()
+  @IsArray({ message: 'Guest members must be an array' })
+  guestMembers?: { name: string; email: string; role: 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR' }[];
 
   @ApiPropertyOptional({
     description: 'Array of Research papers for the project',

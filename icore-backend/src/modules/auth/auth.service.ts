@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { compareSync } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'generated/prisma';
+import { User } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './token-payload.interface';
 import { Response } from 'express';

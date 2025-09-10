@@ -151,12 +151,30 @@ function SelfProfilePage() {
                   My Profile
                 </button>
                 </div>
-                <a
-                  href={`/profile/${currentUser.username}`}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white hover:bg-gray-50 border border-gray-300 rounded-md"
-                >
-                  View Public Profile
-                </a>
+                <div className="flex items-center space-x-3">
+                  {horizontalTab === 1 && (
+                    <a
+                      href="/new-project"
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                    >
+                      New Project
+                    </a>
+                  )}
+                  {horizontalTab === 2 && (
+                    <a
+                      href="/new-blog"
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                    >
+                      New Blog Post
+                    </a>
+                  )}
+                  <a
+                    href={`/profile/${currentUser.username}`}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white hover:bg-gray-50 border border-gray-300 rounded-md"
+                  >
+                    View Public Profile
+                  </a>
+                </div>
               </nav>
             </div>
 
