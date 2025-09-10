@@ -1,4 +1,4 @@
-import { PrismaClient, Role, Status, User } from '../generated/prisma';
+import { PrismaClient, Role, Status, User } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 
