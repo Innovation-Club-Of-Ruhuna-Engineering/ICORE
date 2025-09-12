@@ -41,28 +41,28 @@ const committees = {
   marketing: {
     title: "Marketing Committee",
     committee: [
-      { name: "Sunethi", title: "Member", image: "/committee/sunethi.jpg" },
+      { name: "Sunethi Kurukulasuriya", title: "Member", image: "/committee/sunethi.jpg" },
       { name: "Lakruwan Bandara", title: "Member", image: "/committee/lakruwan.jpg" },
       { name: "Shukri Ahamed", title: "Member", image: "/committee/shukri.jpg" },
-      { name: "Oshan", title: "Member", image: "/committee/oshan.jpg" },
+      { name: "Oshan Wanasinghe", title: "Member", image: "/committee/oshan.jpg" },
       { name: "Nuwina Niduwara", title: "Member", image: "/committee/nuwina.jpg" },
-      { name: "Pamuditha", title: "Member", image: "/committee/pamuditha.jpg" },
+      { name: "Pamuditha Sandaru", title: "Member", image: "/committee/pamuditha.jpg" },
       { name: "Anton Wishwa", title: "Member", image: "/committee/anton.jpg" },
     ]
   },
   operations: {
     title: "Operations and Logistics Committee",
     committee: [
-      { name: "Lakkana", title: "Operations Lead", image: "/committee/lakkana.jpg" },
-      { name: "Lakshitha", title: "Member", image: "/committee/lakshitha.jpg" },
+      { name: "Lakkana Saputantri", title: "Operations Lead", image: "/committee/lakkana.jpg" },
+      { name: "Nirodha Lakshitha", title: "Member", image: "/committee/lakshitha.jpg" },
       { name: "Kavindya Devashini", title: "Member", image: "/committee/oshali.jpg" },
-      { name: "Yasiru", title: "Member", image: "/committee/yasiru.jpg" },
+      { name: "Yasiru Pandigama", title: "Member", image: "/committee/yasiru.jpg" },
     ]
   },
   pr: {
     title: "Public Relations Committee",
     committee: [
-      { name: "Tharindu", title: "PR Lead", image: "/committee/tharindu.jpg" },
+      { name: "Tharindu Bandara", title: "PR Lead", image: "/committee/tharindu.jpg" },
       { name: "Apsari Udithara", title: "Member", image: "/committee/apsari.jpg" },
       { name: "Mudeera Andrahannadi", title: "Member", image: "/committee/mudeera.jpg" },
       { name: "Dilisha Madushan", title: "Member", image: "/committee/dilisha.jpg" },
