@@ -12,11 +12,15 @@ import Image from "next/image";
 interface ProfileCardProps {
     user: User;
     onUpdate: () => void;
+    isPublic?: boolean;
 }
 
-export default function ProfileCard({ user, onUpdate }: ProfileCardProps) {
+export default function ProfileCard({ user, onUpdate, isPublic = false }: ProfileCardProps) {
     const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
     const [isUploadingCover, setIsUploadingCover] = useState(false);
+
+    // Only show upload UI elements if not public
+    const showUploadUI = !isPublic;
 
     const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -127,8 +131,9 @@ export default function ProfileCard({ user, onUpdate }: ProfileCardProps) {
                     />
                 )}
 
-                {/* Cover Image Upload */}
-                <div className="absolute top-4 right-4">
+                {/* Cover Image Upload - Only show if not public */}
+                {showUploadUI && (
+                  <div className="absolute top-4 right-4">
                     <label htmlFor="cover-upload" className="cursor-pointer">
                         <div className="p-2 bg-black bg-opacity-50 hover:bg-opacity-70 rounded-lg transition-all">
                             <Camera className="h-5 w-5 text-white" />
@@ -142,7 +147,8 @@ export default function ProfileCard({ user, onUpdate }: ProfileCardProps) {
                         className="hidden"
                         disabled={isUploadingCover}
                     />
-                </div>
+                  </div>
+                )}
 
                 {/* Upload Progress Overlay for Cover */}
                 {isUploadingCover && (
@@ -178,20 +184,24 @@ export default function ProfileCard({ user, onUpdate }: ProfileCardProps) {
                                 </div>
                             )}
 
-                            {/* Avatar Upload Button */}
-                            <label htmlFor="avatar-upload" className="absolute bottom-2 right-2 cursor-pointer">
-                                <div className="p-2 bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg transition-colors">
-                                    <Camera className="h-4 w-4 text-white" />
-                                </div>
-                            </label>
-                            <input
-                                id="avatar-upload"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleAvatarUpload}
-                                className="hidden"
-                                disabled={isUploadingAvatar}
-                            />
+                            {/* Avatar Upload Button - Only show if not public */}
+                            {showUploadUI && (
+                              <>
+                                <label htmlFor="avatar-upload" className="absolute bottom-2 right-2 cursor-pointer">
+                                    <div className="p-2 bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg transition-colors">
+                                        <Camera className="h-4 w-4 text-white" />
+                                    </div>
+                                </label>
+                                <input
+                                    id="avatar-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleAvatarUpload}
+                                    className="hidden"
+                                    disabled={isUploadingAvatar}
+                                />
+                              </>
+                            )}
 
                             {/* Upload Progress for Avatar */}
                             {isUploadingAvatar && (

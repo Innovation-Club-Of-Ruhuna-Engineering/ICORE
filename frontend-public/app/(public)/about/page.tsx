@@ -1,10 +1,10 @@
 import { Navigation } from "@/components/shared/navigation";
 import committees from "@/constants/committee";
+import Image from "next/image";
 
-
-export default function AboutPage() {
+export default function Page() {
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <Navigation />
 
       <section className="bg-gradient-to-b from-blue-50 to-white pt-28">
@@ -52,9 +52,11 @@ export default function AboutPage() {
                 {committee.committee.map((member) => (
                   <div key={member.name} className="flex flex-col items-center">
                     <div className="w-40 h-40 rounded-full overflow-hidden mb-4">
-                      <img
+                      <Image
                         src={member.image}
                         alt={member.name}
+                        width={160}
+                        height={160}
                         className="w-full h-full object-cover"
                         loading="lazy"
                       />
@@ -68,6 +70,6 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

@@ -99,7 +99,7 @@ const AcademicStaffRegStepTwo = () => {
                         className="text-center mb-10"
                     >
                         <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-3">
-                            Welcome, Professor {user?.username || ""}!
+                            Welcome, {user?.username || ""}!
                         </h2>
                         <h3 className="text-xl sm:text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
                             You&apos;ve joined the ICORE academic community!

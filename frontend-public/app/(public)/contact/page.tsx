@@ -1,9 +1,9 @@
-import { Navigation } from "@/components/shared/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Navigation } from '@/components/shared/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import React from 'react'
 
-export default function ContactPage() {
+export default function Page() {
   return (
     <main className="min-h-screen">
       <Navigation />
@@ -13,7 +13,7 @@ export default function ContactPage() {
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold text-balance mb-6">Contact Us</h1>
             <p className="text-lg text-muted-foreground text-pretty">
-              Have questions or suggestions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+              Have questions or suggestions? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
             </p>
           </div>
         </div>
@@ -60,10 +60,10 @@ export default function ContactPage() {
               <label htmlFor="message" className="text-sm font-medium">
                 Message
               </label>
-              <Textarea
+              <textarea
                 id="message"
                 placeholder="Your message here..."
-                className="min-h-[150px]"
+                className="min-h-[150px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 required
               />
             </div>

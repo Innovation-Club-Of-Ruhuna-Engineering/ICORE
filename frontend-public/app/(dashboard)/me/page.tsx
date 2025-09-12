@@ -12,8 +12,6 @@ import { GeneralInfoSection } from "@/components/me/general-info-section";
 import { ExperienceSkillsSection } from "@/components/me/experience-skills-section";
 import { SocialSection } from "@/components/me/social-section";
 import { SettingsSection } from "@/components/me/settings-section";
-import { ProjectsSection } from "@/components/me/projects-section";
-
 // Skeleton Loaders
 import {
   ProfileCardSkeleton,
@@ -29,10 +27,16 @@ function SelfProfilePage() {
   const [refreshing, setRefreshing] = useState(false);
   const [currentUser, setCurrentUser] = useState(user);
 
+  // Separate states for horizontal and vertical tabs
   const {
-    active,
-    select
-  } = useOption(4, 1);
+    active: horizontalTab,
+    select: selectHorizontalTab
+  } = useOption(3, 1); // 3 horizontal tabs: Projects (1), Blogs (2), Profile (3)
+
+  const {
+    active: verticalTab,
+    select: selectVerticalTab
+  } = useOption(4, 1); // 4 vertical tabs for profile section
 
   // Update local user state when auth user changes
   useEffect(() => {
@@ -54,10 +58,10 @@ function SelfProfilePage() {
     }
   };
 
-  const getTabContent = () => {
+  const getProfileTabContent = () => {
     if (!currentUser) return null;
 
-    switch (active) {
+    switch (verticalTab) {
       case 1:
         return <GeneralInfoSection user={currentUser} onUpdate={refreshProfile} />;
       case 2:
@@ -111,35 +115,90 @@ function SelfProfilePage() {
             )}
           </div>
 
-          {/* Projects Section - Full Width */}
-          <ProjectsSection
-            loading={profileLoading}
-            onCreateProject={() => toast.success("Create project feature coming soon!")}
-            onEditProject={(project) => toast.success(`Edit ${project.title} coming soon!`)}
-            onDeleteProject={(projectId) => toast.success("Delete project feature coming soon!")}
-          />
-
-          {/* Profile Management Section */}
-          <div className="grid lg:grid-cols-5 gap-8">
-
-            {/* Left Sidebar Navigation */}
-            <div className="lg:col-span-1">
-              <div className="lg:sticky lg:top-8">
-                <ProfileNavigation
-                  activeTab={active || 1}
-                  onTabChange={select}
-                  user={currentUser}
-                />
-              </div>
+          {/* Horizontal Tab Navigation */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+            <div className="border-b border-gray-200">
+              <nav className="flex justify-between items-center px-4" aria-label="Tabs">
+                <div className="flex space-x-8">
+                  <button
+                    onClick={() => selectHorizontalTab(1)}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    horizontalTab === 1
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  My Projects
+                </button>
+                <button
+                  onClick={() => selectHorizontalTab(2)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    horizontalTab === 2
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  My Blogs
+                </button>
+                <button
+                  onClick={() => selectHorizontalTab(3)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    horizontalTab === 3
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  My Profile
+                </button>
+                </div>
+                <a
+                  href={`/profile/${currentUser.username}`}
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white hover:bg-gray-50 border border-gray-300 rounded-md"
+                >
+                  View Public Profile
+                </a>
+              </nav>
             </div>
 
-            {/* Main Content Area - 4 columns for spacious layout */}
-            <div className="lg:col-span-4">
-              {profileLoading || refreshing ? (
-                <SettingsPanelSkeleton />
-              ) : (
-                <div className="w-full">
-                  {getTabContent()}
+            {/* Tab Content */}
+            <div className="p-6">
+              {horizontalTab === 1 && (
+                <div className="text-center py-12">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">My Projects</h3>
+                  <p className="text-gray-500">Coming soon! You&apos;ll be able to see your projects here.</p>
+                </div>
+              )}
+
+              {horizontalTab === 2 && (
+                <div className="text-center py-12">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">My Blogs</h3>
+                  <p className="text-gray-500">Coming soon! Your blog articles will appear here.</p>
+                </div>
+              )}
+
+              {horizontalTab === 3 && (
+                <div className="grid lg:grid-cols-5 gap-8">
+                  {/* Left Sidebar Navigation */}
+                  <div className="lg:col-span-1">
+                    <div className="lg:sticky lg:top-8">
+                      <ProfileNavigation
+                        activeTab={verticalTab}
+                        onTabChange={selectVerticalTab}
+                        user={currentUser}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Main Content Area */}
+                  <div className="lg:col-span-4">
+                    {profileLoading || refreshing ? (
+                      <SettingsPanelSkeleton />
+                    ) : (
+                      <div className="w-full">
+                        {getProfileTabContent()}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
