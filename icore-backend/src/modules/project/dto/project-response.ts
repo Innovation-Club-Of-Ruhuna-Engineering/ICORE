@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ProjectType, Status } from 'generated/prisma';
+import { ProjectType, Status } from '@prisma/client';
 import { UserResponse } from '../../user/dto/user-response';
 import { MemberResponse, GuestMemberResponse } from './projectMembers.dto';
 

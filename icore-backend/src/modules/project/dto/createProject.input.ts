@@ -1,9 +1,12 @@
-import { ProjectType } from 'generated/prisma';
+import { ProjectType, Status } from '@prisma/client';
 import {
   ArrayMaxSize,
   IsArray,
+  IsBoolean,
   IsNotEmpty,
+  IsOptional,
   IsString,
+  IsUrl,
   Length,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -71,8 +74,9 @@ export class CreateProjectInput {
     example: '2023-12-31T23:59:59Z',
     required: false,
   })
+  @IsOptional()
   @IsString({ message: 'Project timeline must be a string' })
-  endDate: string;
+  endDate?: string;
 
   @ApiProperty({
     description: 'Array of tags for the project',
@@ -80,8 +84,150 @@ export class CreateProjectInput {
     example: ['AI', 'Web Development', 'Open Source'],
     maxItems: 5,
   })
+  @IsNotEmpty({ message: 'Tags are required' })
   @IsArray({ message: 'Tags must be an array' })
   @IsString({ each: true, message: 'Tags must be an array of strings' })
   @ArrayMaxSize(5, { message: 'You can add up to 5 tags' })
   tags: string[];
+
+  @ApiProperty({
+    description: 'Additional details about the project',
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString({ message: 'Project details must be a string' })
+  details?: string;
+
+  @ApiProperty({
+    description: 'Technologies used in the project',
+    type: [String],
+    example: ['React', 'Node.js', 'PostgreSQL'],
+  })
+  @IsNotEmpty({ message: 'Technologies are required' })
+  @IsArray({ message: 'Technologies must be an array' })
+  @IsString({ each: true, message: 'Technologies must be an array of strings' })
+  technologies: string[];
+
+  @ApiProperty({
+    description: 'References related to the project',
+    type: [String],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray({ message: 'References must be an array' })
+  @IsString({ each: true, message: 'References must be an array of strings' })
+  references?: string[];
+
+  @ApiProperty({
+    description: 'Academic papers related to the project',
+    type: [String],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray({ message: 'Papers must be an array' })
+  @IsString({ each: true, message: 'Papers must be an array of strings' })
+  papers?: string[];
+
+  @ApiProperty({
+    description: 'Photo URLs related to the project',
+    type: [String],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray({ message: 'Photos must be an array' })
+  @IsString({ each: true, message: 'Photos must be an array of strings' })
+  photos?: string[];
+
+  @ApiProperty({
+    description: 'Document URLs related to the project',
+    type: [String],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray({ message: 'Documents must be an array' })
+  @IsString({ each: true, message: 'Documents must be an array of strings' })
+  documents?: string[];
+
+  @ApiProperty({
+    description: 'YouTube video URL for the project',
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, 
+    { message: 'YouTube URL must be a valid URL starting with http:// or https://' })
+  youtubeURL?: string;
+
+  @ApiProperty({
+    description: 'Website URL for the project',
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, 
+    { message: 'Website URL must be a valid URL starting with http:// or https://' })
+  websiteURL?: string;
+
+  @ApiProperty({
+    description: 'GitHub repository URL for the project',
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, 
+    { message: 'GitHub URL must be a valid URL starting with http:// or https://' })
+  githubURL?: string;
+
+  @ApiProperty({
+    description: 'Project visibility status',
+    default: false,
+    type: Boolean,
+  })
+  @IsOptional()
+  @IsBoolean({ message: 'isVisible must be a boolean' })
+  isVisible?: boolean;
+
+  @ApiProperty({
+    description: 'Project status',
+    enum: Status,
+    default: Status.PENDING,
+    type: String,
+  })
+  @IsOptional()
+  @IsString({ message: 'Status must be a string' })
+  status?: Status;
+
+  @ApiProperty({
+    description: 'Array of member user IDs and their roles',
+    type: 'array',
+    required: false,
+    items: {
+      type: 'object',
+      properties: {
+        userId: { type: 'string' },
+        role: { type: 'string', enum: ['LEADER', 'MEMBER', 'SUPERVISOR', 'CONTRIBUTOR'] }
+      }
+    }
+  })
+  @IsOptional()
+  @IsArray({ message: 'Members must be an array' })
+  members?: { userId: string; role: 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR' }[];
+
+  @ApiProperty({
+    description: 'Array of guest members with their details',
+    type: 'array',
+    required: false,
+    items: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        email: { type: 'string' },
+        role: { type: 'string', enum: ['LEADER', 'MEMBER', 'SUPERVISOR', 'CONTRIBUTOR'] }
+      }
+    }
+  })
+  @IsOptional()
+  @IsArray({ message: 'Guest members must be an array' })
+  guestMembers?: { name: string; email: string; role: 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR' }[];
 }

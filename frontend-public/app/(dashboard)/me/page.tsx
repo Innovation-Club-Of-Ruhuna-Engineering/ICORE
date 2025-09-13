@@ -12,6 +12,7 @@ import { GeneralInfoSection } from "@/components/me/general-info-section";
 import { ExperienceSkillsSection } from "@/components/me/experience-skills-section";
 import { SocialSection } from "@/components/me/social-section";
 import { SettingsSection } from "@/components/me/settings-section";
+import { ProjectsSection } from "@/components/me/projects-section";
 // Skeleton Loaders
 import {
   ProfileCardSkeleton,
@@ -151,22 +152,37 @@ function SelfProfilePage() {
                   My Profile
                 </button>
                 </div>
-                <a
-                  href={`/profile/${currentUser.username}`}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white hover:bg-gray-50 border border-gray-300 rounded-md"
-                >
-                  View Public Profile
-                </a>
+                <div className="flex items-center space-x-3">
+                  {horizontalTab === 1 && (
+                    <a
+                      href="/new-project"
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                    >
+                      New Project
+                    </a>
+                  )}
+                  {horizontalTab === 2 && (
+                    <a
+                      href="/new-blog"
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                    >
+                      New Blog Post
+                    </a>
+                  )}
+                  <a
+                    href={`/profile/${currentUser.username}`}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white hover:bg-gray-50 border border-gray-300 rounded-md"
+                  >
+                    View Public Profile
+                  </a>
+                </div>
               </nav>
             </div>
 
             {/* Tab Content */}
             <div className="p-6">
               {horizontalTab === 1 && (
-                <div className="text-center py-12">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">My Projects</h3>
-                  <p className="text-gray-500">Coming soon! You&apos;ll be able to see your projects here.</p>
-                </div>
+                <ProjectsSection userId={currentUser?.id || ''} />
               )}
 
               {horizontalTab === 2 && (

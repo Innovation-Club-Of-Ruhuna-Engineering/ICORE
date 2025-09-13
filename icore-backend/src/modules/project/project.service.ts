@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/config/database/database.service';
-import { Project, User } from 'generated/prisma';
+import { Project, Status, User } from '@prisma/client';
 import { AddMemberInput, UpdateMemberInput } from './dto/projectMembers.dto';
 import { AddGuestMemberInput } from './dto/projectMembers.dto';
 import { CreateProjectInput } from './dto/createProject.input';
@@ -17,6 +17,39 @@ import { UpdateProjectInput } from './dto/updateProject.input';
 export class ProjectService {
   constructor(private readonly databaseService: DatabaseService) {}
 
+  async findOneWithDetails(id: string) {
+    const project = await this.databaseService.project.findUnique({
+      where: { id },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+                avatarUrl: true,
+              },
+            },
+          },
+        },
+        guestMembers: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Project with id ${id} not found`);
+    }
+
+    return project;
+  }
+
   /**
    * Creates a new project
    */
@@ -25,17 +58,49 @@ export class ProjectService {
     ownerId: string,
   ): Promise<Project> {
     try {
+      // Extract members and guestMembers from input
+      const { members, guestMembers, ...projectData } = createProjectInput;
+
+      // Create the project with initial data
       const project = await this.databaseService.project.create({
         data: {
-          ...createProjectInput,
-          tags: createProjectInput.tags || [],
+          ...projectData,
+          tags: projectData.tags || [],
+          technologies: projectData.technologies || [],
+          references: projectData.references || [],
+          papers: projectData.papers || [],
+          photos: projectData.photos || [],
+          documents: projectData.documents || [],
+          isVisible: projectData.isVisible || false,
+          status: projectData.status || Status.PENDING,
           owner: { connect: { id: ownerId } },
         },
       });
 
-      // add owner as a member with 'MEMBER' role
-      await this.addMember(project.id, { userId: ownerId, role: 'MEMBER' });
+      // Add owner as a member with 'MEMBER' role if they're not already included in members
+      const ownerIncluded = members?.some(member => member.userId === ownerId);
+      if (!ownerIncluded) {
+        await this.addMember(project.id, { userId: ownerId, role: 'MEMBER' });
+      }
 
+      // Add additional members if provided
+      if (members && members.length > 0) {
+        for (const member of members) {
+          if (member.userId !== ownerId) { // Skip if it's the owner
+            await this.addMember(project.id, member);
+          }
+        }
+      }
+
+      // Add guest members if provided
+      if (guestMembers && guestMembers.length > 0) {
+        for (const guestMember of guestMembers) {
+          await this.addGuestMember(project.id, guestMember);
+        }
+      }
+
+      // Return the complete project with all relationships
+      // Return the created project
       return project;
     } catch (error) {
       console.error('Error creating project:', error);
@@ -144,6 +209,122 @@ export class ProjectService {
   }
 
   /**
+   * Get public projects by username
+   */
+  async findPublicProjectsByUsername(username: string): Promise<(Project & { owner: { id: string; username: string }, members: any[], guestMembers: any[] })[]> {
+    try {
+      const projects = await this.databaseService.project.findMany({
+        where: {
+          owner: {
+            username: username
+          },
+          isVisible: true,
+          status: Status.ACTIVE
+        },
+        include: {
+          owner: {
+            select: {
+              id: true,
+              username: true
+            }
+          },
+          members: {
+            select: {
+              id: true
+            }
+          },
+          guestMembers: {
+            select: {
+              id: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      return projects;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to retrieve public projects');
+    }
+  }
+
+  /**
+   * Get all public projects
+   */
+  async findAllPublicProjects(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    type?: string,
+    tags?: string[],
+  ): Promise<{ projects: (Project & { owner: { id: string; username: string }, members: any[], guestMembers: any[] })[]; total: number; hasMore: boolean }> {
+    try {
+      const where: any = {
+        isVisible: true,
+        status: Status.ACTIVE
+      };
+
+      if (search) {
+        where.OR = [
+          { name: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+        ];
+      }
+
+      if (type) {
+        where.type = type;
+      }
+
+      if (tags && tags.length > 0) {
+        where.tags = {
+          hasSome: tags,
+        };
+      }
+
+      const [projects, total] = await this.databaseService.$transaction([
+        this.databaseService.project.findMany({
+          where,
+          include: {
+            owner: {
+              select: {
+                id: true,
+                username: true
+              }
+            },
+            members: {
+              select: {
+                id: true
+              }
+            },
+            guestMembers: {
+              select: {
+                id: true
+              }
+            }
+          },
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.databaseService.project.count({ where }),
+      ]);
+
+      return {
+        projects,
+        total,
+        hasMore: total > page * limit
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to retrieve user projects',
+      );
+    }
+  }
+
+  /**
    * Updates project information
    */
   async update(
@@ -152,17 +333,48 @@ export class ProjectService {
   ): Promise<Project> {
     try {
       // TODO: Check if user has permission (Only owner can edit?)
+      
+      // Extract members and guestMembers from input
+      const { members, guestMembers, ...projectData } = updateProjectInput;
 
+      // Update project basic data
       const updatedProject = await this.databaseService.project.update({
         where: { id },
         data: {
-          ...updateProjectInput,
+          ...projectData,
           updatedAt: new Date(),
         },
       });
 
+      // Update members if provided
+      if (members) {
+        // First, remove all existing members
+        await this.databaseService.member.deleteMany({
+          where: { projectId: id },
+        });
+
+        // Then add the new members
+        for (const member of members) {
+          await this.addMember(id, member);
+        }
+      }
+
+      // Update guest members if provided
+      if (guestMembers) {
+        // First, remove all existing guest members
+        await this.databaseService.guestMember.deleteMany({
+          where: { projectId: id },
+        });
+
+        // Then add the new guest members
+        for (const guestMember of guestMembers) {
+          await this.addGuestMember(id, guestMember);
+        }
+      }
+
       return updatedProject;
     } catch (error) {
+      console.error('Project Update Error:', error); 
       if (error instanceof HttpException) {
         throw error;
       }
