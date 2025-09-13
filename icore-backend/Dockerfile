@@ -17,17 +17,16 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
+COPY package*.json ./
 
 # Copy the rest of the files
 COPY . .
 
-RUN npx prisma generate
-
-# Run build with the preferred package manager
+# Run build with the preferred package manager and verify dist directory exists
 RUN \
-  if [ -f package-lock.json ]; then npm run build; \
-  elif [ -f yarn.lock ]; then yarn build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm build; \
+  if [ -f package-lock.json ]; then npm run build && ls -la dist/; \
+  elif [ -f yarn.lock ]; then yarn build && ls -la dist/; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm build && ls -la dist/; \
   else echo "Lockfile not found." && exit 1; \
   fi
 
@@ -53,12 +52,16 @@ RUN \
 FROM node:22-alpine AS runner
 WORKDIR /app
 
-# Copy the bundled code from the builder stage
+# Copy necessary files from builder stage
+COPY --from=builder --chown=node:node /app/package*.json ./
 COPY --from=builder --chown=node:node /app/dist ./dist
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 
 # Use the node user from the image
 USER node
+
+# Verify dist directory contents before starting
+RUN ls -la dist/
 
 # Start the server
 CMD ["node", "dist/main.js"]
