@@ -14,7 +14,6 @@ import toast from "react-hot-toast"
 export default function NewProjectPage() {
   const router = useRouter()
   const { user, isAuthenticated, loading } = useAuth() // ✅ include loading state
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -64,7 +63,6 @@ export default function NewProjectPage() {
 
   const handleSubmit = async (formData: ProjectFormData) => {
     try {
-      setIsSubmitting(true)
       setError(null)
 
       const validationErrors = validateFormData(formData)
@@ -133,8 +131,6 @@ export default function NewProjectPage() {
     } catch (error) {
       console.error("Error creating project:", error)
       setError('Failed to create project. Please try again later.')
-    } finally {
-      setIsSubmitting(false)
     }
   }
 

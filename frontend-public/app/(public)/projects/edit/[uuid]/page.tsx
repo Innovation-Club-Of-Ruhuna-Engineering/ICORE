@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { Breadcrumb } from "@/components/project/breadcrumb"
 import { ProjectForm } from "@/components/project/project-form"
 import { projectApi, type ProjectType } from "@/lib/projects/projectMethods"
@@ -10,7 +10,8 @@ import { type ProjectViewData, type ProjectFormData } from "@/lib/projects/types
 import { AlertCircle, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-export default function ProjectEditPage({ params }: { params: { uuid: string } }) {
+export default function ProjectEditPage() {
+  const { uuid } = useParams<{ uuid: string }>()
   const router = useRouter()
   const { user, isAuthenticated } = useAuth()
   const [project, setProject] = useState<ProjectViewData | null>(null)
@@ -25,15 +26,15 @@ export default function ProjectEditPage({ params }: { params: { uuid: string } }
 
         // Check if user is authenticated
         if (!isAuthenticated || !user) {
-          router.push(`/projects/view/${params.uuid}`)
+          router.push(`/projects/view/${uuid}`)
           return
         }
 
-        const { data } = await projectApi.getProjectById(params.uuid)
+        const { data } = await projectApi.getProjectById(uuid)
         
         // Verify if the logged-in user is the owner
         if (data.owner.id !== user.id) {
-          router.push(`/projects/view/${params.uuid}`)
+          router.push(`/projects/view/${uuid}`)
           return
         }
 
@@ -47,11 +48,11 @@ export default function ProjectEditPage({ params }: { params: { uuid: string } }
     }
 
     loadProject()
-  }, [params.uuid, isAuthenticated, user, router])
+  }, [uuid, isAuthenticated, user, router])
 
   const breadcrumbItems = project ? [
     { label: "Projects", href: "/projects" },
-    { label: project.name, href: `/projects/view/${params.uuid}` },
+    { label: project.name, href: `/projects/view/${uuid}` },
     { label: "Edit" },
   ] : [
     { label: "Projects", href: "/projects" },
@@ -88,8 +89,8 @@ export default function ProjectEditPage({ params }: { params: { uuid: string } }
         ...(formData.githubURL?.trim() && { githubURL: formData.githubURL.trim() }),
       }
 
-      await projectApi.updateProject(params.uuid, updateData)
-      router.push(`/projects/view/${params.uuid}`)
+      await projectApi.updateProject(uuid, updateData)
+      router.push(`/projects/view/${uuid}`)
       router.refresh() // Refresh the page data
     } catch (error) {
       console.error("Error updating project:", error)
@@ -98,7 +99,7 @@ export default function ProjectEditPage({ params }: { params: { uuid: string } }
   }
 
   const handleCancel = () => {
-    router.push(`/projects/view/${params.uuid}`)
+    router.push(`/projects/view/${uuid}`)
   }
 
   if (isLoading) {

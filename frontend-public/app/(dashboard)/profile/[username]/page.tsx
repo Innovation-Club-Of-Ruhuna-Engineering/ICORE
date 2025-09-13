@@ -212,7 +212,7 @@ import useOption from "@/hooks/useOption";function PublicProfilePage() {
                   ) : (
                     <div className="text-center py-12">
                       <h3 className="text-lg font-medium text-gray-900 mb-2">No public projects</h3>
-                      <p className="text-gray-500">This user hasn't shared any projects yet.</p>
+                      <p className="text-gray-500">This user hasn&apos;t shared any projects yet.</p>
                     </div>
                   )}
                 </div>

@@ -17,6 +17,39 @@ import { UpdateProjectInput } from './dto/updateProject.input';
 export class ProjectService {
   constructor(private readonly databaseService: DatabaseService) {}
 
+  async findOneWithDetails(id: string) {
+    const project = await this.databaseService.project.findUnique({
+      where: { id },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+                avatarUrl: true,
+              },
+            },
+          },
+        },
+        guestMembers: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Project with id ${id} not found`);
+    }
+
+    return project;
+  }
+
   /**
    * Creates a new project
    */
@@ -341,6 +374,7 @@ export class ProjectService {
 
       return updatedProject;
     } catch (error) {
+      console.error('Project Update Error:', error); 
       if (error instanceof HttpException) {
         throw error;
       }

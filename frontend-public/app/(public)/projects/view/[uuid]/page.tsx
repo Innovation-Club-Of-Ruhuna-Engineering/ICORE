@@ -1,7 +1,7 @@
 "use client"
 
-import { notFound, redirect } from "next/navigation"
-import { use } from "react"
+import { notFound, redirect, useParams } from "next/navigation"
+import Image from "next/image"
 import { Breadcrumb } from "@/components/project/breadcrumb"
 import { ProjectHeader } from "@/components/project/project-header"
 import { MemberAvatars } from "@/components/project/member-avatars"
@@ -31,8 +31,9 @@ async function getProject(uuid: string, isAuthenticated: boolean): Promise<Proje
       members: [],
       guestMembers: []
     }
-  } catch (error: any) {
-    if (error?.response?.status === 404 && isAuthenticated) {
+  } catch (error) {
+    const axiosError = error as { response?: { status: number } }
+    if (axiosError?.response?.status === 404 && isAuthenticated) {
       try {
         const { data: privateProject } = await projectApi.getPrivateProjectById(uuid)
         if (!privateProject) throw new Error('Project not found')
@@ -46,7 +47,7 @@ async function getProject(uuid: string, isAuthenticated: boolean): Promise<Proje
           members: [],
           guestMembers: []
         }
-      } catch (privateError) {
+      } catch {
         notFound()
       }
     }
@@ -57,8 +58,8 @@ async function getProject(uuid: string, isAuthenticated: boolean): Promise<Proje
   throw new Error('Project not found')
 }
 
-export default function ProjectViewPage({ params }: { params: { uuid: string } }) {
-  const { uuid } = params instanceof Promise ? use(params) : params
+export default function ProjectViewPage() {
+  const { uuid } = useParams<{ uuid: string }>()
   const { user, isAuthenticated } = useAuth()
   const [project, setProject] = useState<ProjectViewData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -149,7 +150,7 @@ export default function ProjectViewPage({ params }: { params: { uuid: string } }
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">Project Not Found</h2>
-          <p className="text-gray-600">The project you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-600">The project you&apos;re looking for doesn&apos;t exist or has been removed.</p>
         </div>
       </div>
     )
@@ -177,10 +178,12 @@ export default function ProjectViewPage({ params }: { params: { uuid: string } }
                 <h3 className="text-lg font-semibold mb-4">Project Gallery</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {project.photos.map((photo, index) => (
-                    <img
+                    <Image
                       key={index}
                       src={photo || "/placeholder.svg"}
                       alt={`Project photo ${index + 1}`}
+                      width={400}
+                      height={300}
                       className="rounded-lg object-cover w-full h-48"
                     />
                   ))}
@@ -289,7 +292,7 @@ export default function ProjectViewPage({ params }: { params: { uuid: string } }
   )
 }
 
-function ResourceLink({ label, url, icon: Icon }: { label: string; url: string; icon: any }) {
+function ResourceLink({ label, url, icon: Icon }: { label: string; url: string; icon: React.ElementType }) {
   return (
     <div className="flex items-center gap-3 p-3 border rounded-lg">
       <Icon className="h-5 w-5 text-muted-foreground" />

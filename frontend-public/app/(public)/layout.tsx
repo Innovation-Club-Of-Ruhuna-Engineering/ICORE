@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { Analytics } from "@vercel/analytics/react"
 import { ThemeProvider } from "@/components/theme-provider/theme-provider"
 import { Suspense } from "react"
 

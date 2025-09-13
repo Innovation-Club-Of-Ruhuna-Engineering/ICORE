@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ProjectCard } from "@/components/shared/project-card";
 import { projectApi, type PublicProject } from "@/lib/projects/projectMethods";
 import { toast } from "react-hot-toast";
@@ -14,7 +14,7 @@ export function ProjectsSection({ userId }: ProjectsSectionProps) {
     const [projects, setProjects] = useState<PublicProject[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchProjects = async () => {
+    const fetchProjects = useCallback(async () => {
         try {
             const response = await projectApi.getUserProjects(userId);
             setProjects(response.data);
@@ -24,11 +24,11 @@ export function ProjectsSection({ userId }: ProjectsSectionProps) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId]);
 
     useEffect(() => {
         fetchProjects();
-    }, [userId]);
+    }, [userId, fetchProjects]);
 
     const handleVisibilityToggle = async (projectId: string, isVisible: boolean) => {
         try {

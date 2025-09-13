@@ -1,4 +1,4 @@
-import { type PublicProject, type ProjectRole, type ProjectType, type Status } from "./projectMethods"
+import { type PublicProject, type ProjectRole } from "./projectMethods"
 
 export interface ProjectFormData {
   name: string;

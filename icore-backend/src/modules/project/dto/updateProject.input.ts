@@ -57,38 +57,29 @@ export class UpdateProjectInput extends PartialType(CreateProjectInput) {
   papers?: string[];
 
   @ApiPropertyOptional({
-    description: 'Youtube URL of the project',
-    minLength: 12,
-    maxLength: 100,
+    description: 'YouTube video URL for the project',
     type: String,
   })
-  @IsString({ message: 'Youtube URL must be a string' })
-  @Length(10, 500, {
-    message: 'Youtube URL must be between 12 and 100 characters',
-  })
+  @IsOptional()
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, 
+    { message: 'YouTube URL must be a valid URL starting with http:// or https://' })
   youtubeURL?: string;
 
   @ApiPropertyOptional({
-    description: 'Github URL of the project',
-    minLength: 12,
-    maxLength: 100,
+    description: 'Website URL for the project',
     type: String,
   })
-  @IsString({ message: 'Github URL must be a string' })
-  @Length(10, 500, {
-    message: 'Github URL must be between 12 and 100 characters',
-  })
-  githubURL?: string;
+  @IsOptional()
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, 
+    { message: 'Website URL must be a valid URL starting with http:// or https://' })
+  websiteURL?: string;
 
   @ApiPropertyOptional({
-    description: 'Website URL of the project',
-    minLength: 12,
-    maxLength: 100,
+    description: 'GitHub repository URL for the project',
     type: String,
   })
-  @IsString({ message: 'Website URL must be a string' })
-  @Length(10, 500, {
-    message: 'Website URL must be between 12 and 100 characters',
-  })
-  websiteURL?: string;
+  @IsOptional()
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, 
+    { message: 'GitHub URL must be a valid URL starting with http:// or https://' })
+  githubURL?: string;
 }

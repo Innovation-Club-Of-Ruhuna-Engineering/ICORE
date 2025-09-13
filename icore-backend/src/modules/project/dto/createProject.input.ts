@@ -74,8 +74,9 @@ export class CreateProjectInput {
     example: '2023-12-31T23:59:59Z',
     required: false,
   })
+  @IsOptional()
   @IsString({ message: 'Project timeline must be a string' })
-  endDate: string;
+  endDate?: string;
 
   @ApiProperty({
     description: 'Array of tags for the project',
@@ -83,6 +84,7 @@ export class CreateProjectInput {
     example: ['AI', 'Web Development', 'Open Source'],
     maxItems: 5,
   })
+  @IsNotEmpty({ message: 'Tags are required' })
   @IsArray({ message: 'Tags must be an array' })
   @IsString({ each: true, message: 'Tags must be an array of strings' })
   @ArrayMaxSize(5, { message: 'You can add up to 5 tags' })
@@ -102,6 +104,7 @@ export class CreateProjectInput {
     type: [String],
     example: ['React', 'Node.js', 'PostgreSQL'],
   })
+  @IsNotEmpty({ message: 'Technologies are required' })
   @IsArray({ message: 'Technologies must be an array' })
   @IsString({ each: true, message: 'Technologies must be an array of strings' })
   technologies: string[];
@@ -152,7 +155,8 @@ export class CreateProjectInput {
     type: String,
   })
   @IsOptional()
-  @IsUrl({}, { message: 'YouTube URL must be a valid URL' })
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, 
+    { message: 'YouTube URL must be a valid URL starting with http:// or https://' })
   youtubeURL?: string;
 
   @ApiProperty({
@@ -161,7 +165,8 @@ export class CreateProjectInput {
     type: String,
   })
   @IsOptional()
-  @IsUrl({}, { message: 'Website URL must be a valid URL' })
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, 
+    { message: 'Website URL must be a valid URL starting with http:// or https://' })
   websiteURL?: string;
 
   @ApiProperty({
@@ -170,7 +175,8 @@ export class CreateProjectInput {
     type: String,
   })
   @IsOptional()
-  @IsUrl({}, { message: 'GitHub URL must be a valid URL' })
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, 
+    { message: 'GitHub URL must be a valid URL starting with http:// or https://' })
   githubURL?: string;
 
   @ApiProperty({
