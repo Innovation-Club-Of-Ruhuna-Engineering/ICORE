@@ -1,242 +1,216 @@
-"use client";
+"use client"
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { projectApi, CreateProjectData } from '@/lib/projects/projectMethods';
-import { toast } from 'react-hot-toast';
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Breadcrumb } from "@/components/project/breadcrumb"
+import { ProjectForm } from "@/components/project/project-form"
+import { projectApi, type CreateProjectData, type ProjectType } from "@/lib/projects/projectMethods"
+import { useAuth } from "@/contexts/userAuthContext"
+import { type ProjectFormData } from "@/lib/projects/types"
+import { AlertCircle, Loader2 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import toast from "react-hot-toast"
 
-const NewProjectPage = () => {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<CreateProjectData>({
-    name: '',
-    about: '',
-    description: '',
-    type: 'RESEARCH',
-    startDate: '',
-    tags: [],
-    technologies: [],
-  });
+export default function NewProjectPage() {
+  const router = useRouter()
+  const { user, isAuthenticated, loading } = useAuth() // ✅ include loading state
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  useEffect(() => {
+    // ✅ Wait until loading is false before redirecting
+    if (!loading && (!isAuthenticated || !user)) {
+      router.push('/signin')
+    }
+  }, [loading, isAuthenticated, user, router])
 
-  const handleArrayChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'tags' | 'technologies' | 'references' | 'papers') => {
-    const values = e.target.value.split(',').map(item => item.trim());
-    setFormData(prev => ({
-      ...prev,
-      [field]: values
-    }));
-  };
+  const breadcrumbItems = [
+    { label: "Projects", href: "/projects" },
+    { label: "Create New Project" },
+  ]
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const validateFormData = (formData: ProjectFormData) => {
+    const errors: string[] = []
 
+    if (!formData.name || formData.name.length < 5 || formData.name.length > 50) {
+      errors.push('Project name must be between 5 and 50 characters')
+    }
+    if (!formData.about || formData.about.length < 10 || formData.about.length > 100) {
+      errors.push('Project about section must be between 10 and 100 characters')
+    }
+    if (!formData.description || formData.description.length < 10 || formData.description.length > 500) {
+      errors.push('Project description must be between 10 and 500 characters')
+    }
+    if (!formData.startDate) {
+      errors.push('Start date is required')
+    }
+    if (formData.tags.length > 5) {
+      errors.push('You can add up to 5 tags')
+    }
+
+    const urlPattern = /^https?:\/\/.+/
+    if (formData.youtubeURL && !urlPattern.test(formData.youtubeURL)) {
+      errors.push('YouTube URL must be a valid URL')
+    }
+    if (formData.websiteURL && !urlPattern.test(formData.websiteURL)) {
+      errors.push('Website URL must be a valid URL')
+    }
+    if (formData.githubURL && !urlPattern.test(formData.githubURL)) {
+      errors.push('GitHub URL must be a valid URL')
+    }
+
+    return errors
+  }
+
+  const handleSubmit = async (formData: ProjectFormData) => {
     try {
-      if (!formData.startDate) {
-        toast.error('Start date is required');
-        return;
+      setIsSubmitting(true)
+      setError(null)
+
+      const validationErrors = validateFormData(formData)
+      if (validationErrors.length > 0) {
+        const errorMsg = validationErrors.join('\n')
+        setError(errorMsg)
+        toast.error(errorMsg)
+        return
       }
 
-      // Format dates to ISO string
-      const formattedData: CreateProjectData = {
-        ...formData,
-        startDate: new Date(formData.startDate + 'T00:00:00.000Z').toISOString(),
-        endDate: formData.endDate ? new Date(formData.endDate + 'T00:00:00.000Z').toISOString() : undefined
-      };
+      const baseData = {
+        name: formData.name,
+        about: formData.about,
+        description: formData.description,
+        type: formData.type as ProjectType,
+        startDate: new Date(formData.startDate).toISOString(),
+        tags: formData.tags,
+        details: formData.details,
+        technologies: formData.technologies,
+        isVisible: formData.isVisible,
+      }
 
-      await projectApi.createProject(formattedData);
-      toast.success('Project created successfully!');
-      router.push('/me'); // Redirect to profile page
+      const createData: CreateProjectData = {
+        ...baseData,
+        ...(formData.endDate?.trim() && { endDate: new Date(formData.endDate.trim()).toISOString() }),
+      }
+
+      if (formData.details?.trim()) {
+        createData.details = formData.details.trim()
+      }
+
+      if (formData.youtubeURL?.trim()) {
+        try {
+          new URL(formData.youtubeURL.trim())
+          createData.youtubeURL = formData.youtubeURL.trim()
+        } catch {
+          toast.error('YouTube URL must be a valid URL starting with http:// or https://')
+          return
+        }
+      }
+
+      if (formData.websiteURL?.trim()) {
+        try {
+          new URL(formData.websiteURL.trim())
+          createData.websiteURL = formData.websiteURL.trim()
+        } catch {
+          toast.error('Website URL must be a valid URL starting with http:// or https://')
+          return
+        }
+      }
+
+      if (formData.githubURL?.trim()) {
+        try {
+          new URL(formData.githubURL.trim())
+          createData.githubURL = formData.githubURL.trim()
+        } catch {
+          toast.error('GitHub URL must be a valid URL starting with http:// or https://')
+          return
+        }
+      }
+
+      await projectApi.createProject(createData)
+      toast.success('Project created successfully!')
+      router.push('/me')
+      router.refresh()
     } catch (error) {
-      console.error('Error creating project:', error);
-      toast.error('Failed to create project');
+      console.error("Error creating project:", error)
+      setError('Failed to create project. Please try again later.')
     } finally {
-      setLoading(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
-  return (
-    <div className="min-h-screen bg-gray-50 mt-10">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-          <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">Create New Project</h1>
-          </div>
-          
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Project Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
+  const handleCancel = () => {
+    router.back()
+  }
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Project Type</label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                >
-                  <option value="RESEARCH">Research</option>
-                  <option value="DEVELOPMENT">Development</option>
-                  <option value="DESIGN">Design</option>
-                  <option value="OTHER">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Start Date</label>
-                <input
-                  type="date"
-                  name="startDate"
-                  value={formData.startDate}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">End Date (Optional)</label>
-                <input
-                  type="date"
-                  name="endDate"
-                  value={formData.endDate || ''}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-900 mb-2">About</label>
-                <textarea
-                  name="about"
-                  value={formData.about}
-                  onChange={handleChange}
-                  required
-                  rows={2}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Description</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                  rows={4}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
-            </div>
-
-            {/* Tags and Technologies */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Tags (comma-separated)</label>
-                <input
-                  type="text"
-                  value={formData.tags.join(', ')}
-                  onChange={(e) => handleArrayChange(e, 'tags')}
-                  placeholder="AI, Web Development, Research"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Technologies (comma-separated)</label>
-                <input
-                  type="text"
-                  value={formData.technologies.join(', ')}
-                  onChange={(e) => handleArrayChange(e, 'technologies')}
-                  placeholder="React, Node.js, PostgreSQL"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
-            </div>
-
-            {/* URLs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">GitHub URL</label>
-                <input
-                  type="url"
-                  name="githubURL"
-                  value={formData.githubURL || ''}
-                  onChange={handleChange}
-                  placeholder="https://github.com/username/repo"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Website URL</label>
-                <input
-                  type="url"
-                  name="websiteURL"
-                  value={formData.websiteURL || ''}
-                  onChange={handleChange}
-                  placeholder="https://yourproject.com"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-900 mb-2">YouTube URL</label>
-                <input
-                  type="url"
-                  name="youtubeURL"
-                  value={formData.youtubeURL || ''}
-                  onChange={handleChange}
-                  placeholder="https://youtube.com/watch?v=..."
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                />
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="px-6 py-3 text-base font-semibold text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className={`px-6 py-3 text-base font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-200 ${
-                  loading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                {loading ? 'Creating...' : 'Create Project'}
-              </button>
-            </div>
-          </form>
+  // ✅ Auth is loading (fetching user profile)
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Checking authentication...</span>
         </div>
       </div>
-    </div>
-  );
-};
+    )
+  }
 
-export default NewProjectPage;
+  // ✅ Block rendering while redirecting
+  if (!isAuthenticated || !user) {
+    return null
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background p-4">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error.split('\n').map((err, index) => (
+              <div key={index}>{err}</div>
+            ))}
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <section className="bg-gradient-to-b from-blue-50 to-white pt-24 pb-8 md:pt-32 md:pb-12">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <Breadcrumb items={breadcrumbItems} />
+          <div className="mt-6">
+            <h1 className="text-4xl md:text-5xl font-bold text-balance mb-4">
+              <span className="text-foreground">Create New</span>{" "}
+              <span className="text-primary">Project</span>
+            </h1>
+            <p className="text-lg text-muted-foreground text-pretty max-w-3xl">
+              Share your innovation story by creating a new project. Fill in the details below to get started.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <ProjectForm 
+          initialData={{
+            name: "",
+            about: "",
+            description: "",
+            type: "RESEARCH",
+            startDate: new Date().toISOString().split('T')[0],
+            tags: [],
+            details: "",
+            technologies: [],
+            youtubeURL: "",
+            websiteURL: "",
+            githubURL: "",
+            isVisible: true,
+          }}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+        />
+      </div>
+    </div>
+  )
+}

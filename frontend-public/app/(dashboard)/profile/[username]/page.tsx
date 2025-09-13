@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { toast, Toaster } from "react-hot-toast";
 import { profileApi } from "@/lib/profile/profileMethods";
-// Icons
-import { Github, Linkedin, Globe, Twitter, Youtube, Instagram } from "lucide-react";
+
 
 // Types
+import { ProjectCard } from "@/components/shared/project-card";
+import { projectApi, type PublicProject } from "@/lib/projects/projectMethods";
+
 // Types for API error
 interface ApiError {
   response?: {
@@ -62,8 +64,8 @@ interface UserProfile {
   // Components
 import ProfileCard from "@/components/me/profile-card";
 
-// Skeleton Loader
-import { ProfileCardSkeleton } from "@/components/ui/skeleton";
+// Skeleton Loaders
+import { ProfileCardSkeleton, Skeleton } from "@/components/ui/skeleton";
 
 // Hooks
 import useOption from "@/hooks/useOption";function PublicProfilePage() {
@@ -72,6 +74,8 @@ import useOption from "@/hooks/useOption";function PublicProfilePage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [projects, setProjects] = useState<PublicProject[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
 
   // Horizontal tabs state
   const {
@@ -97,8 +101,22 @@ import useOption from "@/hooks/useOption";function PublicProfilePage() {
       }
     };
 
+    const fetchProjects = async () => {
+      try {
+        setProjectsLoading(true);
+        const response = await projectApi.getPublicProjectsByUsername(username);
+        setProjects(response.data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        toast.error("Failed to load projects");
+      } finally {
+        setProjectsLoading(false);
+      }
+    };
+
     if (username) {
       fetchProfile();
+      fetchProjects();
     }
   }, [username]);
 
@@ -166,9 +184,37 @@ import useOption from "@/hooks/useOption";function PublicProfilePage() {
             {/* Tab Content */}
             <div className="p-6">
               {horizontalTab === 1 && (
-                <div className="text-center py-12">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Projects</h3>
-                  <p className="text-gray-500">Coming soon! Projects will be showcased here.</p>
+                <div>
+                  {projectsLoading ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {Array.from({ length: 6 }).map((_, index) => (
+                        <div key={index} className="space-y-3">
+                          <Skeleton className="h-48 w-full" />
+                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-4 w-full" />
+                          <div className="flex gap-2">
+                            <Skeleton className="h-6 w-16" />
+                            <Skeleton className="h-6 w-16" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : projects.length > 0 ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {projects.map((project) => (
+                        <ProjectCard
+                          key={project.id}
+                          project={project}
+                          isAdmin={false}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No public projects</h3>
+                      <p className="text-gray-500">This user hasn't shared any projects yet.</p>
+                    </div>
+                  )}
                 </div>
               )}
 

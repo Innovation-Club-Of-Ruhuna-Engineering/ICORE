@@ -12,6 +12,7 @@ import { GeneralInfoSection } from "@/components/me/general-info-section";
 import { ExperienceSkillsSection } from "@/components/me/experience-skills-section";
 import { SocialSection } from "@/components/me/social-section";
 import { SettingsSection } from "@/components/me/settings-section";
+import { ProjectsSection } from "@/components/me/projects-section";
 // Skeleton Loaders
 import {
   ProfileCardSkeleton,
@@ -181,10 +182,7 @@ function SelfProfilePage() {
             {/* Tab Content */}
             <div className="p-6">
               {horizontalTab === 1 && (
-                <div className="text-center py-12">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">My Projects</h3>
-                  <p className="text-gray-500">Coming soon! You&apos;ll be able to see your projects here.</p>
-                </div>
+                <ProjectsSection userId={currentUser?.id || ''} />
               )}
 
               {horizontalTab === 2 && (

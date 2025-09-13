@@ -1,15 +1,20 @@
 import { AxiosResponse } from 'axios';
 import axiosInstance from "../axios/axiosInstance";
 
+// Enums from Prisma schema
+export type ProjectRole = 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR';
+export type ProjectType = 'RESEARCH' | 'DESIGN' | 'DEVELOPMENT' | 'OTHER';
+export type Status = 'ACTIVE' | 'PENDING' | 'INACTIVE';
+
 export interface ProjectMember {
   userId: string;
-  role: 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR';
+  role: ProjectRole;
 }
 
 export interface GuestMember {
   name: string;
   email: string;
-  role: 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR';
+  role: ProjectRole;
 }
 
 export interface PublicProjectOwner {
@@ -22,7 +27,7 @@ export interface PublicProject {
   name: string;
   about: string;
   description: string;
-  type: string;
+  type: ProjectType;
   startDate: Date;
   endDate?: Date;
   tags: string[];
@@ -32,7 +37,7 @@ export interface PublicProject {
   youtubeURL?: string;
   websiteURL?: string;
   isVisible: boolean;
-  status: string;
+  status: Status;
   createdAt: Date;
   updatedAt: Date;
   owner: PublicProjectOwner;
@@ -44,7 +49,7 @@ export interface CreateProjectData {
   name: string;
   about: string;
   description: string;
-  type: string;
+  type: ProjectType;
   startDate: string;
   endDate?: string;
   tags: string[];
@@ -58,7 +63,7 @@ export interface CreateProjectData {
   websiteURL?: string;
   githubURL?: string;
   isVisible?: boolean;
-  status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'ON_HOLD';
+  status?: Status;
   members?: ProjectMember[];
   guestMembers?: GuestMember[];
 }
@@ -119,6 +124,10 @@ export const projectApi = {
   },
 
   getProjectById: async (id: string): Promise<AxiosResponse> => {
+    return await axiosInstance.get(`/project/public/${id}`);
+  },
+
+  getPrivateProjectById: async (id: string): Promise<AxiosResponse> => {
     return await axiosInstance.get(`/project/${id}`);
   },
 
