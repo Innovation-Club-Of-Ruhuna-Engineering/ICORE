@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { Analytics } from "@vercel/analytics/react"
 import { ThemeProvider } from "@/components/theme-provider/theme-provider"
 import { Suspense } from "react"
 
@@ -15,15 +14,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
-        <Suspense fallback={null}>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-            {children}
-          </ThemeProvider>
-        </Suspense>
-        <Analytics />
-      </body>
-    </html>
+    <Suspense fallback={null}>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+        {children}
+      </ThemeProvider>
+    </Suspense>
   )
 }
