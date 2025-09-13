@@ -61,7 +61,7 @@ COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 USER node
 
 # Verify dist directory contents before starting
-RUN ls -la dist/
+RUN ls -la dist/ && ls -la dist/src/
 
 # Start the server
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
