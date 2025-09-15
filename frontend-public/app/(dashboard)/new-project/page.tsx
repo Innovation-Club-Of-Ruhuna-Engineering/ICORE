@@ -13,13 +13,12 @@ import toast from "react-hot-toast"
 
 export default function NewProjectPage() {
   const router = useRouter()
-  const { user, isAuthenticated, loading } = useAuth() // ✅ include loading state
+  const { user, isAuthenticated, loading } = useAuth()
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // ✅ Wait until loading is false before redirecting
     if (!loading && (!isAuthenticated || !user)) {
-      router.push('/signin')
+      router.push("/signin")
     }
   }, [loading, isAuthenticated, user, router])
 
@@ -32,30 +31,30 @@ export default function NewProjectPage() {
     const errors: string[] = []
 
     if (!formData.name || formData.name.length < 5 || formData.name.length > 50) {
-      errors.push('Project name must be between 5 and 50 characters')
+      errors.push("Project name must be between 5 and 50 characters")
     }
-    if (!formData.about || formData.about.length < 10 || formData.about.length > 100) {
-      errors.push('Project about section must be between 10 and 100 characters')
-    }
+
     if (!formData.description || formData.description.length < 10 || formData.description.length > 500) {
-      errors.push('Project description must be between 10 and 500 characters')
+      errors.push("Project description must be between 10 and 500 characters")
     }
+
     if (!formData.startDate) {
-      errors.push('Start date is required')
+      errors.push("Start date is required")
     }
+
     if (formData.tags.length > 5) {
-      errors.push('You can add up to 5 tags')
+      errors.push("You can add up to 5 tags")
     }
 
     const urlPattern = /^https?:\/\/.+/
     if (formData.youtubeURL && !urlPattern.test(formData.youtubeURL)) {
-      errors.push('YouTube URL must be a valid URL')
+      errors.push("YouTube URL must be a valid URL")
     }
     if (formData.websiteURL && !urlPattern.test(formData.websiteURL)) {
-      errors.push('Website URL must be a valid URL')
+      errors.push("Website URL must be a valid URL")
     }
     if (formData.githubURL && !urlPattern.test(formData.githubURL)) {
-      errors.push('GitHub URL must be a valid URL')
+      errors.push("GitHub URL must be a valid URL")
     }
 
     return errors
@@ -67,70 +66,48 @@ export default function NewProjectPage() {
 
       const validationErrors = validateFormData(formData)
       if (validationErrors.length > 0) {
-        const errorMsg = validationErrors.join('\n')
+        const errorMsg = validationErrors.join("\n")
         setError(errorMsg)
         toast.error(errorMsg)
         return
       }
 
-      const baseData = {
+      const createData: CreateProjectData = {
         name: formData.name,
-        about: formData.about,
         description: formData.description,
         type: formData.type as ProjectType,
         startDate: new Date(formData.startDate).toISOString(),
         tags: formData.tags,
-        details: formData.details,
+        techDetails: formData.details?.trim() || "",
         technologies: formData.technologies,
         isVisible: formData.isVisible,
       }
 
-      const createData: CreateProjectData = {
-        ...baseData,
-        ...(formData.endDate?.trim() && { endDate: new Date(formData.endDate.trim()).toISOString() }),
+      if (formData.endDate?.trim()) {
+        createData.endDate = new Date(formData.endDate.trim()).toISOString()
       }
 
-      if (formData.details?.trim()) {
-        createData.details = formData.details.trim()
-      }
-
-      if (formData.youtubeURL?.trim()) {
-        try {
-          new URL(formData.youtubeURL.trim())
-          createData.youtubeURL = formData.youtubeURL.trim()
-        } catch {
-          toast.error('YouTube URL must be a valid URL starting with http:// or https://')
-          return
-        }
-      }
-
-      if (formData.websiteURL?.trim()) {
-        try {
-          new URL(formData.websiteURL.trim())
-          createData.websiteURL = formData.websiteURL.trim()
-        } catch {
-          toast.error('Website URL must be a valid URL starting with http:// or https://')
-          return
-        }
-      }
-
-      if (formData.githubURL?.trim()) {
-        try {
-          new URL(formData.githubURL.trim())
-          createData.githubURL = formData.githubURL.trim()
-        } catch {
-          toast.error('GitHub URL must be a valid URL starting with http:// or https://')
-          return
+      const urlFields = ["youtubeURL", "websiteURL", "githubURL"] as const
+      for (const field of urlFields) {
+        const url = formData[field]?.trim()
+        if (url) {
+          try {
+            new URL(url)
+            createData[field] = url
+          } catch {
+            toast.error(`${field} must be a valid URL starting with http:// or https://`)
+            return
+          }
         }
       }
 
       await projectApi.createProject(createData)
-      toast.success('Project created successfully!')
-      router.push('/me')
+      toast.success("Project created successfully!")
+      router.push("/me")
       router.refresh()
     } catch (error) {
       console.error("Error creating project:", error)
-      setError('Failed to create project. Please try again later.')
+      setError("Failed to create project. Please try again later.")
     }
   }
 
@@ -138,7 +115,6 @@ export default function NewProjectPage() {
     router.back()
   }
 
-  // ✅ Auth is loading (fetching user profile)
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -150,24 +126,8 @@ export default function NewProjectPage() {
     )
   }
 
-  // ✅ Block rendering while redirecting
   if (!isAuthenticated || !user) {
     return null
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background p-4">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {error.split('\n').map((err, index) => (
-              <div key={index}>{err}</div>
-            ))}
-          </AlertDescription>
-        </Alert>
-      </div>
-    )
   }
 
   return (
@@ -188,13 +148,26 @@ export default function NewProjectPage() {
       </section>
 
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <ProjectForm 
+        {error && (
+          <div className="mb-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {error.split("\n").map((err, idx) => (
+                  <div key={idx}>{err}</div>
+                ))}
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
+
+        <ProjectForm
           initialData={{
             name: "",
-            about: "",
             description: "",
             type: "RESEARCH",
-            startDate: new Date().toISOString().split('T')[0],
+            startDate: new Date().toISOString().split("T")[0],
+            endDate: "",
             tags: [],
             details: "",
             technologies: [],

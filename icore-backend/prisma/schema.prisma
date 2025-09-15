@@ -64,13 +64,12 @@ model User {
 model Project {
   id           String        @id @default(uuid())
   name         String
-  about        String
   description  String
   type         ProjectType
   startDate    DateTime
   endDate      DateTime?
   tags         String[]
-  details      String?
+  techDetails  String?
   technologies String[]
   references   String[]
   papers       String[]

@@ -8,9 +8,6 @@ export class PublicProjectResponse {
   @ApiProperty({ description: 'Project name' })
   name: string;
 
-  @ApiProperty({ description: 'Short description of the project' })
-  about: string;
-
   @ApiProperty({ description: 'Detailed description of the project' })
   description: string;
 
@@ -26,11 +23,20 @@ export class PublicProjectResponse {
   @ApiProperty({ description: 'Project tags', type: [String] })
   tags: string[];
 
-  @ApiProperty({ description: 'Additional details about the project', required: false })
-  details?: string;
+  @ApiProperty({ description: 'Technical details about the project', required: false })
+  techDetails?: string;
 
   @ApiProperty({ description: 'Technologies used in the project', type: [String] })
   technologies: string[];
+
+  @ApiProperty({ description: 'Research papers related to the project', type: [String] })
+  papers: string[];
+
+  @ApiProperty({ description: 'Project documentation files', type: [String] })
+  documents: string[];
+
+  @ApiProperty({ description: 'Reference links and materials', type: [String] })
+  references: string[];
 
   @ApiProperty({ description: 'Project photos', type: [String] })
   photos: string[];
@@ -40,6 +46,9 @@ export class PublicProjectResponse {
 
   @ApiProperty({ description: 'Website URL', required: false })
   websiteURL?: string;
+
+  @ApiProperty({ description: 'GitHub repository URL', required: false })
+  githubURL?: string;
 
   @ApiProperty({ description: 'Project visibility status' })
   isVisible: boolean;

@@ -25,17 +25,20 @@ export interface PublicProjectOwner {
 export interface PublicProject {
   id: string;
   name: string;
-  about: string;
   description: string;
   type: ProjectType;
   startDate: Date;
   endDate?: Date;
   tags: string[];
-  details?: string;
+  techDetails?: string;
   technologies: string[];
+  references: string[];
+  papers: string[];
   photos: string[];
+  documents: string[];
   youtubeURL?: string;
   websiteURL?: string;
+  githubURL?: string;
   isVisible: boolean;
   status: Status;
   createdAt: Date;
@@ -47,14 +50,13 @@ export interface PublicProject {
 
 export interface CreateProjectData {
   name: string;
-  about: string;
   description: string;
   type: ProjectType;
   startDate: string;
   endDate?: string;
-  tags: string[];
-  details?: string;
-  technologies: string[];
+  tags?: string[];
+  techDetails?: string;
+  technologies?: string[];
   references?: string[];
   papers?: string[];
   photos?: string[];
@@ -70,11 +72,39 @@ export interface CreateProjectData {
 
 export type UpdateProjectData = Partial<CreateProjectData>;
 
+export interface ProjectResponse extends PublicProject {
+  guestMembers: GuestMember[];
+  members: Array<{
+    id: string;
+    role: ProjectRole;
+    user: {
+      id: string;
+      username: string;
+      email: string;
+      avatarUrl?: string;
+    };
+  }>;
+}
+
 export interface PublicProjectsResponse {
   projects: PublicProject[];
   total: number;
   hasMore: boolean;
 }
+
+/**
+ * Example create project data:
+ * {
+ *   name: "AI Image Recognition System",
+ *   description: "A deep learning based image recognition system",
+ *   type: "DEVELOPMENT",
+ *   startDate: "2025-09-15T00:00:00Z",
+ *   tags: ["AI", "Machine Learning"],
+ *   techDetails: "Built using TensorFlow 2.0",
+ *   technologies: ["Python", "TensorFlow"],
+ *   isVisible: true
+ * }
+ */
 
 export const projectApi = {
   // Public Project APIs (no authentication required)
