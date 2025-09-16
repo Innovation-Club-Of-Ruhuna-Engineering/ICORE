@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -37,6 +38,14 @@ export function ProjectHero({
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
   const [showVideo, setShowVideo] = useState(!!youtubeURL)
 
+  const nextPhoto = () => {
+    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length)
+  }
+
+  const prevPhoto = () => {
+    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)
+  }
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (photos.length > 1 && !showVideo) {
@@ -54,29 +63,23 @@ export function ProjectHero({
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [photos.length, showVideo])
 
-  const nextPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length)
-  }
-
-  const prevPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)
-  }
-
   return (
     <Card className="bg-[#ffffff] border-[#d9d9d9]">
       <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-[#000000] mb-2">{title}</h1>
-            <p className="text-[#555555] mb-4">{description}</p>
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
+          <div className="flex-grow max-w-full md:max-w-[70%]">
+            <h1 className="text-3xl font-bold text-[#000000] mb-3">{title}</h1>
+            <p className="text-[#555555] mb-4 line-clamp-2 text-pretty">
+              {description}
+            </p>
             <p className="text-sm text-[#a6a6a6]">
               Published on {publishedDate} by {author}
             </p>
           </div>
-          <div className="flex flex-col space-y-2">
+          <div className="flex md:flex-col gap-3 md:space-y-0 md:self-start">
             {websiteURL && (
               <Button
-                className="bg-[#0d6efd] hover:bg-[#0d6efd]/90 text-white"
+                className="bg-[#0d6efd] hover:bg-[#0d6efd]/90 text-white flex-1 md:flex-none md:w-40"
                 onClick={() => window.open(websiteURL, "_blank")}
               >
                 Live Demo
@@ -85,20 +88,23 @@ export function ProjectHero({
             {githubURL && (
               <Button
                 variant="outline"
-                className="border-[#0d6efd] text-[#0d6efd] hover:bg-[#0d6efd]/10 bg-transparent"
+                className="border-[#0d6efd] text-[#0d6efd] hover:bg-[#0d6efd]/10 bg-transparent flex-1 md:flex-none md:w-40"
                 onClick={() => window.open(githubURL, "_blank")}
               >
                 View Code
               </Button>
             )}
-            <Button variant="outline" className="border-[#0d6efd] text-[#0d6efd] hover:bg-[#0d6efd]/10 bg-transparent">
+            <Button 
+              variant="outline" 
+              className="border-[#0d6efd] text-[#0d6efd] hover:bg-[#0d6efd]/10 bg-transparent flex-1 md:flex-none md:w-40"
+            >
               Collaborate?
             </Button>
           </div>
         </div>
 
         {/* Team Members */}
-        <div className="flex items-center space-x-6 mb-6">
+        <div className="flex items-center space-x-6 mb-8">
           {teamMembers.map((member, index) => (
             <div key={index} className="flex items-center space-x-2">
               <Avatar className="h-10 w-10">
@@ -110,28 +116,7 @@ export function ProjectHero({
           ))}
         </div>
 
-        {youtubeURL && photos.length > 0 && (
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Button
-              variant={showVideo ? "default" : "outline"}
-              size="sm"
-              className={showVideo ? "bg-[#0d6efd] text-white" : "border-[#d9d9d9] text-[#555555]"}
-              onClick={() => setShowVideo(true)}
-            >
-              <Play className="h-4 w-4 mr-2" />
-              Video
-            </Button>
-            <Button
-              variant={!showVideo ? "default" : "outline"}
-              size="sm"
-              className={!showVideo ? "bg-[#0d6efd] text-white" : "border-[#d9d9d9] text-[#555555]"}
-              onClick={() => setShowVideo(false)}
-            >
-              <ImageIcon className="h-4 w-4 mr-2" />
-              Images ({photos.length})
-            </Button>
-          </div>
-        )}
+        {/* Media buttons have been moved below the media area */}
 
         <div className="rounded-lg overflow-hidden relative">
           {showVideo && youtubeURL ? (
@@ -147,9 +132,11 @@ export function ProjectHero({
             </div>
           ) : photos.length > 0 ? (
             <div className="relative group">
-              <img
+              <Image
                 src={photos[currentPhotoIndex] || "/placeholder.svg"}
                 alt={`${title} - Image ${currentPhotoIndex + 1}`}
+                width={1200}
+                height={400}
                 className="w-full h-[400px] object-cover"
               />
               {photos.length > 1 && (
@@ -188,9 +175,39 @@ export function ProjectHero({
               )}
             </div>
           ) : (
-            <img src="/placeholder.svg" alt={title} className="w-full h-[400px] object-cover" />
+            <Image
+              src="/backdrop.jpg"
+              alt={title}
+              width={1200}
+              height={400}
+              className="w-full h-[400px] object-cover"
+            />
           )}
         </div>
+
+        {/* Media toggle buttons moved here, after the media display */}
+        {youtubeURL && photos.length > 0 && (
+          <div className="flex items-center justify-end space-x-2 mt-4">
+            <Button
+              variant={showVideo ? "default" : "outline"}
+              size="sm"
+              className={showVideo ? "bg-[#0d6efd] text-white" : "border-[#d9d9d9] text-[#555555]"}
+              onClick={() => setShowVideo(true)}
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Video
+            </Button>
+            <Button
+              variant={!showVideo ? "default" : "outline"}
+              size="sm"
+              className={!showVideo ? "bg-[#0d6efd] text-white" : "border-[#d9d9d9] text-[#555555]"}
+              onClick={() => setShowVideo(false)}
+            >
+              <ImageIcon className="h-4 w-4 mr-2" />
+              Images ({photos.length})
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

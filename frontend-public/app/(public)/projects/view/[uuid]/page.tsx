@@ -7,84 +7,86 @@ import { ProjectTabs } from "@/components/project/project-tabs"
 import { useAuth } from "@/contexts/userAuthContext"
 import { useEffect, useState } from "react"
 import { projectApi, type PublicProject } from "@/lib/projects/projectMethods"
-
-interface ProjectViewData extends Omit<PublicProject, 'startDate' | 'endDate'> {
-  startDate: string;
-  endDate: string;
-  supervisor?: string;
-  fieldsOfInterest?: string;
-  progress?: string;
-  members: Array<{
-    id: string;
-    name: string;
-    role: string;
-    user?: {
-      name: string;
-    };
-  }>;
-  owner: {
-    id: string;
-    username: string;
-    name?: string;
-  };
-}
 import { ProjectHero } from "@/components/project/project-hero"
-import { DiscussionSection } from "@/components/project/discussion-section"
+//import { DiscussionSection } from "@/components/project/discussion-section"
+import { ProjectType } from "@/components/project/project-sidebar"
 
-// Get project data
+interface ProjectViewData extends Omit<PublicProject, 'startDate' | 'endDate' | 'type'> {
+  type: ProjectType
+  startDate: string
+  endDate: string
+  supervisor?: string
+  fieldsOfInterest?: string
+  progress?: string
+  members: Array<{
+    id: string
+    name: string
+    role: string
+    user?: {
+      name: string
+    }
+  }>
+  owner: {
+    id: string
+    username: string
+    name?: string
+  }
+}
+
+// Load project data (public or private)
 async function getProject(uuid: string, isAuthenticated: boolean): Promise<ProjectViewData> {
   try {
     const { data: project } = await projectApi.getProjectById(uuid)
-    if (!project) throw new Error('Project not found')
+    if (!project) throw new Error("Project not found")
 
     return {
       ...project,
-      type: project.type || 'RESEARCH',
+      type: (project.type as ProjectType) || "RESEARCH",
       photos: project.photos || [],
       papers: project.papers || [],
       references: project.references || [],
       documents: project.documents || [],
       members: project.members || [],
       guestMembers: project.guestMembers || [],
-      techDetails: project.techDetails || '',
+      techDetails: project.techDetails || "",
       technologies: project.technologies || [],
       tags: project.tags || [],
-      startDate: new Date(project.startDate).toLocaleDateString() || '',
-      endDate: project.endDate ? new Date(project.endDate).toLocaleDateString() : '',
-      fieldsOfInterest: '',
-      supervisor: '',
-      youtubeURL: project.youtubeURL || '',
-      websiteURL: project.websiteURL || '',
-      githubURL: project.githubURL || '',
-      progress: project.status || 'PENDING'
+      startDate: new Date(project.startDate).toLocaleDateString() || "",
+      endDate: project.endDate ? new Date(project.endDate).toLocaleDateString() : "",
+      fieldsOfInterest: "",
+      supervisor: "",
+      youtubeURL: project.youtubeURL || "",
+      websiteURL: project.websiteURL || "",
+      githubURL: project.githubURL || "",
+      progress: project.status || "PENDING",
     }
   } catch (error) {
     const axiosError = error as { response?: { status: number } }
     if (axiosError?.response?.status === 404 && isAuthenticated) {
       try {
         const { data: privateProject } = await projectApi.getPrivateProjectById(uuid)
-        if (!privateProject) throw new Error('Project not found')
+        if (!privateProject) throw new Error("Project not found")
 
         return {
           ...privateProject,
-          type: privateProject.type || 'RESEARCH',
+          type: (privateProject.type as ProjectType) || "RESEARCH",
           photos: privateProject.photos || [],
           papers: privateProject.papers || [],
           references: privateProject.references || [],
           documents: privateProject.documents || [],
           members: privateProject.members || [],
           guestMembers: privateProject.guestMembers || [],
-          techDetails: privateProject.techDetails || '',
+          techDetails: privateProject.techDetails || "",
           technologies: privateProject.technologies || [],
           tags: privateProject.tags || [],
-          startDate: new Date(privateProject.startDate).toLocaleDateString() || '',
-          endDate: privateProject.endDate ? new Date(privateProject.endDate).toLocaleDateString() : '',
-          fieldsOfInterest: '',
-          supervisor: '',
-          youtubeURL: privateProject.youtubeURL || '',
-          websiteURL: privateProject.websiteURL || '',
-          githubURL: privateProject.githubURL || '',
-          progress: privateProject.status || 'PENDING'
+          startDate: new Date(privateProject.startDate).toLocaleDateString() || "",
+          endDate: privateProject.endDate ? new Date(privateProject.endDate).toLocaleDateString() : "",
+          fieldsOfInterest: "",
+          supervisor: "",
+          youtubeURL: privateProject.youtubeURL || "",
+          websiteURL: privateProject.websiteURL || "",
+          githubURL: privateProject.githubURL || "",
+          progress: privateProject.status || "PENDING",
         }
       } catch {
         notFound()
@@ -94,7 +96,7 @@ async function getProject(uuid: string, isAuthenticated: boolean): Promise<Proje
     notFound()
   }
 
-  throw new Error('Project not found')
+  throw new Error("Project not found")
 }
 
 export default function ProjectViewPage() {
@@ -102,26 +104,24 @@ export default function ProjectViewPage() {
   const { user, isAuthenticated } = useAuth()
   const [project, setProject] = useState<ProjectViewData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [comments, setComments] = useState([])
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const projectData = await getProject(uuid, isAuthenticated)
-        
-        // Gracefully handle missing owner
+
         const ownerId = projectData?.owner?.id
 
-        // Access control
-        if (projectData.status === 'PENDING') {
+        // Access control logic
+        if (projectData.status === "PENDING") {
           if (!isAuthenticated || !ownerId || user?.id !== ownerId) {
             notFound()
           }
-        } else if (projectData.status === 'ACTIVE' && !projectData.isVisible) {
+        } else if (projectData.status === "ACTIVE" && !projectData.isVisible) {
           if (!isAuthenticated || !ownerId || user?.id !== ownerId) {
             notFound()
           }
-        } else if (projectData.status !== 'ACTIVE') {
+        } else if (projectData.status !== "ACTIVE") {
           if (!isAuthenticated || !ownerId || user?.id !== ownerId) {
             notFound()
           }
@@ -129,7 +129,7 @@ export default function ProjectViewPage() {
 
         setProject(projectData)
       } catch (error) {
-        console.error('Error fetching project:', error)
+        console.error("Error fetching project:", error)
         setProject(null)
       } finally {
         setLoading(false)
@@ -169,8 +169,10 @@ export default function ProjectViewPage() {
     )
   }
 
-  const breadcrumbItems = [{ label: "Projects", href: "/projects" }, { label: project.name }]
-  const isOwner = project.owner?.id === user?.id
+  const breadcrumbItems = [
+    { label: "Projects", href: "/projects" },
+    { label: project.name },
+  ]
 
   const handleReply = (commentId: string) => {
     console.log("Reply to comment:", commentId)
@@ -191,11 +193,19 @@ export default function ProjectViewPage() {
               title={project.name}
               description={project.description}
               publishedDate={project.startDate}
-              author={project.owner?.name || 'Unknown'}
-              teamMembers={project.members.map(m => ({
-                name: m.user?.name || m.name || 'Unknown Member',
-                initials: (m.user?.name || m.name || 'Unknown').split(' ').map((n: string) => n[0]).join('')
-              }))}
+              author={project.owner?.username || "Unknown"}
+              teamMembers={project.members.map((m) => {
+                const fullName = m.user?.name || m.name || "Unknown"
+                const initials = fullName
+                  .split(" ")
+                  .map((n) => (typeof n === "string" ? n[0] : ""))
+                  .join("")
+
+                return {
+                  name: fullName,
+                  initials,
+                }
+              })}
               photos={project.photos}
               youtubeURL={project.youtubeURL}
               websiteURL={project.websiteURL}
@@ -205,11 +215,11 @@ export default function ProjectViewPage() {
 
           <div>
             <ProjectSidebar
-              progress={project.progress || 'In Progress'}
+              progress={project.progress || "In Progress"}
               dates={`${project.startDate} - ${project.endDate}`}
-              supervisor={project.supervisor || 'Not Specified'}
-              fieldsOfInterest={project.fieldsOfInterest || 'Not Specified'}
-              projectType={project.type as any}
+              supervisor={project.supervisor || "Not Specified"}
+              fieldsOfInterest={project.fieldsOfInterest || "Not Specified"}
+              projectType={project.type}
               tags={project.tags}
               technologies={project.technologies}
             />
@@ -227,9 +237,9 @@ export default function ProjectViewPage() {
           />
         </div>
 
-        <div className="mt-8">
-          <DiscussionSection comments={comments} onReply={handleReply} />
-        </div>
+        {/* <div className="mt-8">
+          <DiscussionSection comments={[]} onReply={handleReply} />
+        </div> */}
       </div>
     </div>
   )

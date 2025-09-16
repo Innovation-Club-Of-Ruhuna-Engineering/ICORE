@@ -1,119 +1,162 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Breadcrumb } from "@/components/project/breadcrumb"
-import { ProjectForm } from "@/components/project/project-form"
-import { projectApi, type CreateProjectData, type ProjectType } from "@/lib/projects/projectMethods"
-import { useAuth } from "@/contexts/userAuthContext"
-import { type ProjectFormData } from "@/lib/projects/types"
-import { AlertCircle, Loader2 } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import toast from "react-hot-toast"
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import toast from "react-hot-toast";
+import { projectApi, type CreateProjectData, type ProjectType } from "@/lib/projects/projectMethods";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/userAuthContext";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Breadcrumb } from "@/components/project/breadcrumb";
 
 export default function NewProjectPage() {
-  const router = useRouter()
-  const { user, isAuthenticated, loading } = useAuth()
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const { user, isAuthenticated, loading } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    type: "RESEARCH" as ProjectType,
+    startDate: new Date().toISOString().split("T")[0],
+    endDate: "",
+    tags: [] as string[],
+    tagsInput: "",
+    techDetails: "",
+    technologies: [] as string[],
+    technologiesInput: "",
+    youtubeURL: "",
+    websiteURL: "",
+    githubURL: "",
+    isVisible: true,
+  });
 
   useEffect(() => {
     if (!loading && (!isAuthenticated || !user)) {
-      router.push("/signin")
+      router.push("/signin");
     }
-  }, [loading, isAuthenticated, user, router])
+  }, [loading, isAuthenticated, user, router]);
 
   const breadcrumbItems = [
     { label: "Projects", href: "/projects" },
     { label: "Create New Project" },
-  ]
+  ];
 
-  const validateFormData = (formData: ProjectFormData) => {
-    const errors: string[] = []
+  const validateFormData = (data: typeof formData) => {
+    const errors: string[] = [];
 
-    if (!formData.name || formData.name.length < 5 || formData.name.length > 50) {
-      errors.push("Project name must be between 5 and 50 characters")
+    if (!data.name || data.name.length < 5 || data.name.length > 50) {
+      errors.push("Project name must be between 5 and 50 characters");
     }
 
-    if (!formData.description || formData.description.length < 10 || formData.description.length > 500) {
-      errors.push("Project description must be between 10 and 500 characters")
+    if (!data.description || data.description.length < 10 || data.description.length > 500) {
+      errors.push("Project description must be between 10 and 500 characters");
     }
 
-    if (!formData.startDate) {
-      errors.push("Start date is required")
+    if (!data.startDate) {
+      errors.push("Start date is required");
     }
 
-    if (formData.tags.length > 5) {
-      errors.push("You can add up to 5 tags")
+    if (data.tags.length > 5) {
+      errors.push("You can add up to 5 tags");
     }
 
-    const urlPattern = /^https?:\/\/.+/
-    if (formData.youtubeURL && !urlPattern.test(formData.youtubeURL)) {
-      errors.push("YouTube URL must be a valid URL")
+    const urlPattern = /^https?:\/\/.+/;
+    if (data.youtubeURL && !urlPattern.test(data.youtubeURL)) {
+      errors.push("YouTube URL must be a valid URL");
     }
-    if (formData.websiteURL && !urlPattern.test(formData.websiteURL)) {
-      errors.push("Website URL must be a valid URL")
+    if (data.websiteURL && !urlPattern.test(data.websiteURL)) {
+      errors.push("Website URL must be a valid URL");
     }
-    if (formData.githubURL && !urlPattern.test(formData.githubURL)) {
-      errors.push("GitHub URL must be a valid URL")
+    if (data.githubURL && !urlPattern.test(data.githubURL)) {
+      errors.push("GitHub URL must be a valid URL");
     }
 
-    return errors
-  }
+    return errors;
+  };
 
-  const handleSubmit = async (formData: ProjectFormData) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
     try {
-      setError(null)
-
-      const validationErrors = validateFormData(formData)
+      const validationErrors = validateFormData(formData);
       if (validationErrors.length > 0) {
-        const errorMsg = validationErrors.join("\n")
-        setError(errorMsg)
-        toast.error(errorMsg)
-        return
+        const errorMsg = validationErrors.join("\n");
+        setError(errorMsg);
+        toast.error(errorMsg, { duration: 4000 });
+        setIsLoading(false);
+        return;
       }
 
       const createData: CreateProjectData = {
         name: formData.name,
         description: formData.description,
-        type: formData.type as ProjectType,
+        type: formData.type,
         startDate: new Date(formData.startDate).toISOString(),
         tags: formData.tags,
-        techDetails: formData.details?.trim() || "",
+        techDetails: formData.techDetails?.trim() || "",
         technologies: formData.technologies,
         isVisible: formData.isVisible,
-      }
+      };
 
       if (formData.endDate?.trim()) {
-        createData.endDate = new Date(formData.endDate.trim()).toISOString()
+        createData.endDate = new Date(formData.endDate.trim()).toISOString();
       }
 
-      const urlFields = ["youtubeURL", "websiteURL", "githubURL"] as const
+      const urlFields = ["youtubeURL", "websiteURL", "githubURL"] as const;
       for (const field of urlFields) {
-        const url = formData[field]?.trim()
+        const url = formData[field]?.trim();
         if (url) {
           try {
-            new URL(url)
-            createData[field] = url
+            new URL(url);
+            createData[field] = url;
           } catch {
-            toast.error(`${field} must be a valid URL starting with http:// or https://`)
-            return
+            toast.error(`${field} must be a valid URL starting with http:// or https://`, { duration: 4000 });
+            setIsLoading(false);
+            return;
           }
         }
       }
 
-      await projectApi.createProject(createData)
-      toast.success("Project created successfully!")
-      router.push("/me")
-      router.refresh()
+      await projectApi.createProject(createData);
+      toast.success("Project created successfully!", { duration: 3000 });
+      router.push("/me");
+      router.refresh();
     } catch (error) {
-      console.error("Error creating project:", error)
-      setError("Failed to create project. Please try again later.")
+      console.error("Error creating project:", error);
+      setError("Failed to create project. Please try again later.");
+      toast.error("Failed to create project. Please try again later.", { duration: 4000 });
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCancel = () => {
-    router.back()
-  }
+    router.back();
+  };
 
   if (loading) {
     return (
@@ -123,11 +166,11 @@ export default function NewProjectPage() {
           <span>Checking authentication...</span>
         </div>
       </div>
-    )
+    );
   }
 
   if (!isAuthenticated || !user) {
-    return null
+    return null;
   }
 
   return (
@@ -161,25 +204,200 @@ export default function NewProjectPage() {
           </div>
         )}
 
-        <ProjectForm
-          initialData={{
-            name: "",
-            description: "",
-            type: "RESEARCH",
-            startDate: new Date().toISOString().split("T")[0],
-            endDate: "",
-            tags: [],
-            details: "",
-            technologies: [],
-            youtubeURL: "",
-            websiteURL: "",
-            githubURL: "",
-            isVisible: true,
-          }}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-        />
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Create New Project</CardTitle>
+            <CardDescription>
+              Fill in the details to create a new project
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Project Name*</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter project name (5-50 characters)"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="description">Description*</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Describe your project (10-500 characters)"
+                  rows={4}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="type">Project Type*</Label>
+                <select 
+                  id="type"
+                  name="type"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={formData.type}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      type: e.target.value as ProjectType
+                    }));
+                  }}
+                  required
+                >
+                  <option value="RESEARCH">Research</option>
+                  <option value="DESIGN">Design</option>
+                  <option value="DEVELOPMENT">Development</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="startDate">Start Date*</Label>
+                  <Input
+                    id="startDate"
+                    name="startDate"
+                    type="date"
+                    value={formData.startDate}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="endDate">End Date</Label>
+                  <Input
+                    id="endDate"
+                    name="endDate"
+                    type="date"
+                    value={formData.endDate}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="techDetails">Technical Details</Label>
+                <Textarea
+                  id="techDetails"
+                  name="techDetails"
+                  value={formData.techDetails}
+                  onChange={handleChange}
+                  placeholder="Enter technical details about your project"
+                  rows={3}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="tags">Tags (comma separated, max 5)</Label>
+                <Input
+                  id="tags"
+                  name="tags"
+                  placeholder="AI, Machine Learning, Web Development"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      tagsInput: value,
+                      tags: value.split(',').map(tag => tag.trim()).filter(Boolean)
+                    }));
+                  }}
+                  value={formData.tagsInput || formData.tags.join(', ')}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="technologies">Technologies (comma separated)</Label>
+                <Input
+                  id="technologies"
+                  name="technologies"
+                  placeholder="Python, React, TensorFlow"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      technologiesInput: value,
+                      technologies: value.split(',').map(tech => tech.trim()).filter(Boolean)
+                    }));
+                  }}
+                  value={formData.technologiesInput || formData.technologies.join(', ')}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="youtubeURL">YouTube URL</Label>
+                <Input
+                  id="youtubeURL"
+                  name="youtubeURL"
+                  value={formData.youtubeURL}
+                  onChange={handleChange}
+                  placeholder="https://youtube.com/..."
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="websiteURL">Website URL</Label>
+                <Input
+                  id="websiteURL"
+                  name="websiteURL"
+                  value={formData.websiteURL}
+                  onChange={handleChange}
+                  placeholder="https://example.com"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="githubURL">GitHub URL</Label>
+                <Input
+                  id="githubURL"
+                  name="githubURL"
+                  value={formData.githubURL}
+                  onChange={handleChange}
+                  placeholder="https://github.com/username/repo"
+                />
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isVisible"
+                  name="isVisible"
+                  checked={formData.isVisible}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isVisible: e.target.checked }))}
+                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <Label htmlFor="isVisible">Make project publicly visible</Label>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : "Create Project"}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
       </div>
     </div>
-  )
+  );
 }

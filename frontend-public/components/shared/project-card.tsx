@@ -43,7 +43,7 @@ export function ProjectCard({ project, isAdmin = false, onToggleVisibility }: Pr
                 {project.name}
               </Link>
             </CardTitle>
-            <p className="text-muted-foreground text-sm line-clamp-2">{project.about}</p>
+            <p className="text-muted-foreground text-sm line-clamp-2">{project.description}</p>
           </div>
           {isAdmin && (
             <div className="flex items-center gap-2">
