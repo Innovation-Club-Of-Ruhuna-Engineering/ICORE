@@ -77,11 +77,14 @@ export class ProjectService {
         },
       });
 
-      // Add owner as a member with 'MEMBER' role if they're not already included in members
-      const ownerIncluded = members?.some(member => member.userId === ownerId);
-      if (!ownerIncluded) {
-        await this.addMember(project.id, { userId: ownerId, role: 'MEMBER' });
-      }
+      // Create initial project membership for owner
+      await this.databaseService.member.create({
+        data: {
+          projectId: project.id,
+          userId: ownerId,
+          role: 'LEADER', // Owner is always a leader
+        },
+      });
 
       // Add additional members if provided
       if (members && members.length > 0) {
