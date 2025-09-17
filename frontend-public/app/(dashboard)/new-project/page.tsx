@@ -61,8 +61,8 @@ export default function NewProjectPage() {
       errors.push("Project name must be between 5 and 50 characters");
     }
 
-    if (!data.description || data.description.length < 10 || data.description.length > 500) {
-      errors.push("Project description must be between 10 and 500 characters");
+    if (!data.description) {
+      errors.push("Project description is required");
     }
 
     if (!data.startDate) {
