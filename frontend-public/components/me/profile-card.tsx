@@ -1,4 +1,4 @@
-"use clt";
+"use client";
 
 import { User } from "@/types/auth/userAuthTypes";
 import { Camera, MapPin, Calendar, GraduationCap, BookOpen, Users, Clock } from "lucide-react";
@@ -8,6 +8,7 @@ import { profileApi } from "@/lib/profile/profileMethods";
 import { FaLinkedin, FaGithub, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
+import ImageCropper from "@/components/ui/image-cropper";
 
 interface ProfileCardProps {
     user: User;
@@ -18,53 +19,38 @@ interface ProfileCardProps {
 export default function ProfileCard({ user, onUpdate, isPublic = false }: ProfileCardProps) {
     const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
     const [isUploadingCover, setIsUploadingCover] = useState(false);
+    const [cropModalOpen, setCropModalOpen] = useState(false);
+    const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
 
     // Only show upload UI elements if not public
     const showUploadUI = !isPublic;
-
+    
     const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        // Validate file type and size
-        if (!file.type.startsWith('image/')) {
-            toast.error('Please select an image file');
+        if (!file.type.startsWith("image/")) {
+            toast.error("Please select an image file");
             return;
         }
 
-        if (file.size > 5 * 1024 * 1024) { // 5MB limit
-            toast.error('Image size should be less than 5MB');
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit for initial file
+            toast.error("Image size should be less than 10MB");
             return;
         }
 
-        try {
-            setIsUploadingAvatar(true);
-            const formData = new FormData();
-            formData.append('avatar', file);
-
-            // Assuming you have an upload endpoint
-            const response = await fetch('/api/upload/avatar', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) throw new Error('Upload failed');
-
-            const data = await response.json();
-            await profileApi.updateProfile({ avatarUrl: data.url });
-            toast.success('Profile picture updated successfully!');
-            onUpdate();
-        } catch (error) {
-            console.error('Error uploading avatar:', error);
-            toast.error('Failed to upload profile picture');
-        } finally {
-            setIsUploadingAvatar(false);
-        }
+        // Load image as data URL for cropper
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            setCropImageSrc(reader.result as string);
+            setCropModalOpen(true);
+        });
+        reader.readAsDataURL(file);
     };
 
     const handleCoverUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (!file) return;
+        if (!file || !user.id) return;
 
         if (!file.type.startsWith('image/')) {
             toast.error('Please select an image file');
@@ -78,23 +64,25 @@ export default function ProfileCard({ user, onUpdate, isPublic = false }: Profil
 
         try {
             setIsUploadingCover(true);
-            const formData = new FormData();
-            formData.append('cover', file);
-
-            const response = await fetch('/api/upload/cover', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) throw new Error('Upload failed');
-
-            const data = await response.json();
-            await profileApi.updateProfile({ coverImageUrl: data.url });
-            toast.success('Cover image updated successfully!');
-            onUpdate();
-        } catch (error) {
+            
+            // Use the profileApi method to upload cover image
+            const response = await profileApi.uploadCoverImage(user.id, file);
+            
+            if (response.data && response.data.success) {
+                if (response.data.url) {
+                    await profileApi.updateProfile({ coverImageUrl: response.data.url });
+                    toast.success('Cover image updated successfully!');
+                    onUpdate();
+                } else {
+                    throw new Error('No image URL returned from server');
+                }
+            } else {
+                throw new Error(response.data?.message || 'Upload failed');
+            }
+        } catch (error: unknown) {
             console.error('Error uploading cover:', error);
-            toast.error('Failed to upload cover image');
+            const errorMessage = error instanceof Error ? error.message : 'Failed to upload cover image';
+            toast.error(errorMessage);
         } finally {
             setIsUploadingCover(false);
         }
@@ -117,8 +105,53 @@ export default function ProfileCard({ user, onUpdate, isPublic = false }: Profil
         return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
     };
 
+    const handleCroppedImageUpload = async (file: File) => {
+        if (!user.id) return;
+        
+        try {
+            setIsUploadingAvatar(true);
+            
+            // Use the profileApi method to upload the profile picture
+            const response = await profileApi.uploadProfilePicture(user.id, file);
+            
+            if (response.data && response.data.success) {
+                // Update the local state with the new avatar URL
+                if (response.data.url) {
+                    await profileApi.updateProfile({ avatarUrl: response.data.url });
+                    toast.success('Profile picture updated successfully!');
+                    onUpdate();
+                } else {
+                    throw new Error('No image URL returned from server');
+                }
+            } else {
+                throw new Error(response.data?.message || 'Upload failed');
+            }
+        } catch (error: unknown) {
+            console.error('Error uploading avatar:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to upload profile picture';
+            toast.error(errorMessage);
+        } finally {
+            setIsUploadingAvatar(false);
+            setCropModalOpen(false);
+            setCropImageSrc(null);
+        }
+    };
+
     return (
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+            {/* Crop Modal */}
+            {cropModalOpen && cropImageSrc && (
+                <ImageCropper
+                    imageSrc={cropImageSrc}
+                    onCancel={() => {
+                        setCropModalOpen(false);
+                        setCropImageSrc(null);
+                    }}
+                    onCropComplete={handleCroppedImageUpload}
+                    isLoading={isUploadingAvatar}
+                />
+            )}
+            
             {/* Cover Image Section */}
             <div className="relative h-48 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-800">
                 {user.coverImageUrl && (
@@ -128,6 +161,8 @@ export default function ProfileCard({ user, onUpdate, isPublic = false }: Profil
                         className="w-full h-full object-cover"
                         width={1280}
                         height={720}
+                        unoptimized={true}
+                        priority
                     />
                 )}
 
@@ -175,6 +210,8 @@ export default function ProfileCard({ user, onUpdate, isPublic = false }: Profil
                                     className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
                                     width={128}
                                     height={128}
+                                    unoptimized={true}
+                                    priority
                                 />
                             ) : (
                                 <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
