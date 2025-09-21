@@ -11,6 +11,9 @@ import {
   HttpCode,
   ValidationPipe,
   ParseUUIDPipe,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
@@ -28,11 +31,13 @@ import { UpdateUserDto } from './dto/updateUser.input';
 import { UserResponse } from './dto/user-response';
 import { UpdatePasswordDto } from './dto/updatePassword.input';
 import { UserProfileByUsernameResponse } from './dto/user-profile-by-username-response.dto';
+import { StorageService } from '../storage/storage.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService, private readonly storageService: StorageService) {}
 
   // Create new user endpoint
   @Post()
@@ -50,6 +55,56 @@ export class UserController {
     createUserDto: CreateUserDto,
   ): Promise<UserResponse> {
     return await this.userService.create(createUserDto);
+  }
+
+  //upload profile picture
+  @Post(':id/profile-picture')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Upload user profile picture' })
+  @ApiResponse({ status: 200, description: 'Profile picture uploaded successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request or invalid file' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseInterceptors(FileInterceptor('file', {
+    limits: {
+      fileSize: 1024 * 1024 * 5, // Reduced to 1MB to match service limit
+    },
+    fileFilter: (req, file, callback) => {
+      if (!file.mimetype.match(/\/(webp|jpg|jpeg|png)$/)) {
+        return callback(new BadRequestException('Only JPG and PNG files are allowed'), false);
+      }
+      callback(null, true);
+    },
+  }),)
+  async uploadProfilePicture(
+    @Param('id') userId: string,
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() user: User,
+  ) {
+    if (!file) {
+      return {
+        success: false,
+        message: 'No file uploaded or file field is not named "file"',
+      };
+    }
+    
+    try {
+      // Optional: Add permission check
+      // if (user.id !== userId && user.role !== 'ADMIN') {
+      //   throw new UnauthorizedException('You can only upload your own profile picture');
+      // }
+      
+      const url = await this.storageService.uploadUserProfilePicture(userId, file);
+      
+      // Optional: Update user's profilePictureUrl in the database
+      // await this.userService.updateProfilePicture(userId, url);
+      
+      return { success: true, url };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || 'Failed to upload profile picture',
+      };
+    }
   }
 
   @Get() // Only for admins

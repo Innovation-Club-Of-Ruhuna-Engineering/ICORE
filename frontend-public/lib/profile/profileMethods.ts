@@ -89,6 +89,12 @@ export interface UpdatePasswordData {
     newPassword: string;
 }
 
+interface UploadResponse {
+    success: boolean;
+    url?: string;
+    message?: string;
+}
+
 export const profileApi = {
     // Get current user profile
     getProfile: async (): Promise<AxiosResponse<User>> => {
@@ -113,5 +119,29 @@ export const profileApi = {
     // Get public profile by username
     getPublicProfile: async (username: string): Promise<AxiosResponse<User>> => {
         return await axiosInstance.get(`/user/profile/${username}`);
+    },
+
+    // Upload profile picture
+    uploadProfilePicture: async (userId: string, file: File): Promise<AxiosResponse<UploadResponse>> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        return await axiosInstance.post(`/user/${userId}/profile-picture`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    },
+    
+    // Upload cover image 
+    uploadCoverImage: async (userId: string, file: File): Promise<AxiosResponse<UploadResponse>> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        return await axiosInstance.post(`/api/upload/cover`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
     }
 };

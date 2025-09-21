@@ -6,6 +6,7 @@ import { Menu, X, User, LogOut, Settings, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/userAuthContext"
 import Link from "next/link"
+import Image from "next/image"
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -83,8 +84,21 @@ export function Navigation() {
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                    {user.firstName?.charAt(0)?.toUpperCase() || user.username?.charAt(0)?.toUpperCase() || 'U'}
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium overflow-hidden">
+                    {user.avatarUrl ? (
+                      <Image 
+                        src={user.avatarUrl} 
+                        alt={`${user.firstName || user.username}'s avatar`}
+                        className="w-full h-full object-cover"
+                        width={32}
+                        height={32}
+                        unoptimized={true}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-blue-600 flex items-center justify-center">
+                        {user.firstName?.charAt(0)?.toUpperCase() || user.username?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
+                    )}
                   </div>
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                     {user.firstName || user.username}
@@ -175,8 +189,21 @@ export function Navigation() {
           {user ? (
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-3">
               <div className="flex items-center gap-3 px-2 py-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                  {user.firstName?.charAt(0)?.toUpperCase() || user.username?.charAt(0)?.toUpperCase() || 'U'}
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium overflow-hidden">
+                  {user.avatarUrl ? (
+                    <Image 
+                      src={user.avatarUrl} 
+                      alt={`${user.firstName || user.username}'s avatar`}
+                      className="w-full h-full object-cover"
+                      width={32}
+                      height={32}
+                      unoptimized={true}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-blue-600 flex items-center justify-center">
+                      {user.firstName?.charAt(0)?.toUpperCase() || user.username?.charAt(0)?.toUpperCase() || 'U'}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
