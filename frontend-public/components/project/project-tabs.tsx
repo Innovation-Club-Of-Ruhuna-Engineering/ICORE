@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { FormattedText } from "@/components/ui/formatted-text"
 import { FileText, Download, ExternalLink } from "lucide-react"
 
 interface ProjectTabsProps {
@@ -97,19 +98,22 @@ export function ProjectTabs({
           <TabsContent value="description" className="p-6">
             <div>
               <h2 className="text-2xl font-bold text-[#000000] mb-4">What is this project about?</h2>
-              <p className="text-[#555555] leading-relaxed">
-                {description ||
-                  "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."}
-              </p>
+              <FormattedText 
+                text={description} 
+                fallback="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
+                className="text-[#555555] leading-relaxed"
+              />
             </div>
           </TabsContent>
 
           <TabsContent value="technical" className="p-6">
             <div>
               <h2 className="text-2xl font-bold text-[#000000] mb-4">Technical Details</h2>
-              <p className="text-[#555555] leading-relaxed mb-6">
-                {techDetails || "Technical specifications and implementation details will be displayed here."}
-              </p>
+              <FormattedText 
+                text={techDetails} 
+                fallback="Technical specifications and implementation details will be displayed here."
+                className="text-[#555555] leading-relaxed mb-6"
+              />
 
               {technologies.length > 0 && (
                 <div>

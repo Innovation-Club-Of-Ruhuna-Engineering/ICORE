@@ -5,11 +5,16 @@ import Image from "next/image"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { FormattedText } from "@/components/ui/formatted-text"
 import { ChevronLeft, ChevronRight, Play, ImageIcon } from "lucide-react"
 
 interface TeamMember {
   name: string
   initials: string
+  username?: string
+  email?: string
+  avatarUrl?: string
+  isGuest: boolean
 }
 
 interface ProjectHeroProps {
@@ -69,9 +74,10 @@ export function ProjectHero({
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
           <div className="flex-grow max-w-full md:max-w-[70%]">
             <h1 className="text-3xl font-bold text-[#000000] mb-3">{title}</h1>
-            <p className="text-[#555555] mb-4 line-clamp-2 text-pretty">
-              {description}
-            </p>
+            <FormattedText 
+              text={description} 
+              className="text-[#555555] mb-4 line-clamp-2 text-pretty"
+            />
             <p className="text-sm text-[#a6a6a6]">
               Published on {publishedDate} by {author}
             </p>
@@ -104,16 +110,43 @@ export function ProjectHero({
         </div>
 
         {/* Team Members */}
-        <div className="flex items-center space-x-6 mb-8">
-          {teamMembers.map((member, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={`/abstract-geometric-shapes.png?height=40&width=40&query=${member.name}`} />
-                <AvatarFallback className="bg-[#f7f7f7] text-[#555555]">{member.initials}</AvatarFallback>
-              </Avatar>
-              <span className="text-sm text-[#555555]">{member.name}</span>
-            </div>
-          ))}
+        <div className="flex items-center space-x-6 mb-8 flex-wrap ">
+          {teamMembers.map((member, index) => {
+            const firstName = member.name.split(' ')[0]
+            
+            if (member.isGuest) {
+              // Guest members are not clickable
+              return (
+                <div key={index} className="flex items-center space-x-2">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback className="bg-[#f7f7f7] text-[#555555]">
+                      {member.initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm text-[#555555]">{firstName}</span>
+                </div>
+              )
+            } else {
+              // Registered members are clickable
+              return (
+                <a
+                  key={index}
+                  href={`/profile/${member.username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors cursor-pointer"
+                >
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={member.avatarUrl} alt={member.name} />
+                    <AvatarFallback className="bg-[#f7f7f7] text-[#555555]">
+                      {member.initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm text-[#555555] hover:text-blue-600">{firstName}</span>
+                </a>
+              )
+            }
+          })}
         </div>
 
         {/* Media buttons have been moved below the media area */}

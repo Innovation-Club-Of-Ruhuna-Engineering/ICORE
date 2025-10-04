@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { FormattedText } from "@/components/ui/formatted-text"
 import { SocialSharingCard } from "./social-sharing-card"
 
 export enum ProjectType {
@@ -12,11 +13,14 @@ export enum ProjectType {
 interface ProjectSidebarProps {
   progress: string
   dates: string
-  supervisor: string
+  supervisor?: string | null
   fieldsOfInterest: string
   projectType: ProjectType
   tags?: string[]
   technologies?: string[]
+  projectTitle?: string
+  projectDescription?: string
+  projectUrl?: string
 }
 
 export function ProjectSidebar({
@@ -27,10 +31,17 @@ export function ProjectSidebar({
   projectType,
   tags = [],
   technologies = [],
+  projectTitle,
+  projectDescription,
+  projectUrl,
 }: ProjectSidebarProps) {
   return (
     <div className="space-y-6">
-      <SocialSharingCard />
+      <SocialSharingCard 
+        projectTitle={projectTitle}
+        projectDescription={projectDescription}
+        projectUrl={projectUrl}
+      />
 
       <Card className="bg-[#ffffff] border-[#d9d9d9]">
         <CardContent className="p-4 space-y-4">
@@ -52,14 +63,22 @@ export function ProjectSidebar({
             <span className="text-[#555555] text-sm">{dates}</span>
           </div>
 
-          <div>
-            <span className="font-semibold text-[#000000] block mb-1">Supervisor(s)</span>
-            <span className="text-[#555555] text-sm">{supervisor}</span>
-          </div>
+          {supervisor && (
+            <div>
+              <span className="font-semibold text-[#000000] block mb-1">Supervisor(s)</span>
+              <FormattedText 
+                text={supervisor} 
+                className="text-[#555555] text-sm"
+              />
+            </div>
+          )}
 
           <div>
             <span className="font-semibold text-[#000000] block mb-1">Fields of Interest</span>
-            <span className="text-[#555555] text-sm">{fieldsOfInterest}</span>
+            <FormattedText 
+              text={fieldsOfInterest} 
+              className="text-[#555555] text-sm"
+            />
           </div>
 
           {tags.length > 0 && (

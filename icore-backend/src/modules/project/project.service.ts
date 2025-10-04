@@ -637,14 +637,37 @@ export class ProjectService {
   /**
    * Get all members of a project
    */
-  async getProjectMembers(projectId: string): Promise<User[]> {
+  async getProjectMembers(projectId: string): Promise<{
+    id: string;
+    email: string;
+    username: string;
+    avatarUrl: string | null;
+    firstName: string;
+    role: string;
+    memberId: string;
+  }[]> {
     try {
       await this.findOneById(projectId);
       const members = await this.databaseService.member.findMany({
         where: { projectId },
-        include: { user: true }, // Include user details
+        include: { 
+          user: {
+            select: {
+              id: true,
+              email: true,
+              username: true,
+              avatarUrl: true,
+              firstName: true,
+              role: true
+            }
+          }
+        }, // Include only specific user details
       });
-      return members.map((member) => member.user);
+      return members.map((member) => ({
+        ...member.user,
+        role: member.role,
+        memberId: member.id // Include member ID for removal
+      }));
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -660,13 +683,14 @@ export class ProjectService {
    */
   async getProjectGuestMembers(
     projectId: string,
-  ): Promise<{ name: string; email: string; role: string }[]> {
+  ): Promise<{ id: string; name: string; email: string; role: string }[]> {
     try {
       await this.findOneById(projectId);
       const guestMembers = await this.databaseService.guestMember.findMany({
         where: { projectId },
       });
       return guestMembers.map((guest) => ({
+        id: guest.id,
         name: guest.name,
         email: guest.email,
         role: guest.role,

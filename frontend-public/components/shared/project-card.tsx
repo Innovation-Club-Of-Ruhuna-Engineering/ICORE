@@ -24,16 +24,62 @@ export function ProjectCard({ project, isAdmin = false, onToggleVisibility }: Pr
     onToggleVisibility?.(project.id, checked);
   };
 
+  // Determine what media to show based on priority:
+  // 1. If both images and video exist, show video (if valid video ID)
+  // 2. If only video exists, show video (if valid video ID)
+  // 3. If only images exist, show first image
+  // 4. If neither exists or video is invalid, show backdrop/image
+  const hasImages = project.photos && project.photos.length > 0;
+  const hasVideo = project.youtubeURL && project.youtubeURL.trim() !== '';
+  
+  // Extract YouTube video ID for embed
+  const getYouTubeVideoId = (url: string) => {
+    if (!url) return null;
+    // Handle various YouTube URL formats:
+    // - https://www.youtube.com/watch?v=VIDEO_ID
+    // - https://youtu.be/VIDEO_ID
+    // - https://www.youtube.com/embed/VIDEO_ID
+    // - https://youtube.com/watch?v=VIDEO_ID
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\n?#]+)/);
+    return match ? match[1] : null;
+  };
+
+  const videoId = hasVideo && project.youtubeURL ? getYouTubeVideoId(project.youtubeURL) : null;
+  const showVideo = hasVideo && videoId; // Only show video if we have a valid video ID
+  const showImage = !showVideo && hasImages;
+  const showBackdrop = !showVideo && !hasImages;
+
   return (
     <Card className="hover:shadow-lg transition-shadow overflow-hidden p-0">
       <div className="relative h-48 w-full">
-        <Image
-          src={project.photos?.[0] || "/backdrop.jpg"}
-          alt={project.name}
-          fill
-          className="object-cover transition-transform hover:scale-105"
-          priority={false}
-        />
+        {showVideo && (
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title={project.name}
+            className="w-full h-full object-cover"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        )}
+        {showImage && (
+          <Image
+            src={project.photos[0]}
+            alt={project.name}
+            fill
+            className="object-cover transition-transform hover:scale-105"
+            priority={false}
+          />
+        )}
+        {showBackdrop && (
+          <Image
+            src="/backdrop.jpg"
+            alt={project.name}
+            fill
+            className="object-cover transition-transform hover:scale-105"
+            priority={false}
+          />
+        )}
       </div>
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">

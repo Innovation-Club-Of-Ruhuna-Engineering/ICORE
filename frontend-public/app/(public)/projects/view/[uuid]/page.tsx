@@ -11,6 +11,23 @@ import { ProjectHero } from "@/components/project/project-hero"
 //import { DiscussionSection } from "@/components/project/discussion-section"
 import { ProjectType } from "@/components/project/project-sidebar"
 
+// Define types for API responses
+interface ProjectMemberResponse {
+  id: string;
+  firstName?: string;
+  username?: string;
+  email: string;
+  role: string;
+  avatarUrl?: string;
+}
+
+interface GuestMemberResponse {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 interface ProjectViewData extends Omit<PublicProject, 'startDate' | 'endDate' | 'type'> {
   type: ProjectType
   startDate: string
@@ -22,6 +39,10 @@ interface ProjectViewData extends Omit<PublicProject, 'startDate' | 'endDate' | 
     id: string
     name: string
     role: string
+    username?: string
+    email?: string
+    avatarUrl?: string
+    isGuest: boolean
     user?: {
       name: string
     }
@@ -39,6 +60,51 @@ async function getProject(uuid: string, isAuthenticated: boolean): Promise<Proje
     const { data: project } = await projectApi.getProjectById(uuid)
     if (!project) throw new Error("Project not found")
 
+    // Fetch members and guest members separately
+    let allMembers: Array<{
+      id: string;
+      name: string;
+      username?: string | null;
+      email: string;
+      avatarUrl?: string | null;
+      role: string;
+      isGuest: boolean;
+    }> = []
+    try {
+      const [membersResponse, guestMembersResponse] = await Promise.all([
+        projectApi.getProjectMembers(uuid),
+        projectApi.getProjectGuestMembers(uuid)
+      ])
+
+      // Format registered members
+      const registeredMembers = membersResponse.data?.map((m: ProjectMemberResponse) => ({
+        id: m.id,
+        name: m.firstName || m.username || "Unknown User",
+        username: m.username,
+        email: m.email,
+        avatarUrl: m.avatarUrl,
+        role: m.role,
+        isGuest: false
+      })) || []
+
+      // Format guest members
+      const guestMembers = guestMembersResponse.data?.map((m: GuestMemberResponse) => ({
+        id: m.id,
+        name: m.name,
+        email: m.email,
+        role: m.role,
+        isGuest: true,
+        avatarUrl: null,
+        username: null
+      })) || []
+
+      allMembers = [...registeredMembers, ...guestMembers]
+    } catch (error) {
+      console.error("Error fetching members:", error)
+      // Fallback to project.members if separate endpoints fail
+      allMembers = project.members || []
+    }
+
     return {
       ...project,
       type: (project.type as ProjectType) || "RESEARCH",
@@ -46,7 +112,7 @@ async function getProject(uuid: string, isAuthenticated: boolean): Promise<Proje
       papers: project.papers || [],
       references: project.references || [],
       documents: project.documents || [],
-      members: project.members || [],
+      members: allMembers,
       guestMembers: project.guestMembers || [],
       techDetails: project.techDetails || "",
       technologies: project.technologies || [],
@@ -67,6 +133,51 @@ async function getProject(uuid: string, isAuthenticated: boolean): Promise<Proje
         const { data: privateProject } = await projectApi.getPrivateProjectById(uuid)
         if (!privateProject) throw new Error("Project not found")
 
+        // Fetch members and guest members separately for private project
+        let allMembers: Array<{
+          id: string;
+          name: string;
+          username?: string | null;
+          email: string;
+          avatarUrl?: string | null;
+          role: string;
+          isGuest: boolean;
+        }> = []
+        try {
+          const [membersResponse, guestMembersResponse] = await Promise.all([
+            projectApi.getProjectMembers(uuid),
+            projectApi.getProjectGuestMembers(uuid)
+          ])
+
+          // Format registered members
+          const registeredMembers = membersResponse.data?.map((m: ProjectMemberResponse) => ({
+            id: m.id,
+            name: m.firstName || m.username || "Unknown User",
+            username: m.username,
+            email: m.email,
+            avatarUrl: m.avatarUrl,
+            role: m.role,
+            isGuest: false
+          })) || []
+
+          // Format guest members
+          const guestMembers = guestMembersResponse.data?.map((m: GuestMemberResponse) => ({
+            id: m.id,
+            name: m.name,
+            email: m.email,
+            role: m.role,
+            isGuest: true,
+            avatarUrl: null,
+            username: null
+          })) || []
+
+          allMembers = [...registeredMembers, ...guestMembers]
+        } catch (error) {
+          console.error("Error fetching private project members:", error)
+          // Fallback to privateProject.members if separate endpoints fail
+          allMembers = privateProject.members || []
+        }
+
         return {
           ...privateProject,
           type: (privateProject.type as ProjectType) || "RESEARCH",
@@ -74,7 +185,7 @@ async function getProject(uuid: string, isAuthenticated: boolean): Promise<Proje
           papers: privateProject.papers || [],
           references: privateProject.references || [],
           documents: privateProject.documents || [],
-          members: privateProject.members || [],
+          members: allMembers,
           guestMembers: privateProject.guestMembers || [],
           techDetails: privateProject.techDetails || "",
           technologies: privateProject.technologies || [],
@@ -174,10 +285,6 @@ export default function ProjectViewPage() {
     { label: project.name },
   ]
 
-  const handleReply = (commentId: string) => {
-    console.log("Reply to comment:", commentId)
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <section className="bg-gradient-to-b from-blue-50 to-white pt-24 pb-6 md:pt-28 md:pb-8">
@@ -195,15 +302,19 @@ export default function ProjectViewPage() {
               publishedDate={project.startDate}
               author={project.owner?.username || "Unknown"}
               teamMembers={project.members.map((m) => {
-                const fullName = m.user?.name || m.name || "Unknown"
-                const initials = fullName
+                const initials = m.name
                   .split(" ")
                   .map((n) => (typeof n === "string" ? n[0] : ""))
                   .join("")
+                  .toUpperCase()
 
                 return {
-                  name: fullName,
+                  name: m.name,
                   initials,
+                  username: m.username,
+                  email: m.email,
+                  avatarUrl: m.avatarUrl,
+                  isGuest: m.isGuest
                 }
               })}
               photos={project.photos}
@@ -217,11 +328,14 @@ export default function ProjectViewPage() {
             <ProjectSidebar
               progress={project.progress || "In Progress"}
               dates={`${project.startDate} - ${project.endDate}`}
-              supervisor={project.supervisor || "Not Specified"}
+              supervisor={project.supervisor || undefined}
               fieldsOfInterest={project.fieldsOfInterest || "Not Specified"}
               projectType={project.type}
               tags={project.tags}
               technologies={project.technologies}
+              projectTitle={project.name}
+              projectDescription={project.description}
+              projectUrl={typeof window !== 'undefined' ? window.location.href : undefined}
             />
           </div>
         </div>

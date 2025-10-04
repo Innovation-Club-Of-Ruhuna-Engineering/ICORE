@@ -143,5 +143,10 @@ export const profileApi = {
                 'Content-Type': 'multipart/form-data'
             }
         });
+    },
+
+    // Get all users (for member search)
+    getAllUsers: async (): Promise<AxiosResponse<User[]>> => {
+        return await axiosInstance.get('/user');
     }
 };
