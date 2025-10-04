@@ -110,7 +110,7 @@ export function ProjectHero({
         </div>
 
         {/* Team Members */}
-        <div className="flex items-center space-x-6 mb-8 flex-wrap ">
+        <div className="flex items-center space-x-6 mb-8 flex-wrap gap-2">
           {teamMembers.map((member, index) => {
             const firstName = member.name.split(' ')[0]
             
