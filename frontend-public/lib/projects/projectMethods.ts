@@ -200,5 +200,18 @@ export const projectApi = {
 
   getProjectGuestMembers: async (projectId: string): Promise<AxiosResponse> => {
     return await axiosInstance.get(`/project/${projectId}/guest-members`);
+  },
+
+  // Image upload
+  uploadProjectImages: async (projectId: string, files: File[]): Promise<AxiosResponse> => {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('images', file);
+    });
+    return await axiosInstance.post(`/project/${projectId}/upload-images`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   }
 };

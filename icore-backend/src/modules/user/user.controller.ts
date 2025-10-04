@@ -107,6 +107,53 @@ export class UserController {
     }
   }
 
+  //upload background/cover image
+  @Post(':id/background')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Upload user background/cover image' })
+  @ApiResponse({ status: 200, description: 'Background image uploaded successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request or invalid file' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseInterceptors(FileInterceptor('file', {
+    limits: {
+      fileSize: 1024 * 1024 * 5, // 5MB limit to match service limit
+    },
+    fileFilter: (req, file, callback) => {
+      if (!file.mimetype.match(/\/(webp|jpg|jpeg|png)$/)) {
+        return callback(new BadRequestException('Only JPG, PNG, and WEBP files are allowed'), false);
+      }
+      callback(null, true);
+    },
+  }),)
+  async uploadBackgroundImage(
+    @Param('id') userId: string,
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() user: User,
+  ) {
+    if (!file) {
+      return {
+        success: false,
+        message: 'No file uploaded or file field is not named "file"',
+      };
+    }
+    
+    try {
+      // Optional: Add permission check
+      // if (user.id !== userId && user.role !== 'ADMIN') {
+      //   throw new UnauthorizedException('You can only upload your own background image');
+      // }
+      
+      const url = await this.storageService.uploadUserBackground(userId, file);
+      
+      return { success: true, url };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || 'Failed to upload background image',
+      };
+    }
+  }
+
   @Get() // Only for admins
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
