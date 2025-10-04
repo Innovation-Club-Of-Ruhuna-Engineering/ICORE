@@ -347,12 +347,10 @@ export class ProjectController {
   }
 
   // -------------------------
-  // Member Lists
+  // Member Lists (Public Access)
   // -------------------------
 
   @Get(':id/members')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all members of a project' })
   @ApiParam({ name: 'id', description: 'Project ID' })
   async getProjectMembers(@Param('id', ParseUUIDPipe) id: string) {
@@ -360,8 +358,6 @@ export class ProjectController {
   }
 
   @Get(':id/guest-members')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all guest members of a project' })
   @ApiParam({ name: 'id', description: 'Project ID' })
   async getProjectGuestMembers(@Param('id', ParseUUIDPipe) id: string) {
