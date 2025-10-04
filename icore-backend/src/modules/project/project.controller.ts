@@ -13,6 +13,8 @@ import {
   BadRequestException,
   NotFoundException,
   ForbiddenException,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -22,6 +24,7 @@ import { CreateProjectInput } from './dto/createProject.input';
 import { UpdateProjectInput } from './dto/updateProject.input';
 import { AddMemberInput, AddGuestMemberInput, UpdateMemberRoleInput } from './dto/member.input';
 import { MemberResponse, GuestMemberResponse } from './dto/member.response';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -29,6 +32,7 @@ import {
   ApiQuery,
   ApiResponse,
   ApiTags,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { ProjectResponse } from './dto/project-response';
 import { PublicProjectResponse } from './dto/public-project.response';
@@ -222,6 +226,47 @@ export class ProjectController {
     if (!project) throw new NotFoundException('Project not found');
     if (project.ownerId !== user.id) throw new ForbiddenException('You do not have permission to update this project');
     return this.projectService.update(id, updateProjectInput);
+  }
+
+  @Post(':id/upload-images')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(FilesInterceptor('images', 10)) // Allow up to 10 images
+  @ApiOperation({ summary: 'Upload images for a project' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'Project ID' })
+  @ApiResponse({ status: 200, description: 'Images uploaded successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 404, description: 'Project not found' })
+  @ApiResponse({ status: 403, description: 'Only project owner can upload images' })
+  async uploadProjectImages(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFiles() files: Express.Multer.File[],
+    @CurrentUser() user: User,
+  ) {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('No images provided');
+    }
+
+    if (files.length > 10) {
+      throw new BadRequestException('Maximum 10 images allowed per upload');
+    }
+
+    // Validate file types
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    for (const file of files) {
+      if (!allowedMimeTypes.includes(file.mimetype)) {
+        throw new BadRequestException(`Invalid file type: ${file.mimetype}. Only JPEG, PNG, WebP, and GIF are allowed.`);
+      }
+    }
+
+    const uploadedUrls = await this.projectService.uploadProjectImages(id, files, user.id);
+    
+    return {
+      message: 'Images uploaded successfully',
+      uploadedImages: uploadedUrls,
+      count: uploadedUrls.length
+    };
   }
 
   // -------------------------

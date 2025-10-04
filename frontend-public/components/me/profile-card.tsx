@@ -9,6 +9,7 @@ import { FaLinkedin, FaGithub, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
 import ImageCropper from "@/components/ui/image-cropper";
+import { convertToWebPForCover } from "@/lib/utils/imageUtils";
 
 interface ProfileCardProps {
     user: User;
@@ -57,7 +58,7 @@ export default function ProfileCard({ user, onUpdate, isPublic = false }: Profil
             return;
         }
 
-        if (file.size > 10 * 1024 * 1024) { // 10MB limit for cover
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit for initial file
             toast.error('Image size should be less than 10MB');
             return;
         }
@@ -65,8 +66,11 @@ export default function ProfileCard({ user, onUpdate, isPublic = false }: Profil
         try {
             setIsUploadingCover(true);
             
-            // Use the profileApi method to upload cover image
-            const response = await profileApi.uploadCoverImage(user.id, file);
+            // Convert to WebP and compress
+            const webpFile = await convertToWebPForCover(file);
+            
+            // Upload the converted WebP file
+            const response = await profileApi.uploadCoverImage(user.id, webpFile);
             
             if (response.data && response.data.success) {
                 if (response.data.url) {
@@ -153,7 +157,7 @@ export default function ProfileCard({ user, onUpdate, isPublic = false }: Profil
             )}
             
             {/* Cover Image Section */}
-            <div className="relative h-48 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-800">
+            <div className="relative h-64 md:h-72 lg:h-80 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-800">
                 {user.coverImageUrl && (
                     <Image
                         src={user.coverImageUrl}
@@ -199,7 +203,7 @@ export default function ProfileCard({ user, onUpdate, isPublic = false }: Profil
             {/* Profile Content */}
             <div className="px-6 pb-6">
                 {/* Centered Avatar and Basic Info */}
-                <div className="flex flex-col items-center text-center -mt-16 relative z-10">
+                <div className="flex flex-col items-center text-center -mt-20 relative z-10">
                     {/* Avatar */}
                     <div className="relative mb-4">
                         <div className="relative">

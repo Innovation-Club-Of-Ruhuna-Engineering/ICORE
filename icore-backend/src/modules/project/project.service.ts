@@ -12,10 +12,14 @@ import { AddMemberInput, UpdateMemberInput } from './dto/projectMembers.dto';
 import { AddGuestMemberInput } from './dto/projectMembers.dto';
 import { CreateProjectInput } from './dto/createProject.input';
 import { UpdateProjectInput } from './dto/updateProject.input';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class ProjectService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly storageService: StorageService,
+  ) {}
 
   async findOneWithDetails(id: string) {
     const project = await this.databaseService.project.findUnique({
@@ -675,6 +679,24 @@ export class ProjectService {
         'Failed to retrieve project guest members',
       );
     }
+  }
+
+  // ------------------------------------------------------------------------------------ //
+
+  async uploadProjectImages(projectId: string, files: Express.Multer.File[], userId: string) {
+    // First verify the project exists and user has permission
+    const project = await this.findOneById(projectId);
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    // Check if user is the owner of the project
+    if (project.ownerId !== userId) {
+      throw new BadRequestException('Only project owner can upload images');
+    }
+
+    // Use the storage service to upload images
+    return await this.storageService.uploadProjectImages(projectId, files);
   }
 
   // ------------------------------------------------------------------------------------ //

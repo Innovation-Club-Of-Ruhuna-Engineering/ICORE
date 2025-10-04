@@ -138,7 +138,7 @@ export const profileApi = {
         const formData = new FormData();
         formData.append('file', file);
         
-        return await axiosInstance.post(`/api/upload/cover`, formData, {
+        return await axiosInstance.post(`/user/${userId}/background`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

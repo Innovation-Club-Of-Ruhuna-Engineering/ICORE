@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter, useParams } from "next/navigation"
+import Image from "next/image"
 import { Breadcrumb } from "@/components/project/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,9 +15,10 @@ import { Switch } from "@/components/ui/switch"
 import { projectApi, type ProjectType, type ProjectRole, type Status } from "@/lib/projects/projectMethods"
 import { useAuth } from "@/contexts/userAuthContext"
 import { type ProjectViewData } from "@/lib/projects/types"
-import { AlertCircle, Loader2, Plus, X, Info, ArrowLeft } from "lucide-react"
+import { AlertCircle, Loader2, Plus, X, Info, ArrowLeft, Upload, ImageIcon } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import toast from "react-hot-toast"
+import { convertToWebP } from "@/lib/utils/imageUtils"
 
 export default function ProjectEditPage() {
   const { uuid } = useParams<{ uuid: string }>()
@@ -26,6 +28,12 @@ export default function ProjectEditPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // File upload state
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [isUploading, setIsUploading] = useState(false)
+  const [previewUrls, setPreviewUrls] = useState<string[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
   
   // Form state for all project fields
   const [formData, setFormData] = useState({
@@ -137,6 +145,13 @@ export default function ProjectEditPage() {
 
     loadProject()
   }, [uuid, isAuthenticated, user, router])
+
+  // Cleanup preview URLs on unmount
+  useEffect(() => {
+    return () => {
+      previewUrls.forEach(url => URL.revokeObjectURL(url))
+    }
+  }, [previewUrls])
 
   const breadcrumbItems = project
     ? [
@@ -310,6 +325,105 @@ export default function ProjectEditPage() {
         [name]: value
       }
     }))
+  }
+
+  // File handling functions
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    // Validate file types
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+    const invalidFiles = files.filter(file => !allowedTypes.includes(file.type))
+    
+    if (invalidFiles.length > 0) {
+      toast.error(`Invalid file types: ${invalidFiles.map(f => f.name).join(', ')}. Only JPEG, PNG, WebP, and GIF are allowed.`)
+      return
+    }
+
+    // Check file size (10MB limit per file)
+    const oversizedFiles = files.filter(file => file.size > 10 * 1024 * 1024)
+    if (oversizedFiles.length > 0) {
+      toast.error(`Files too large: ${oversizedFiles.map(f => f.name).join(', ')}. Maximum 10MB per file.`)
+      return
+    }
+
+    // Check total number of files (max 10 per upload)
+    if (selectedFiles.length + files.length > 10) {
+      toast.error(`Too many files. Maximum 10 images per upload. Currently selected: ${selectedFiles.length}`)
+      return
+    }
+
+    setSelectedFiles(prev => [...prev, ...files])
+    
+    // Create preview URLs
+    const newPreviewUrls = files.map(file => URL.createObjectURL(file))
+    setPreviewUrls(prev => [...prev, ...newPreviewUrls])
+  }
+
+  const removeSelectedFile = (index: number) => {
+    // Revoke the object URL to prevent memory leaks
+    URL.revokeObjectURL(previewUrls[index])
+    
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index))
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const clearSelectedFiles = () => {
+    // Revoke all object URLs
+    previewUrls.forEach(url => URL.revokeObjectURL(url))
+    
+    setSelectedFiles([])
+    setPreviewUrls([])
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleUploadImages = async () => {
+    if (selectedFiles.length === 0) {
+      toast.error('Please select images to upload')
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      // Convert images to WebP format
+      const convertedFiles = await Promise.all(
+        selectedFiles.map(async (file) => {
+          try {
+            return await convertToWebP(file, {
+              maxSizeMB: 2,
+              maxWidthOrHeight: 1920,
+              quality: 0.85
+            })
+          } catch (error) {
+            console.error(`Failed to convert ${file.name}:`, error)
+            // Fallback to original file if conversion fails
+            return file
+          }
+        })
+      )
+
+      // Upload the converted images
+      const response = await projectApi.uploadProjectImages(uuid, convertedFiles)
+      
+      if (response.data.uploadedImages) {
+        // Update the form data with new image URLs
+        setFormData(prev => ({
+          ...prev,
+          photos: [...prev.photos, ...response.data.uploadedImages]
+        }))
+        
+        toast.success(`Successfully uploaded ${response.data.count} images`)
+        clearSelectedFiles()
+      }
+    } catch (error) {
+      console.error('Error uploading images:', error)
+      toast.error('Failed to upload images. Please try again.')
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   if (isLoading) {
@@ -603,11 +717,105 @@ export default function ProjectEditPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Photos & Documents</CardTitle>
-                  <CardDescription>Add photo links and document links (Google Drive, Dropbox, etc.)</CardDescription>
+                  <CardDescription>Upload project images or add photo links and document links</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <Label>Photos</Label>
+                    <Label>Photo Upload</Label>
+                    <div className="space-y-4 mt-2">
+                      {/* File Input */}
+                      <div className="flex gap-2">
+                        <Input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                          multiple
+                          onChange={handleFileSelect}
+                          className="flex-1"
+                        />
+                        <Button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          variant="outline"
+                          size="sm"
+                        >
+                          <ImageIcon className="h-4 w-4 mr-2" />
+                          Browse
+                        </Button>
+                      </div>
+
+                      {/* Selected Files Preview */}
+                      {selectedFiles.length > 0 && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">Selected Images ({selectedFiles.length})</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={clearSelectedFiles}
+                            >
+                              Clear All
+                            </Button>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                            {previewUrls.map((url, index) => (
+                              <div key={index} className="relative group">
+                                <Image
+                                  src={url}
+                                  alt={`Preview ${index + 1}`}
+                                  width={200}
+                                  height={96}
+                                  className="w-full h-24 object-cover rounded border"
+                                  unoptimized
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removeSelectedFile(index)}
+                                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b truncate">
+                                  {selectedFiles[index]?.name}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          <Button
+                            type="button"
+                            onClick={handleUploadImages}
+                            disabled={isUploading || selectedFiles.length === 0}
+                            className="w-full"
+                          >
+                            {isUploading ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Uploading...
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload {selectedFiles.length} Image{selectedFiles.length !== 1 ? 's' : ''}
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      )}
+
+                      <div className="text-xs text-muted-foreground">
+                        • Support formats: JPEG, PNG, WebP, GIF
+                        • Maximum 10MB per image
+                        • Maximum 10 images per upload
+                        • Images will be converted to WebP format for optimization
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <Label>Photo URLs (Manual)</Label>
                     <div className="flex gap-2 mt-2">
                       <Input
                         value={formData.photoInput}
@@ -630,22 +838,42 @@ export default function ProjectEditPage() {
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="space-y-2 mt-3">
-                      {formData.photos.map((photo, index) => (
-                        <div key={index} className="flex items-center gap-2 p-2 border rounded">
-                          <span className="flex-1 text-sm">{photo}</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeArrayItem("photos", index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
                   </div>
+
+                  {/* Current Photos Display */}
+                  {formData.photos.length > 0 && (
+                    <div>
+                      <Label>Current Photos ({formData.photos.length})</Label>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-3">
+                        {formData.photos.map((photo, index) => (
+                          <div key={index} className="relative group">
+                            <Image
+                              src={photo}
+                              alt={`Photo ${index + 1}`}
+                              width={200}
+                              height={128}
+                              className="w-full h-32 object-cover rounded border"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement
+                                target.style.display = 'none'
+                              }}
+                              unoptimized
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeArrayItem("photos", index)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b">
+                              Photo {index + 1}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <Label>Documents</Label>
