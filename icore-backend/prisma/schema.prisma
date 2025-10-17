@@ -140,4 +140,5 @@ enum ProjectType {
   DESIGN
   DEVELOPMENT
   OTHER
+  FYP
 }
