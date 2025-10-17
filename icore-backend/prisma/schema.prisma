@@ -57,6 +57,7 @@ model User {
   updatedAt      DateTime  @updatedAt
   projectMembers Member[]
   projects       Project[]
+  supervisedProjects Project[] @relation("ProjectSupervisors")
 
   @@map("users")
 }
@@ -86,6 +87,7 @@ model Project {
   guestMembers GuestMember[]
   members      Member[]
   owner        User          @relation(fields: [ownerId], references: [id])
+  supervisors  User[]        @relation("ProjectSupervisors")
 
   @@map("projects")
 }
