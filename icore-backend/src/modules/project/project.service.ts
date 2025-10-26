@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/config/database/database.service';
-import { Project, Status, User } from '@prisma/client';
+import { Project, Status,User } from '@prisma/client';
 import { AddMemberInput, UpdateMemberInput } from './dto/projectMembers.dto';
 import { AddGuestMemberInput } from './dto/projectMembers.dto';
 import { CreateProjectInput } from './dto/createProject.input';
@@ -127,6 +127,10 @@ export class ProjectService {
     search?: string,
     type?: string,
     tags?: string[],
+    status?: string,
+    technologies?: string[],
+    sortBy?: string,
+    sortOrder?: string,
   ): Promise<{ projects: Project[] }> {
     try {
       const where: any = {};
@@ -149,12 +153,30 @@ export class ProjectService {
         };
       }
 
+      if (status) {
+        where.status = status;
+      }
+
+      if (technologies && technologies.length > 0) {
+        where.technologies = {
+          hasSome: technologies,
+        };
+      }
+
+      // Build orderBy clause
+      const orderBy: any = {};
+      if (sortBy) {
+        orderBy[sortBy] = sortOrder === 'asc' ? 'asc' : 'desc';
+      } else {
+        orderBy.createdAt = 'desc'; // default sorting
+      }
+
       const [projects] = await this.databaseService.$transaction([
         this.databaseService.project.findMany({
           where,
           skip: (page - 1) * limit,
           take: limit,
-          orderBy: { createdAt: 'desc' }, // get most recent projects first
+          orderBy,
         }),
         this.databaseService.project.count({ where }),
       ]);
@@ -267,6 +289,10 @@ export class ProjectService {
     search?: string,
     type?: string,
     tags?: string[],
+    status?: string,
+    technologies?: string[],
+    sortBy?: string,
+    sortOrder?: string,
   ): Promise<{ projects: (Project & { owner: { id: string; username: string }, members: any[], guestMembers: any[] })[]; total: number; hasMore: boolean }> {
     try {
       const where: any = {
@@ -289,6 +315,24 @@ export class ProjectService {
         where.tags = {
           hasSome: tags,
         };
+      }
+
+      if (status) {
+        where.status = status;
+      }
+
+      if (technologies && technologies.length > 0) {
+        where.technologies = {
+          hasSome: technologies,
+        };
+      }
+
+      // Build orderBy clause
+      const orderBy: any = {};
+      if (sortBy) {
+        orderBy[sortBy] = sortOrder === 'asc' ? 'asc' : 'desc';
+      } else {
+        orderBy.createdAt = 'desc'; // default sorting
       }
 
       const [projects, total] = await this.databaseService.$transaction([
@@ -314,7 +358,7 @@ export class ProjectService {
           },
           skip: (page - 1) * limit,
           take: limit,
-          orderBy: { createdAt: 'desc' },
+          orderBy,
         }),
         this.databaseService.project.count({ where }),
       ]);
@@ -724,6 +768,61 @@ export class ProjectService {
   }
 
   // ------------------------------------------------------------------------------------ //
+
+  /**
+   * Get available filter options for projects
+   */
+  async getFilterOptions(): Promise<{
+    types: string[];
+    statuses: string[];
+    tags: string[];
+    technologies: string[];
+  }> {
+    try {
+      const [types, statuses, tags, technologies] = await this.databaseService.$transaction([
+        // Get unique project types
+        this.databaseService.project.findMany({
+          where: { isVisible: true, status: Status.ACTIVE },
+          select: { type: true },
+          distinct: ['type'],
+        }),
+        // Get unique statuses
+        this.databaseService.project.findMany({
+          where: { isVisible: true },
+          select: { status: true },
+          distinct: ['status'],
+        }),
+        // Get all unique tags from visible projects
+        this.databaseService.project.findMany({
+          where: { isVisible: true, status: Status.ACTIVE },
+          select: { tags: true },
+        }),
+        // Get all unique technologies from visible projects
+        this.databaseService.project.findMany({
+          where: { isVisible: true, status: Status.ACTIVE },
+          select: { technologies: true },
+        }),
+      ]);
+
+      // Extract and flatten tags and technologies
+      const allTags = tags.flatMap(project => project.tags);
+      const allTechnologies = technologies.flatMap(project => project.technologies);
+
+      // Get unique values
+      const uniqueTags = [...new Set(allTags)].sort();
+      const uniqueTechnologies = [...new Set(allTechnologies)].sort();
+
+      return {
+        types: types.map(t => t.type),
+        statuses: statuses.map(s => s.status),
+        tags: uniqueTags,
+        technologies: uniqueTechnologies,
+      };
+    } catch (error) {
+      console.error('Error getting filter options:', error);
+      throw new InternalServerErrorException('Failed to retrieve filter options');
+    }
+  }
 
   /** CONSIDER: How to handle project tags?
    * SUGGESTION:

@@ -92,6 +92,23 @@ export interface PublicProjectsResponse {
   hasMore: boolean;
 }
 
+export interface FilterOptions {
+  types: string[];
+  statuses: string[];
+  tags: string[];
+  technologies: string[];
+}
+
+export interface ProjectFilters {
+  search?: string;
+  type?: string;
+  status?: string;
+  tags?: string[];
+  technologies?: string[];
+  sortBy?: 'createdAt' | 'name' | 'startDate';
+  sortOrder?: 'asc' | 'desc';
+}
+
 /**
  * Example create project data:
  * {
@@ -111,17 +128,27 @@ export const projectApi = {
   getPublicProjects: async (
     page: number = 1,
     limit: number = 10,
-    search?: string,
-    type?: string,
-    tags?: string[]
+    filters?: ProjectFilters
   ): Promise<AxiosResponse<PublicProjectsResponse>> => {
     const params = new URLSearchParams();
     params.append('page', page.toString());
     params.append('limit', limit.toString());
-    if (search) params.append('search', search);
-    if (type) params.append('type', type);
-    if (tags) tags.forEach(tag => params.append('tags', tag));
+    
+    if (filters) {
+      if (filters.search) params.append('search', filters.search);
+      if (filters.type) params.append('type', filters.type);
+      if (filters.status) params.append('status', filters.status);
+      if (filters.tags) filters.tags.forEach(tag => params.append('tags', tag));
+      if (filters.technologies) filters.technologies.forEach(tech => params.append('technologies', tech));
+      if (filters.sortBy) params.append('sortBy', filters.sortBy);
+      if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
+    }
+    
     return await axiosInstance.get(`/project/public/all?${params}`);
+  },
+
+  getPublicFilterOptions: async (): Promise<AxiosResponse<FilterOptions>> => {
+    return await axiosInstance.get('/project/public/filters');
   },
 
   getPublicProjectsByUsername: async (username: string): Promise<AxiosResponse<PublicProject[]>> => {
@@ -136,16 +163,22 @@ export const projectApi = {
   getProjects: async (
     page: number = 1, 
     limit: number = 10,
-    search?: string,
-    type?: string,
-    tags?: string[]
+    filters?: ProjectFilters
   ): Promise<AxiosResponse> => {
     const params = new URLSearchParams();
     params.append('page', page.toString());
     params.append('limit', limit.toString());
-    if (search) params.append('search', search);
-    if (type) params.append('type', type);
-    if (tags) tags.forEach(tag => params.append('tags', tag));
+    
+    if (filters) {
+      if (filters.search) params.append('search', filters.search);
+      if (filters.type) params.append('type', filters.type);
+      if (filters.status) params.append('status', filters.status);
+      if (filters.tags) filters.tags.forEach(tag => params.append('tags', tag));
+      if (filters.technologies) filters.technologies.forEach(tech => params.append('technologies', tech));
+      if (filters.sortBy) params.append('sortBy', filters.sortBy);
+      if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
+    }
+    
     return await axiosInstance.get(`/project?${params}`);
   },
 
