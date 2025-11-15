@@ -101,10 +101,10 @@ export class ProjectController {
     @Query('sortOrder') sortOrder?: string,
   ) {
     // Normalize array parameters
-    const normalizedTags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
-    const normalizedTechnologies = Array.isArray(technologies) ? technologies : technologies ? [technologies] : undefined;
+    const Tags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
+    const Technologies = Array.isArray(technologies) ? technologies : technologies ? [technologies] : undefined;
 
-    if (normalizedTags && normalizedTags.length > 5) {
+    if (Tags && Tags.length > 5) {
       throw new BadRequestException('Too many tags provided. Maximum is 5.');
     }
     if (page && page < 1) {
@@ -116,9 +116,9 @@ export class ProjectController {
       Number(limit) || 10,
       search,
       type,
-      normalizedTags,
+      Tags,
       status,
-      normalizedTechnologies,
+      Technologies,
       sortBy,
       sortOrder,
     );
@@ -151,8 +151,8 @@ export class ProjectController {
   @ApiQuery({ name: 'tags', required: false, isArray: true, type: [String] })
   async testFilters(@Query('tags') tags?: string | string[]) {
     console.log('Test endpoint - Raw tags:', tags);
-    const normalizedTags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
-    console.log('Test endpoint - Normalized tags:', normalizedTags);
+    const Tags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
+    console.log('Test endpoint - Normalized tags:', Tags);
     
     // Get a few projects to test with
     const projects = await this.projectService.findAll(1, 5);
@@ -160,7 +160,7 @@ export class ProjectController {
     
     return {
       rawTags: tags,
-      normalizedTags,
+      Tags,
       projectCount: projects.projects.length,
       projects: projects.projects.map(p => ({ id: p.id, name: p.name, tags: p.tags }))
     };
@@ -220,11 +220,10 @@ export class ProjectController {
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: string,
   ) {
-    // Normalize array parameters
-    const normalizedTags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
-    const normalizedTechnologies = Array.isArray(technologies) ? technologies : technologies ? [technologies] : undefined;
+    const Tags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
+    const Technologies = Array.isArray(technologies) ? technologies : technologies ? [technologies] : undefined;
 
-    if (normalizedTags && normalizedTags.length > 5) {
+    if (Tags && Tags.length > 5) {
       throw new BadRequestException('Too many tags provided. Maximum is 5.');
     }
     if (page && page < 1) {
@@ -236,9 +235,9 @@ export class ProjectController {
       Number(limit) || 10,
       search,
       type,
-      normalizedTags,
+      Tags,
       status,
-      normalizedTechnologies,
+      Technologies,
       sortBy,
       sortOrder,
     );
