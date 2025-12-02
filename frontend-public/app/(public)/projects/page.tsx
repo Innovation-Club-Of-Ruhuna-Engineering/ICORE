@@ -1,6 +1,25 @@
-import { Button } from "@/components/ui/button"
+'use client';
+
+import { Button } from "@/components/ui/button";
+import { ProjectSearchFilters } from '@/components/project/project-search-filters';
+import { ProjectsGrid } from '@/components/project/projects-grid';
+import { useProjects } from '@/hooks/useProjects';
+import Link from 'next/link';
 
 export default function ProjectsPage() {
+  const {
+    projects,
+    total,
+    hasMore,
+    isLoading,
+    error,
+    filterOptions,
+    filters,
+    loadMore,
+    setFilters: handleSetFilters,
+  } = useProjects();
+
+  
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -16,19 +35,36 @@ export default function ProjectsPage() {
                 Discover groundbreaking projects from the Innovation Club of Ruhuna Engineering
               </p>
             </div>
-            <Button size="lg" className="shadow-lg">
-              New Project
+            <Button size="lg" className="shadow-lg" asChild>
+              <Link href="/new-project">
+                New Project
+              </Link>
             </Button>
           </div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12 max-w-7xl text-center">
-        <h2 className="text-2xl font-semibold text-muted-foreground mb-4">Coming Soon</h2>
-        <p className="text-muted-foreground text-lg">
-          This page will soon feature a searchable and filterable list of projects. Stay tuned!
-        </p>
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
+        {filterOptions && (
+          <div className="mb-8">
+            <ProjectSearchFilters
+              filters={filters}
+              onFiltersChange={handleSetFilters}
+              filterOptions={filterOptions}
+              isLoading={isLoading}
+            />
+          </div>
+        )}
+
+        {/* Projects Grid */}
+        <ProjectsGrid
+          data={projects.length > 0 ? { projects, total, hasMore } : null}
+          isLoading={isLoading}
+          error={error}
+          onLoadMore={loadMore}
+          hasMore={hasMore}
+        />
       </div>
     </div>
-  )
+  );
 }

@@ -19,7 +19,7 @@ import {
 import { ProjectService } from './project.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
-import { Project, User } from '@prisma/client';
+import { Project,User } from '@prisma/client';
 import { CreateProjectInput } from './dto/createProject.input';
 import { UpdateProjectInput } from './dto/updateProject.input';
 import { AddMemberInput, AddGuestMemberInput, UpdateMemberRoleInput } from './dto/member.input';
@@ -83,16 +83,28 @@ export class ProjectController {
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'type', required: false })
-  @ApiQuery({ name: 'tags', required: false, isArray: true })
+  @ApiQuery({ name: 'tags', required: false, isArray: true, type: [String] })
+  @ApiQuery({ name: 'status', required: false })
+  @ApiQuery({ name: 'technologies', required: false, isArray: true, type: [String] })
+  @ApiQuery({ name: 'sortBy', required: false, enum: ['createdAt', 'name', 'startDate'] })
+  @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
   @ApiResponse({ status: 200, description: 'List of public projects', type: [PublicProjectResponse] })
   async findAllPublic(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('search') search?: string,
     @Query('type') type?: string,
-    @Query('tags') tags?: string[],
+    @Query('tags') tags?: string | string[],
+    @Query('status') status?: string,
+    @Query('technologies') technologies?: string | string[],
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: string,
   ) {
-    if (tags && tags.length > 5) {
+    // Normalize array parameters
+    const Tags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
+    const Technologies = Array.isArray(technologies) ? technologies : technologies ? [technologies] : undefined;
+
+    if (Tags && Tags.length > 5) {
       throw new BadRequestException('Too many tags provided. Maximum is 5.');
     }
     if (page && page < 1) {
@@ -104,7 +116,11 @@ export class ProjectController {
       Number(limit) || 10,
       search,
       type,
-      tags,
+      Tags,
+      status,
+      Technologies,
+      sortBy,
+      sortOrder,
     );
 
     return {
@@ -121,6 +137,33 @@ export class ProjectController {
   async findPublicByUsername(@Param('username') username: string) {
     const projects = await this.projectService.findPublicProjectsByUsername(username);
     return projects.map(project => this.mapToPublicResponse(project));
+  }
+
+  @Get('public/filters')
+  @ApiOperation({ summary: 'Get available filter options for public projects' })
+  @ApiResponse({ status: 200, description: 'Available filter options' })
+  async getPublicFilters() {
+    return this.projectService.getFilterOptions();
+  }
+
+  @Get('public/test-filters')
+  @ApiOperation({ summary: 'Test filtering with debug output' })
+  @ApiQuery({ name: 'tags', required: false, isArray: true, type: [String] })
+  async testFilters(@Query('tags') tags?: string | string[]) {
+    console.log('Test endpoint - Raw tags:', tags);
+    const Tags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
+    console.log('Test endpoint - Normalized tags:', Tags);
+    
+    // Get a few projects to test with
+    const projects = await this.projectService.findAll(1, 5);
+    console.log('Test endpoint - Found projects:', projects.projects.length);
+    
+    return {
+      rawTags: tags,
+      Tags,
+      projectCount: projects.projects.length,
+      projects: projects.projects.map(p => ({ id: p.id, name: p.name, tags: p.tags }))
+    };
   }
 
   @Get('public/:id')
@@ -159,7 +202,11 @@ export class ProjectController {
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'type', required: false })
-  @ApiQuery({ name: 'tags', required: false, isArray: true })
+  @ApiQuery({ name: 'tags', required: false, isArray: true, type: [String] })
+  @ApiQuery({ name: 'status', required: false })
+  @ApiQuery({ name: 'technologies', required: false, isArray: true, type: [String] })
+  @ApiQuery({ name: 'sortBy', required: false, enum: ['createdAt', 'name', 'startDate'] })
+  @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
   @ApiResponse({ status: 200, description: 'List of projects', type: [ProjectResponse] })
   @ApiResponse({ status: 400, description: 'Bad request' })
   findAll(
@@ -167,9 +214,16 @@ export class ProjectController {
     @Query('limit') limit?: number,
     @Query('search') search?: string,
     @Query('type') type?: string,
-    @Query('tags') tags?: string[],
+    @Query('tags') tags?: string | string[],
+    @Query('status') status?: string,
+    @Query('technologies') technologies?: string | string[],
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: string,
   ) {
-    if (tags && tags.length > 5) {
+    const Tags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
+    const Technologies = Array.isArray(technologies) ? technologies : technologies ? [technologies] : undefined;
+
+    if (Tags && Tags.length > 5) {
       throw new BadRequestException('Too many tags provided. Maximum is 5.');
     }
     if (page && page < 1) {
@@ -181,7 +235,11 @@ export class ProjectController {
       Number(limit) || 10,
       search,
       type,
-      tags,
+      Tags,
+      status,
+      Technologies,
+      sortBy,
+      sortOrder,
     );
   }
 
