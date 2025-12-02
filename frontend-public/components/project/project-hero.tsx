@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -43,13 +43,13 @@ export function ProjectHero({
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
   const [showVideo, setShowVideo] = useState(!!youtubeURL)
 
-  const nextPhoto = () => {
+  const nextPhoto = useCallback(() => {
     setCurrentPhotoIndex((prev) => (prev + 1) % photos.length)
-  }
+  }, [photos.length])
 
-  const prevPhoto = () => {
+  const prevPhoto = useCallback(() => {
     setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)
-  }
+  }, [photos.length])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -66,7 +66,7 @@ export function ProjectHero({
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [photos.length, showVideo])
+  }, [photos.length, showVideo, nextPhoto, prevPhoto])
 
   return (
     <Card className="bg-[#ffffff] border-[#d9d9d9]">
