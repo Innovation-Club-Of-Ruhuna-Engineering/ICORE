@@ -38,7 +38,7 @@ export function ProjectSearchFilters({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchValue, filters, onFiltersChange]);
+  }, [searchValue]); // Only depend on searchValue to avoid infinite loop
 
   const handleFilterChange = (key: keyof ProjectFilters, value: string | undefined) => {
     onFiltersChange({ ...filters, [key]: value });
