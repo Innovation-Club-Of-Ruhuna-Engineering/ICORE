@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import { ProjectFilters, FilterOptions } from '@/lib/projects/projectMethods';
 
 interface ProjectSearchFiltersProps {
@@ -38,9 +38,9 @@ export function ProjectSearchFilters({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchValue]);
+  }, [searchValue, filters, onFiltersChange]);
 
-  const handleFilterChange = (key: keyof ProjectFilters, value: any) => {
+  const handleFilterChange = (key: keyof ProjectFilters, value: string | undefined) => {
     onFiltersChange({ ...filters, [key]: value });
   };
 
@@ -175,7 +175,7 @@ export function ProjectSearchFilters({
               <CardContent className="pt-0">
                 <Select
                   value={filters.sortBy || 'createdAt'}
-                  onValueChange={(value) => handleFilterChange('sortBy', value as any)}
+                  onValueChange={(value) => handleFilterChange('sortBy', value)}
                   disabled={isLoading}
                 >
                   <SelectTrigger>
@@ -198,7 +198,7 @@ export function ProjectSearchFilters({
               <CardContent className="pt-0">
                 <Select
                   value={filters.sortOrder || 'desc'}
-                  onValueChange={(value) => handleFilterChange('sortOrder', value as any)}
+                  onValueChange={(value) => handleFilterChange('sortOrder', value)}
                   disabled={isLoading}
                 >
                   <SelectTrigger>

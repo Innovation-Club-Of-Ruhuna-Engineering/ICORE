@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ProjectCard } from '@/components/shared/project-card';
-import { PublicProject, PublicProjectsResponse } from '@/lib/projects/projectMethods';
+import { PublicProjectsResponse } from '@/lib/projects/projectMethods';
 import { Button } from '@/components/ui/button';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
