@@ -139,6 +139,7 @@ enum ProjectType {
   RESEARCH
   DESIGN
   DEVELOPMENT
+  REXTRO_2025
   OTHER
   FYP
 }

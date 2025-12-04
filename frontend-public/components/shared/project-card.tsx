@@ -9,6 +9,8 @@ import { Switch } from '@/components/ui/switch';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { formatProjectType } from '@/lib/projects/projectUtils';
+import { Button as MovingBorderButton } from '../ui/moving-border';
 
 interface ProjectCardProps {
   project: PublicProject;
@@ -31,7 +33,8 @@ export function ProjectCard({ project, isAdmin = false, onToggleVisibility }: Pr
   // 4. If neither exists or video is invalid, show backdrop/image
   const hasImages = project.photos && project.photos.length > 0;
   const hasVideo = project.youtubeURL && project.youtubeURL.trim() !== '';
-  
+  const isRextro2025 = project.type === 'REXTRO_2025';
+
   // Extract YouTube video ID for embed
   const getYouTubeVideoId = (url: string) => {
     if (!url) return null;
@@ -84,6 +87,15 @@ export function ProjectCard({ project, isAdmin = false, onToggleVisibility }: Pr
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
+            {isRextro2025 && (
+              <MovingBorderButton
+                borderRadius="1.75rem"
+                className="bg-gradient-to-r from-[#800000] to-[#0d6efd] dark:bg-slate-900 text-white dark:text-white border-neutral-200 dark:border-slate-800"
+                containerClassName='h-8 w-26 b-1'
+              >
+                {formatProjectType(project.type)}
+              </MovingBorderButton>
+            )}
             <CardTitle className="text-lg">
               <Link href={`/projects/view/${project.id}`} className="hover:text-blue-600 transition-colors">
                 {project.name}
@@ -147,8 +159,8 @@ export function ProjectCard({ project, isAdmin = false, onToggleVisibility }: Pr
                 project.status === 'ACTIVE'
                   ? 'default'
                   : project.status === 'PENDING'
-                  ? 'secondary'
-                  : 'destructive'
+                    ? 'secondary'
+                    : 'destructive'
               }
               className="text-xs"
             >

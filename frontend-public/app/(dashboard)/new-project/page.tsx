@@ -256,6 +256,8 @@ export default function NewProjectPage() {
                   <option value="RESEARCH">Research</option>
                   <option value="DESIGN">Design</option>
                   <option value="DEVELOPMENT">Development</option>
+                  <option value="REXTRO_2025">Rextro 2025</option>
+                  <option value="FYP">FYP</option>
                   <option value="OTHER">Other</option>
                 </select>
               </div>
