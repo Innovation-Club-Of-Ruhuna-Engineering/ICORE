@@ -87,7 +87,7 @@ export function ProjectCard({ project, isAdmin = false, onToggleVisibility }: Pr
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            
+
             <CardTitle className="text-lg">
               <Link href={`/projects/view/${project.id}`} className="hover:text-blue-600 transition-colors">
                 {project.name}
