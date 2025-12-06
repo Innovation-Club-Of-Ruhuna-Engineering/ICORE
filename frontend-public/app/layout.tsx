@@ -15,7 +15,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "ICORE - Innovation Club of Ruhuna Engineering",
-  keywords: ["ICORE", "Innovation Club of Ruhuna Engineering", "Ruhuna University", "Engineering Club"],
+  keywords: ["ICORE", "Innovation Club of Ruhuna Engineering", "Ruhuna Engineering Faculty", "Engineering Club"],
   description: "Developed by ICORE development team",
 };
 
