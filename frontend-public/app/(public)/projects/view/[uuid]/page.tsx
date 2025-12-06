@@ -9,7 +9,10 @@ import { useEffect, useState } from "react"
 import { projectApi, type PublicProject } from "@/lib/projects/projectMethods"
 import { ProjectHero } from "@/components/project/project-hero"
 //import { DiscussionSection } from "@/components/project/discussion-section"
-import { ProjectType } from "@/components/project/project-sidebar"
+import { ProjectType } from "@/lib/projects/projectMethods"
+import { formatProjectType } from "@/lib/projects/projectUtils";
+import { Button as MovingBorderButton } from "@/components/ui/moving-border";
+
 
 // Define types for API responses
 interface ProjectMemberResponse {
@@ -53,6 +56,7 @@ interface ProjectViewData extends Omit<PublicProject, 'startDate' | 'endDate' | 
     name?: string
   }
 }
+
 
 // Load project data (public or private)
 async function getProject(uuid: string, isAuthenticated: boolean): Promise<ProjectViewData> {
@@ -105,9 +109,11 @@ async function getProject(uuid: string, isAuthenticated: boolean): Promise<Proje
       allMembers = project.members || []
     }
 
+    
+
     return {
       ...project,
-      type: (project.type as ProjectType) || "RESEARCH",
+      type: (project.type as ProjectType ) || "RESEARCH",
       photos: project.photos || [],
       papers: project.papers || [],
       references: project.references || [],
@@ -216,6 +222,8 @@ export default function ProjectViewPage() {
   const [project, setProject] = useState<ProjectViewData | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const isRextro2025 = project?.type === 'REXTRO_2025';
+
   useEffect(() => {
     const fetchProject = async () => {
       try {
@@ -296,6 +304,17 @@ export default function ProjectViewPage() {
       <div className="container mx-auto px-6 py-8 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
+            {isRextro2025 && (
+              <div className="mb-2">
+                <MovingBorderButton
+                  containerClassName="h-8 w-auto px-3"
+                  borderClassName="bg-gradient-to-r from-[#800000] to-[#0d6efd]"
+                  className="px-3 py-1 text-sm font-semibold"
+                >
+                  {formatProjectType(project.type)}
+                </MovingBorderButton>
+              </div>
+            )}
             <ProjectHero
               title={project.name}
               description={project.description}

@@ -3,7 +3,7 @@ import axiosInstance from "../axios/axiosInstance";
 
 // Enums from Prisma schema
 export type ProjectRole = 'LEADER' | 'MEMBER' | 'SUPERVISOR' | 'CONTRIBUTOR';
-export type ProjectType = 'RESEARCH' | 'DESIGN' | 'DEVELOPMENT' | 'OTHER';
+export type ProjectType = 'RESEARCH' | 'DESIGN' | 'DEVELOPMENT' | 'REXTRO_2025' | 'FYP' | 'OTHER';
 export type Status = 'ACTIVE' | 'PENDING' | 'INACTIVE';
 
 export interface ProjectMember {
@@ -133,7 +133,7 @@ export const projectApi = {
     const params = new URLSearchParams();
     params.append('page', page.toString());
     params.append('limit', limit.toString());
-    
+
     if (filters) {
       if (filters.search) params.append('search', filters.search);
       if (filters.type) params.append('type', filters.type);
@@ -143,7 +143,7 @@ export const projectApi = {
       if (filters.sortBy) params.append('sortBy', filters.sortBy);
       if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
     }
-    
+
     return await axiosInstance.get(`/project/public/all?${params}`);
   },
 
@@ -161,14 +161,14 @@ export const projectApi = {
   },
 
   getProjects: async (
-    page: number = 1, 
+    page: number = 1,
     limit: number = 10,
     filters?: ProjectFilters
   ): Promise<AxiosResponse> => {
     const params = new URLSearchParams();
     params.append('page', page.toString());
     params.append('limit', limit.toString());
-    
+
     if (filters) {
       if (filters.search) params.append('search', filters.search);
       if (filters.type) params.append('type', filters.type);
@@ -178,7 +178,7 @@ export const projectApi = {
       if (filters.sortBy) params.append('sortBy', filters.sortBy);
       if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
     }
-    
+
     return await axiosInstance.get(`/project?${params}`);
   },
 
@@ -212,8 +212,8 @@ export const projectApi = {
   },
 
   updateMemberRole: async (
-    projectId: string, 
-    memberId: string, 
+    projectId: string,
+    memberId: string,
     role: ProjectMember['role']
   ): Promise<AxiosResponse> => {
     return await axiosInstance.patch(`/project/${projectId}/member/${memberId}`, { role });

@@ -2,13 +2,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { FormattedText } from "@/components/ui/formatted-text"
 import { SocialSharingCard } from "./social-sharing-card"
+import type { ProjectType } from "@/lib/projects/projectMethods"
+import { formatProjectType } from "@/lib/projects/projectUtils"
 
-export enum ProjectType {
-  RESEARCH = "RESEARCH",
-  DESIGN = "DESIGN",
-  DEVELOPMENT = "DEVELOPMENT",
-  OTHER = "OTHER",
-}
+
 
 interface ProjectSidebarProps {
   progress: string
@@ -53,13 +50,13 @@ export function ProjectSidebar({
             <div className="flex items-center justify-between mt-2">
               <span className="font-semibold text-[#000000]">Project Type</span>
               <Badge variant="secondary" className="bg-blue-100 text-blue-800 hover:bg-blue-100">
-                {projectType}
+                {formatProjectType(projectType)}
               </Badge>
             </div>
           </div>
 
           <div>
-            <span className="font-semibold text-[#000000] block mb-1">Dates</span>
+            <span className="font-semibold text-[#000000] block mb-1">Duration</span>
             <span className="text-[#555555] text-sm">{dates}</span>
           </div>
 

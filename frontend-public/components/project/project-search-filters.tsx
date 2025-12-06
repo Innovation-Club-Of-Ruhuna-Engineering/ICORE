@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import { ProjectFilters, FilterOptions } from '@/lib/projects/projectMethods';
+import { formatProjectType } from "@/lib/projects/projectUtils"; 
+import { Button as MovingBorderButton } from '../ui/moving-border';
 
 interface ProjectSearchFiltersProps {
   filters: ProjectFilters;
@@ -65,6 +67,14 @@ export function ProjectSearchFilters({
     value !== undefined && value !== '' && (Array.isArray(value) ? value.length > 0 : true)
   );
 
+  const toggleRextroFilter = () => {
+    if (filters.type === 'REXTRO_2025') {
+      handleFilterChange('type', undefined);
+    } else {
+      handleFilterChange('type', 'REXTRO_2025');
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Search Bar */}
@@ -79,25 +89,37 @@ export function ProjectSearchFilters({
         />
       </div>
 
-      {/* Filter Toggle */}
+      {/* Filter Toggle + REXTRO 2025 shortcut */}
       <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={handleToggleFilters}
-          className="flex items-center gap-2"
-          disabled={isLoading}
-        >
-          <Filter className="h-4 w-4" />
-          Filters
-          {hasActiveFilters && (
-            <Badge variant="secondary" className="ml-1">
-              {Object.values(filters).filter(value => 
-                value !== undefined && value !== '' && (Array.isArray(value) ? value.length > 0 : true)
-              ).length}
-            </Badge>
-          )}
-          <ChevronDown className={`h-4 w-4 transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleToggleFilters}
+            className="flex items-center gap-2"
+            disabled={isLoading}
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+            {hasActiveFilters && (
+              <Badge variant="secondary" className="ml-1">
+                {Object.values(filters).filter(value =>
+                  value !== undefined && value !== '' && (Array.isArray(value) ? value.length > 0 : true)
+                ).length}
+              </Badge>
+            )}
+            <ChevronDown className={`h-4 w-4 transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
+          </Button>
+
+          {/* Quick toggler for REXTRO 2025 */}
+          <MovingBorderButton
+            borderRadius="1.75rem"
+            className="bg-gradient-to-r from-[#800000] to-[#0d6efd] dark:bg-slate-900 text-white dark:text-white border-neutral-200 dark:border-slate-800"
+            containerClassName='h-8 w-26 b-1'
+            onClick={toggleRextroFilter}
+          >
+            {formatProjectType('REXTRO_2025')}
+          </MovingBorderButton>
+        </div>
 
         {hasActiveFilters && (
           <Button

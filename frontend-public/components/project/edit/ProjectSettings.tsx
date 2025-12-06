@@ -45,6 +45,8 @@ export function ProjectSettings({
                 <SelectItem value="RESEARCH">Research</SelectItem>
                 <SelectItem value="DESIGN">Design</SelectItem>
                 <SelectItem value="DEVELOPMENT">Development</SelectItem>
+                <SelectItem value="REXTRO_2025">REXTRO 2025</SelectItem>
+                <SelectItem value="FYP">FYP</SelectItem>
                 <SelectItem value="OTHER">Other</SelectItem>
               </SelectContent>
             </Select>
