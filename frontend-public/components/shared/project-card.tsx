@@ -87,15 +87,7 @@ export function ProjectCard({ project, isAdmin = false, onToggleVisibility }: Pr
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            {isRextro2025 && (
-              <MovingBorderButton
-                borderRadius="1.75rem"
-                className="bg-gradient-to-r from-[#800000] to-[#0d6efd] dark:bg-slate-900 text-white dark:text-white border-neutral-200 dark:border-slate-800"
-                containerClassName='h-8 w-26 b-1'
-              >
-                {formatProjectType(project.type)}
-              </MovingBorderButton>
-            )}
+            
             <CardTitle className="text-lg">
               <Link href={`/projects/view/${project.id}`} className="hover:text-blue-600 transition-colors">
                 {project.name}
@@ -128,7 +120,17 @@ export function ProjectCard({ project, isAdmin = false, onToggleVisibility }: Pr
 
       <CardContent className="space-y-3 p-4 pt-3">
 
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex items-center flex-wrap gap-1.5">
+          {isRextro2025 && (
+            <MovingBorderButton
+              borderRadius="1.75rem"
+              className="bg-gradient-to-r from-[#800000] to-[#0d6efd] dark:bg-slate-900 text-white dark:text-white border-neutral-200 dark:border-slate-800"
+              containerClassName='h-8 w-26 b-1'
+            >
+              {formatProjectType(project.type)}
+            </MovingBorderButton>
+          )}
+
           {project.tags.slice(0, 3).map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs">
               {tag}
