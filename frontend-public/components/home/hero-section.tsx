@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 
 export function HeroSection() {
@@ -13,7 +14,7 @@ export function HeroSection() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768) // 768px is standard tablet breakpoint
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
@@ -21,7 +22,7 @@ export function HeroSection() {
 
   useEffect(() => {
     if (isMobile) return // Don't add mouse events on mobile
-    
+
     const handleMouseMove = (e: MouseEvent) => {
       if (heroRef.current) {
         const rect = heroRef.current.getBoundingClientRect()
@@ -137,12 +138,17 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
-            <Button size="lg" className="px-8 py-3 text-base font-semibold">
-              Explore Projects
+            <Button size="lg" className="px-8 py-3 text-base font-semibold" >
+              <Link href="/projects">
+                Explore Projects
+              </Link>
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <Button variant="outline" size="lg" className="px-8 py-3 text-base font-semibold bg-white">
-              Join ICORE
+              <Link href="/signup">
+                Join ICORE
+              </Link>
+              
             </Button>
           </div>
         </div>
