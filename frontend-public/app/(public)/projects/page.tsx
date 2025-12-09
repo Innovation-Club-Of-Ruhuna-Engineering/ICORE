@@ -1,25 +1,27 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
-import { ProjectSearchFilters } from '@/components/project/project-search-filters';
-import { ProjectsGrid } from '@/components/project/projects-grid';
-import { useProjects } from '@/hooks/useProjects';
-import Link from 'next/link';
+import { ProjectSearchFilters } from "@/components/project/project-search-filters";
+import { ProjectsGrid } from "@/components/project/projects-grid";
+import { useProjects } from "@/hooks/useProjects";
+import Link from "next/link";
 
 export default function ProjectsPage() {
   const {
     projects,
     total,
     hasMore,
+    currentPage,
+    totalPages,
     isLoading,
     error,
     filterOptions,
     filters,
+    goToPage,
     loadMore,
     setFilters: handleSetFilters,
   } = useProjects();
 
-  
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -32,13 +34,12 @@ export default function ProjectsPage() {
                 <span className="text-primary">Projects</span>
               </h1>
               <p className="text-lg text-muted-foreground text-pretty max-w-2xl">
-                Discover groundbreaking projects from the Innovation Club of Ruhuna Engineering
+                Discover groundbreaking projects from the Innovation Club of
+                Ruhuna Engineering
               </p>
             </div>
             <Button size="lg" className="shadow-lg" asChild>
-              <Link href="/new-project">
-                New Project
-              </Link>
+              <Link href="/new-project">New Project</Link>
             </Button>
           </div>
         </div>
@@ -58,10 +59,14 @@ export default function ProjectsPage() {
 
         {/* Projects Grid */}
         <ProjectsGrid
-          data={projects.length > 0 ? { projects, total, hasMore } : null}
+          data={
+            projects.length > 0
+              ? { projects, total, hasMore, currentPage, totalPages }
+              : null
+          }
           isLoading={isLoading}
           error={error}
-          onLoadMore={loadMore}
+          onPageChange={goToPage}
           hasMore={hasMore}
         />
       </div>
