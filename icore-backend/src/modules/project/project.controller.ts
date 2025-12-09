@@ -19,10 +19,14 @@ import {
 import { ProjectService } from './project.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
-import { Project,User } from '@prisma/client';
+import { Project, User } from '@prisma/client';
 import { CreateProjectInput } from './dto/createProject.input';
 import { UpdateProjectInput } from './dto/updateProject.input';
-import { AddMemberInput, AddGuestMemberInput, UpdateMemberRoleInput } from './dto/member.input';
+import {
+  AddMemberInput,
+  AddGuestMemberInput,
+  UpdateMemberRoleInput,
+} from './dto/member.input';
 import { MemberResponse, GuestMemberResponse } from './dto/member.response';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -42,7 +46,13 @@ import { PublicProjectResponse } from './dto/public-project.response';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
-  private mapToPublicResponse(project: Project & { owner: { id: string; username: string }, members: any[], guestMembers: any[] }): PublicProjectResponse {
+  private mapToPublicResponse(
+    project: Project & {
+      owner: { id: string; username: string };
+      members: any[];
+      guestMembers: any[];
+    },
+  ): PublicProjectResponse {
     return {
       id: project.id,
       name: project.name,
@@ -66,10 +76,10 @@ export class ProjectController {
       updatedAt: project.updatedAt,
       owner: {
         id: project.owner.id,
-        username: project.owner.username
+        username: project.owner.username,
       },
       membersCount: project.members.length,
-      guestMembersCount: project.guestMembers.length
+      guestMembersCount: project.guestMembers.length,
     };
   }
 
@@ -85,10 +95,23 @@ export class ProjectController {
   @ApiQuery({ name: 'type', required: false })
   @ApiQuery({ name: 'tags', required: false, isArray: true, type: [String] })
   @ApiQuery({ name: 'status', required: false })
-  @ApiQuery({ name: 'technologies', required: false, isArray: true, type: [String] })
-  @ApiQuery({ name: 'sortBy', required: false, enum: ['createdAt', 'name', 'startDate'] })
+  @ApiQuery({
+    name: 'technologies',
+    required: false,
+    isArray: true,
+    type: [String],
+  })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    enum: ['createdAt', 'name', 'startDate'],
+  })
   @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
-  @ApiResponse({ status: 200, description: 'List of public projects', type: [PublicProjectResponse] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of public projects',
+    type: [PublicProjectResponse],
+  })
   async findAllPublic(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -102,7 +125,11 @@ export class ProjectController {
   ) {
     // Normalize array parameters
     const Tags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
-    const Technologies = Array.isArray(technologies) ? technologies : technologies ? [technologies] : undefined;
+    const Technologies = Array.isArray(technologies)
+      ? technologies
+      : technologies
+        ? [technologies]
+        : undefined;
 
     if (Tags && Tags.length > 5) {
       throw new BadRequestException('Too many tags provided. Maximum is 5.');
@@ -124,19 +151,28 @@ export class ProjectController {
     );
 
     return {
-      projects: result.projects.map(project => this.mapToPublicResponse(project)),
+      projects: result.projects.map((project) =>
+        this.mapToPublicResponse(project),
+      ),
       total: result.total,
-      hasMore: result.hasMore
+      hasMore: result.hasMore,
+      currentPage: result.currentPage,
+      totalPages: result.totalPages,
     };
   }
 
   @Get('public/user/:username')
   @ApiOperation({ summary: 'Get public projects by username' })
   @ApiParam({ name: 'username', description: 'Username' })
-  @ApiResponse({ status: 200, description: 'List of public projects by user', type: [PublicProjectResponse] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of public projects by user',
+    type: [PublicProjectResponse],
+  })
   async findPublicByUsername(@Param('username') username: string) {
-    const projects = await this.projectService.findPublicProjectsByUsername(username);
-    return projects.map(project => this.mapToPublicResponse(project));
+    const projects =
+      await this.projectService.findPublicProjectsByUsername(username);
+    return projects.map((project) => this.mapToPublicResponse(project));
   }
 
   @Get('public/filters')
@@ -153,25 +189,35 @@ export class ProjectController {
     console.log('Test endpoint - Raw tags:', tags);
     const Tags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
     console.log('Test endpoint - Normalized tags:', Tags);
-    
+
     // Get a few projects to test with
     const projects = await this.projectService.findAll(1, 5);
     console.log('Test endpoint - Found projects:', projects.projects.length);
-    
+
     return {
       rawTags: tags,
       Tags,
       projectCount: projects.projects.length,
-      projects: projects.projects.map(p => ({ id: p.id, name: p.name, tags: p.tags }))
+      projects: projects.projects.map((p) => ({
+        id: p.id,
+        name: p.name,
+        tags: p.tags,
+      })),
     };
   }
 
   @Get('public/:id')
   @ApiOperation({ summary: 'Get public project by ID' })
   @ApiParam({ name: 'id', description: 'Project ID' })
-  @ApiResponse({ status: 200, description: 'Project found', type: PublicProjectResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Project found',
+    type: PublicProjectResponse,
+  })
   @ApiResponse({ status: 404, description: 'Project not found' })
-  async findPublicOne(@Param('id', ParseUUIDPipe) id: string): Promise<PublicProjectResponse> {
+  async findPublicOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<PublicProjectResponse> {
     const project = await this.projectService.findOneById(id);
     if (!project || !project.isVisible) {
       throw new NotFoundException('Project not found or not publicly visible');
@@ -189,7 +235,11 @@ export class ProjectController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all projects for a user' })
   @ApiParam({ name: 'userId', description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'List of user projects', type: [ProjectResponse] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of user projects',
+    type: [ProjectResponse],
+  })
   async findUserProjects(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.projectService.findUserProjects(userId);
   }
@@ -204,10 +254,23 @@ export class ProjectController {
   @ApiQuery({ name: 'type', required: false })
   @ApiQuery({ name: 'tags', required: false, isArray: true, type: [String] })
   @ApiQuery({ name: 'status', required: false })
-  @ApiQuery({ name: 'technologies', required: false, isArray: true, type: [String] })
-  @ApiQuery({ name: 'sortBy', required: false, enum: ['createdAt', 'name', 'startDate'] })
+  @ApiQuery({
+    name: 'technologies',
+    required: false,
+    isArray: true,
+    type: [String],
+  })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    enum: ['createdAt', 'name', 'startDate'],
+  })
   @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
-  @ApiResponse({ status: 200, description: 'List of projects', type: [ProjectResponse] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of projects',
+    type: [ProjectResponse],
+  })
   @ApiResponse({ status: 400, description: 'Bad request' })
   findAll(
     @Query('page') page?: number,
@@ -221,7 +284,11 @@ export class ProjectController {
     @Query('sortOrder') sortOrder?: string,
   ) {
     const Tags = Array.isArray(tags) ? tags : tags ? [tags] : undefined;
-    const Technologies = Array.isArray(technologies) ? technologies : technologies ? [technologies] : undefined;
+    const Technologies = Array.isArray(technologies)
+      ? technologies
+      : technologies
+        ? [technologies]
+        : undefined;
 
     if (Tags && Tags.length > 5) {
       throw new BadRequestException('Too many tags provided. Maximum is 5.');
@@ -247,7 +314,11 @@ export class ProjectController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new project' })
-  @ApiResponse({ status: 201, description: 'Project successfully created', type: ProjectResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'Project successfully created',
+    type: ProjectResponse,
+  })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async create(
     @Body() createProjectInput: CreateProjectInput,
@@ -261,7 +332,11 @@ export class ProjectController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get project by ID (requires authentication)' })
   @ApiParam({ name: 'id', description: 'Project ID' })
-  @ApiResponse({ status: 200, description: 'Project found', type: ProjectResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Project found',
+    type: ProjectResponse,
+  })
   @ApiResponse({ status: 404, description: 'Project not found' })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Project> {
     return this.projectService.findOneById(id);
@@ -272,7 +347,11 @@ export class ProjectController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update project by ID' })
   @ApiParam({ name: 'id', description: 'Project ID' })
-  @ApiResponse({ status: 200, description: 'Project updated successfully', type: ProjectResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Project updated successfully',
+    type: ProjectResponse,
+  })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Project not found' })
   async update(
@@ -282,7 +361,10 @@ export class ProjectController {
   ): Promise<Project> {
     const project = await this.projectService.findOneById(id);
     if (!project) throw new NotFoundException('Project not found');
-    if (project.ownerId !== user.id) throw new ForbiddenException('You do not have permission to update this project');
+    if (project.ownerId !== user.id)
+      throw new ForbiddenException(
+        'You do not have permission to update this project',
+      );
     return this.projectService.update(id, updateProjectInput);
   }
 
@@ -296,7 +378,10 @@ export class ProjectController {
   @ApiResponse({ status: 200, description: 'Images uploaded successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Project not found' })
-  @ApiResponse({ status: 403, description: 'Only project owner can upload images' })
+  @ApiResponse({
+    status: 403,
+    description: 'Only project owner can upload images',
+  })
   async uploadProjectImages(
     @Param('id', ParseUUIDPipe) id: string,
     @UploadedFiles() files: Express.Multer.File[],
@@ -311,19 +396,30 @@ export class ProjectController {
     }
 
     // Validate file types
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const allowedMimeTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ];
     for (const file of files) {
       if (!allowedMimeTypes.includes(file.mimetype)) {
-        throw new BadRequestException(`Invalid file type: ${file.mimetype}. Only JPEG, PNG, WebP, and GIF are allowed.`);
+        throw new BadRequestException(
+          `Invalid file type: ${file.mimetype}. Only JPEG, PNG, WebP, and GIF are allowed.`,
+        );
       }
     }
 
-    const uploadedUrls = await this.projectService.uploadProjectImages(id, files, user.id);
-    
+    const uploadedUrls = await this.projectService.uploadProjectImages(
+      id,
+      files,
+      user.id,
+    );
+
     return {
       message: 'Images uploaded successfully',
       uploadedImages: uploadedUrls,
-      count: uploadedUrls.length
+      count: uploadedUrls.length,
     };
   }
 
@@ -342,7 +438,8 @@ export class ProjectController {
     @CurrentUser() user: User,
   ) {
     const project = await this.projectService.findOneById(id);
-    if (project.ownerId !== user.id) throw new ForbiddenException('Only project owner can add members');
+    if (project.ownerId !== user.id)
+      throw new ForbiddenException('Only project owner can add members');
     return this.projectService.addMember(id, addMemberInput);
   }
 
@@ -357,7 +454,8 @@ export class ProjectController {
     @CurrentUser() user: User,
   ) {
     const project = await this.projectService.findOneById(id);
-    if (project.ownerId !== user.id) throw new ForbiddenException('Only project owner can add guest members');
+    if (project.ownerId !== user.id)
+      throw new ForbiddenException('Only project owner can add guest members');
     return this.projectService.addGuestMember(id, addGuestMemberInput);
   }
 
@@ -373,7 +471,11 @@ export class ProjectController {
     @Body() updateMemberInput: UpdateMemberRoleInput,
     @CurrentUser() user: User,
   ) {
-    return this.projectService.updateMemberRole(id, memberId, updateMemberInput);
+    return this.projectService.updateMemberRole(
+      id,
+      memberId,
+      updateMemberInput,
+    );
   }
 
   @Delete(':id/member/:memberId')
