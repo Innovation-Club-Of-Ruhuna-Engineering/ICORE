@@ -4,118 +4,108 @@ import { NewsletterForm } from '@/components/course/newsletter-form';
 import { motion } from 'framer-motion';
 
 const NewsletterPage = () => {
-  const courses = [
-    'Web Development & CAD Design',
-    'Home Electricity',
-    'Electronics',
-    'Product Development',
-    'Gadget Building',
-    'Software Security',
-  ];
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
+  // Animated background elements
+  const FloatingShape = ({ delay, duration, x, y, size, opacity }: any) => (
+    <motion.div
+      className="absolute rounded-full bg-gradient-to-br from-blue-400/20 to-blue-600/10 blur-3xl"
+      style={{
+        width: size,
+        height: size,
+        left: x,
+        top: y,
+      }}
+      animate={{
+        y: [0, -30, 0],
+        x: [0, 20, 0],
+        opacity: [opacity, opacity + 0.2, opacity],
+      }}
+      transition={{
+        duration,
+        delay,
+        repeat: Infinity,
+        ease: 'easeInOut',
+      }}
+    />
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-slate-50 dark:to-slate-950">
-      {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 text-center"
-      >
-        <div className="mb-6">
-          <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 bg-clip-text text-transparent mb-4">
-            Practical Engineering Course
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Join the <span className="font-semibold text-foreground">Innovation Club of Ruhuna Engineering (ICORE)</span> for an exciting journey into practical engineering
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-white dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-950 overflow-hidden relative">
+      {/* Animated Background Shapes */}
+      <FloatingShape delay={0} duration={8} x="10%" y="20%" size="400px" opacity={0.3} />
+      <FloatingShape delay={2} duration={10} x="80%" y="60%" size="300px" opacity={0.25} />
+      <FloatingShape delay={4} duration={9} x="50%" y="10%" size="350px" opacity={0.2} />
 
-        {/* Course Overview */}
+      {/* Grid Pattern Overlay */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10" />
+
+      {/* Noise Texture */}
+      <div className="absolute inset-0 bg-noise opacity-[0.02] dark:opacity-[0.05]" />
+
+      {/* Main Content */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-4xl mx-auto mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-md w-full"
         >
-          <h2 className="text-3xl font-bold text-foreground mb-8">Course Modules</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {courses.map((course, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                className="bg-card border border-border rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow"
-              >
-                <div className="w-full h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mb-3" />
-                <p className="font-semibold text-foreground text-center">{course}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </motion.section>
-
-      {/* Newsletter Subscription Form Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: 0.3 }}
-        className="py-16 px-4 sm:px-6 lg:px-8"
-      >
-        <div className="max-w-2xl mx-auto">
+          {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center mb-10"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-3">
-              Stay Updated
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Subscribe to our newsletter to receive updates about the Practical Engineering Course and exclusive ICORE events
+            <div className="mb-6 inline-block">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                className="relative"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                
+              </motion.div>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 dark:from-blue-400 dark:via-blue-300 dark:to-blue-500 mb-4">
+              Practical Engineering Course Newsletter
+            </h1>
+
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 font-medium">
+              Join thousands of innovators exploring practical engineering
             </p>
           </motion.div>
 
-          <NewsletterForm />
-
-          {/* Additional Info */}
+          {/* Form Container */}
           <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="relative"
+          >
+            {/* Gradient Border Effect */}
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/50 via-blue-400/30 to-blue-600/50 rounded-2xl blur opacity-75 dark:opacity-50 group-hover:opacity-100 transition duration-1000" />
+
+            {/* Form Background */}
+            <div className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-blue-100/50 dark:border-blue-800/30 shadow-2xl">
+              <NewsletterForm />
+            </div>
+          </motion.div>
+
+          {/* Footer Note */}
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-10 p-6 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg text-center"
+            className="text-center text-xs text-gray-500 dark:text-gray-400 mt-8"
           >
-            <p className="text-muted-foreground mb-2">
-              Have questions? Get in touch with us!
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center text-sm font-semibold">
-              <span>📞 077 927 6997</span>
-              <span className="hidden sm:inline">|</span>
-              <span>📧 admin@theicore.org</span>
-            </div>
-          </motion.div>
-        </div>
-      </motion.section>
+            No spam. Unsubscribe anytime. We respect your privacy.
+          </motion.p>
+        </motion.div>
+      </div>
+
+      {/* Gradient Overlay Bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white dark:from-slate-950 to-transparent pointer-events-none" />
     </div>
   );
 };
