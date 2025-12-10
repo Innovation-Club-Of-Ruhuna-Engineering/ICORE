@@ -3,9 +3,18 @@ import React from 'react';
 import { NewsletterForm } from '@/components/course/newsletter-form';
 import { motion } from 'framer-motion';
 
+interface FloatingShapeProps {
+  delay: number;
+  duration: number;
+  x: string;
+  y: string;
+  size: string;
+  opacity: number;
+}
+
 const NewsletterPage = () => {
   // Animated background elements
-  const FloatingShape = ({ delay, duration, x, y, size, opacity }: any) => (
+  const FloatingShape = ({ delay, duration, x, y, size, opacity }: FloatingShapeProps) => (
     <motion.div
       className="absolute rounded-full bg-gradient-to-br from-blue-400/20 to-blue-600/10 blur-3xl"
       style={{
