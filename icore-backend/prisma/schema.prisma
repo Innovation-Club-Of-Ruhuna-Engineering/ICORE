@@ -52,7 +52,7 @@ model User {
   skills      Json? // Skills as JSON array
 
   role           Role      @default(GENERAL)
-  status         Status    @default(PENDING)
+  status         Status    @default(ACTIVE)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   projectMembers Member[]
@@ -81,7 +81,7 @@ model Project {
   githubURL    String?
   ownerId      String
   isVisible    Boolean       @default(false)
-  status       Status        @default(PENDING)
+  status       Status        @default(ACTIVE)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   guestMembers GuestMember[]
