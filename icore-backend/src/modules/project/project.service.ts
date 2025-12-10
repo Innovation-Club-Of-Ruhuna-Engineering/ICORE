@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/config/database/database.service';
-import { Project, Status,User } from '@prisma/client';
+import { Project, Status, User } from '@prisma/client';
 import { AddMemberInput, UpdateMemberInput } from './dto/projectMembers.dto';
 import { AddGuestMemberInput } from './dto/projectMembers.dto';
 import { CreateProjectInput } from './dto/createProject.input';
@@ -93,7 +93,8 @@ export class ProjectService {
       // Add additional members if provided
       if (members && members.length > 0) {
         for (const member of members) {
-          if (member.userId !== ownerId) { // Skip if it's the owner
+          if (member.userId !== ownerId) {
+            // Skip if it's the owner
             await this.addMember(project.id, member);
           }
         }
@@ -240,35 +241,43 @@ export class ProjectService {
   /**
    * Get public projects by username
    */
-  async findPublicProjectsByUsername(username: string): Promise<(Project & { owner: { id: string; username: string }, members: any[], guestMembers: any[] })[]> {
+  async findPublicProjectsByUsername(
+    username: string,
+  ): Promise<
+    (Project & {
+      owner: { id: string; username: string };
+      members: any[];
+      guestMembers: any[];
+    })[]
+  > {
     try {
       const projects = await this.databaseService.project.findMany({
         where: {
           owner: {
-            username: username
+            username: username,
           },
           isVisible: true,
-          status: Status.ACTIVE
+          status: Status.ACTIVE,
         },
         include: {
           owner: {
             select: {
               id: true,
-              username: true
-            }
+              username: true,
+            },
           },
           members: {
             select: {
-              id: true
-            }
+              id: true,
+            },
           },
           guestMembers: {
             select: {
-              id: true
-            }
-          }
+              id: true,
+            },
+          },
         },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       });
 
       return projects;
@@ -276,7 +285,9 @@ export class ProjectService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to retrieve public projects');
+      throw new InternalServerErrorException(
+        'Failed to retrieve public projects',
+      );
     }
   }
 
@@ -293,11 +304,21 @@ export class ProjectService {
     technologies?: string[],
     sortBy?: string,
     sortOrder?: string,
-  ): Promise<{ projects: (Project & { owner: { id: string; username: string }, members: any[], guestMembers: any[] })[]; total: number; hasMore: boolean }> {
+  ): Promise<{
+    projects: (Project & {
+      owner: { id: string; username: string };
+      members: any[];
+      guestMembers: any[];
+    })[];
+    total: number;
+    hasMore: boolean;
+    currentPage: number;
+    totalPages: number;
+  }> {
     try {
       const where: any = {
         isVisible: true,
-        status: Status.ACTIVE
+        status: Status.ACTIVE,
       };
 
       if (search) {
@@ -342,19 +363,19 @@ export class ProjectService {
             owner: {
               select: {
                 id: true,
-                username: true
-              }
+                username: true,
+              },
             },
             members: {
               select: {
-                id: true
-              }
+                id: true,
+              },
             },
             guestMembers: {
               select: {
-                id: true
-              }
-            }
+                id: true,
+              },
+            },
           },
           skip: (page - 1) * limit,
           take: limit,
@@ -363,10 +384,14 @@ export class ProjectService {
         this.databaseService.project.count({ where }),
       ]);
 
+      const totalPages = Math.ceil(total / limit);
+
       return {
         projects,
         total,
-        hasMore: total > page * limit
+        hasMore: total > page * limit,
+        currentPage: page,
+        totalPages,
       };
     } catch (error) {
       throw new InternalServerErrorException(
@@ -384,7 +409,7 @@ export class ProjectService {
   ): Promise<Project> {
     try {
       // TODO: Check if user has permission (Only owner can edit?)
-      
+
       // Extract members and guestMembers from input
       const { members, guestMembers, ...projectData } = updateProjectInput;
 
@@ -425,7 +450,7 @@ export class ProjectService {
 
       return updatedProject;
     } catch (error) {
-      console.error('Project Update Error:', error); 
+      console.error('Project Update Error:', error);
       if (error instanceof HttpException) {
         throw error;
       }
@@ -681,20 +706,22 @@ export class ProjectService {
   /**
    * Get all members of a project
    */
-  async getProjectMembers(projectId: string): Promise<{
-    id: string;
-    email: string;
-    username: string;
-    avatarUrl: string | null;
-    firstName: string;
-    role: string;
-    memberId: string;
-  }[]> {
+  async getProjectMembers(projectId: string): Promise<
+    {
+      id: string;
+      email: string;
+      username: string;
+      avatarUrl: string | null;
+      firstName: string;
+      role: string;
+      memberId: string;
+    }[]
+  > {
     try {
       await this.findOneById(projectId);
       const members = await this.databaseService.member.findMany({
         where: { projectId },
-        include: { 
+        include: {
           user: {
             select: {
               id: true,
@@ -702,15 +729,15 @@ export class ProjectService {
               username: true,
               avatarUrl: true,
               firstName: true,
-              role: true
-            }
-          }
+              role: true,
+            },
+          },
         }, // Include only specific user details
       });
       return members.map((member) => ({
         ...member.user,
         role: member.role,
-        memberId: member.id // Include member ID for removal
+        memberId: member.id, // Include member ID for removal
       }));
     } catch (error) {
       if (error instanceof HttpException) {
@@ -751,7 +778,11 @@ export class ProjectService {
 
   // ------------------------------------------------------------------------------------ //
 
-  async uploadProjectImages(projectId: string, files: Express.Multer.File[], userId: string) {
+  async uploadProjectImages(
+    projectId: string,
+    files: Express.Multer.File[],
+    userId: string,
+  ) {
     // First verify the project exists and user has permission
     const project = await this.findOneById(projectId);
     if (!project) {
@@ -779,48 +810,53 @@ export class ProjectService {
     technologies: string[];
   }> {
     try {
-      const [types, statuses, tags, technologies] = await this.databaseService.$transaction([
-        // Get unique project types
-        this.databaseService.project.findMany({
-          where: { isVisible: true, status: Status.ACTIVE },
-          select: { type: true },
-          distinct: ['type'],
-        }),
-        // Get unique statuses
-        this.databaseService.project.findMany({
-          where: { isVisible: true },
-          select: { status: true },
-          distinct: ['status'],
-        }),
-        // Get all unique tags from visible projects
-        this.databaseService.project.findMany({
-          where: { isVisible: true, status: Status.ACTIVE },
-          select: { tags: true },
-        }),
-        // Get all unique technologies from visible projects
-        this.databaseService.project.findMany({
-          where: { isVisible: true, status: Status.ACTIVE },
-          select: { technologies: true },
-        }),
-      ]);
+      const [types, statuses, tags, technologies] =
+        await this.databaseService.$transaction([
+          // Get unique project types
+          this.databaseService.project.findMany({
+            where: { isVisible: true, status: Status.ACTIVE },
+            select: { type: true },
+            distinct: ['type'],
+          }),
+          // Get unique statuses
+          this.databaseService.project.findMany({
+            where: { isVisible: true },
+            select: { status: true },
+            distinct: ['status'],
+          }),
+          // Get all unique tags from visible projects
+          this.databaseService.project.findMany({
+            where: { isVisible: true, status: Status.ACTIVE },
+            select: { tags: true },
+          }),
+          // Get all unique technologies from visible projects
+          this.databaseService.project.findMany({
+            where: { isVisible: true, status: Status.ACTIVE },
+            select: { technologies: true },
+          }),
+        ]);
 
       // Extract and flatten tags and technologies
-      const allTags = tags.flatMap(project => project.tags);
-      const allTechnologies = technologies.flatMap(project => project.technologies);
+      const allTags = tags.flatMap((project) => project.tags);
+      const allTechnologies = technologies.flatMap(
+        (project) => project.technologies,
+      );
 
       // Get unique values
       const uniqueTags = [...new Set(allTags)].sort();
       const uniqueTechnologies = [...new Set(allTechnologies)].sort();
 
       return {
-        types: types.map(t => t.type),
-        statuses: statuses.map(s => s.status),
+        types: types.map((t) => t.type),
+        statuses: statuses.map((s) => s.status),
         tags: uniqueTags,
         technologies: uniqueTechnologies,
       };
     } catch (error) {
       console.error('Error getting filter options:', error);
-      throw new InternalServerErrorException('Failed to retrieve filter options');
+      throw new InternalServerErrorException(
+        'Failed to retrieve filter options',
+      );
     }
   }
 
