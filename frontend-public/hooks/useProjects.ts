@@ -37,7 +37,7 @@ export function useProjects(initialFilters: ProjectFilters = {}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 9;
 
   // Load filter options
   const loadFilterOptions = useCallback(async () => {
