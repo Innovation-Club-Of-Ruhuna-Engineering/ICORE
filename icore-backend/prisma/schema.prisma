@@ -114,6 +114,19 @@ model GuestMember {
   project   Project     @relation(fields: [projectId], references: [id])
 }
 
+model NewsletterSubscriber {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  contactNumber String
+  age           Int?
+  school        String?
+  subscribedAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("newsletter_subscribers")
+}
+
 enum Role {
   GENERAL
   FULL

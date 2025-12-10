@@ -13,7 +13,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "prismaClient": "prisma generate",
-    "prismaMigrate": "prisma migrate dev --name init",
+    "prismaMigrate": "prisma migrate dev --name newsletter_subscriber",
     "prismaMigrate:reset": "prisma migrate reset",
     "prismaMigrate:deploy": "prisma migrate deploy",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
