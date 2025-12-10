@@ -42,36 +42,36 @@ const NewsletterPage = () => {
       <div className="absolute inset-0 bg-noise opacity-[0.02] dark:opacity-[0.05]" />
 
       {/* Main Content */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-3 sm:px-4 md:px-6 lg:px-8 py-12 sm:py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-md w-full"
+          className="w-full sm:max-w-md lg:max-w-3xl"
         >
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-10 lg:mb-12"
           >
-            <div className="mb-6 inline-block">
+            <div className="mb-6 inline-block ">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                 className="relative"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                
+
               </motion.div>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 dark:from-blue-400 dark:via-blue-300 dark:to-blue-500 mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 dark:from-blue-400 dark:via-blue-300 dark:to-blue-500 mb-4 leading-tight">
               Practical Engineering Course Newsletter
             </h1>
 
-            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 font-medium">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-300 font-medium px-2">
               Join thousands of innovators exploring practical engineering
             </p>
           </motion.div>
@@ -97,7 +97,7 @@ const NewsletterPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-center text-xs text-gray-500 dark:text-gray-400 mt-8"
+            className="text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-6 sm:mt-8 px-2"
           >
             No spam. Unsubscribe anytime. We respect your privacy.
           </motion.p>

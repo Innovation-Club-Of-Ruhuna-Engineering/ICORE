@@ -151,20 +151,20 @@ export const NewsletterForm = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.4 }}
-                    className="flex flex-col items-center justify-center py-16 px-8"
+                    className="flex flex-col items-center justify-center py-12 sm:py-16 px-4 sm:px-8"
                 >
                     <motion.div
                         animate={{ scale: [1, 1.1, 1] }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                        <CheckCircle className="w-20 h-20 text-green-500 mb-6" />
+                        <CheckCircle className="w-16 sm:w-20 h-16 sm:h-20 text-green-500 mb-4 sm:mb-6" />
                     </motion.div>
 
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 text-center">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 text-center">
                         Welcome to ICORE!
                     </h2>
 
-                    <p className="text-gray-600 dark:text-gray-300 text-center mb-8">
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 text-center mb-6 sm:mb-8 px-2">
                         Thanks for joining. Check your email for updates on our upcoming Practical Engineering Course.
                     </p>
 
@@ -184,14 +184,14 @@ export const NewsletterForm = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="p-8 space-y-5"
+                    className="p-4 sm:p-8 md:p-8 space-y-4 sm:space-y-5 sm:mx-2"
                 >
                     {/* Name Field */}
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.05 }}
-                        className="space-y-2"
+                        className="space-y-1.5 sm:space-y-2"
                     >
                         <Label
                             htmlFor="name"
@@ -199,6 +199,7 @@ export const NewsletterForm = () => {
                         >
                             <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                             Full Name
+                            <span className="text-red-500 ml-1">*</span>
                         </Label>
                         <Input
                             id="name"
@@ -231,7 +232,7 @@ export const NewsletterForm = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="space-y-2"
+                        className="space-y-1.5 sm:space-y-2"
                     >
                         <Label
                             htmlFor="email"
@@ -239,6 +240,7 @@ export const NewsletterForm = () => {
                         >
                             <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                             Email
+                            <span className="text-red-500 ml-1">*</span>
                         </Label>
                         <Input
                             id="email"
@@ -271,7 +273,7 @@ export const NewsletterForm = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.15 }}
-                        className="space-y-2"
+                        className="space-y-1.5 sm:space-y-2"
                     >
                         <Label
                             htmlFor="contactNumber"
@@ -279,6 +281,7 @@ export const NewsletterForm = () => {
                         >
                             <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                             Phone
+                            <span className="text-red-500 ml-1">*</span>
                         </Label>
                         <Input
                             id="contactNumber"
@@ -311,16 +314,17 @@ export const NewsletterForm = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="grid grid-cols-2 gap-4"
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                     >
                         {/* Age Field */}
-                        <div className="space-y-2">
+                        <div className="space-y-1.5 sm:space-y-2">
                             <Label
                                 htmlFor="age"
                                 className="text-sm font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2"
                             >
                                 <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                 Age
+                                <span className="text-gray-400 text-xs ml-auto">(Optional)</span>
                             </Label>
                             <Input
                                 id="age"
@@ -351,13 +355,14 @@ export const NewsletterForm = () => {
                         </div>
 
                         {/* School Field */}
-                        <div className="space-y-2">
+                        <div className="space-y-1.5 sm:space-y-2">
                             <Label
                                 htmlFor="school"
                                 className="text-sm font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2"
                             >
                                 <School className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                 School
+                                <span className="text-gray-400 text-xs ml-auto">(Optional)</span>
                             </Label>
                             <Input
                                 id="school"
