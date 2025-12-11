@@ -122,22 +122,22 @@ export function HeroSection() {
         </div>
       )}
 
-      <div className="relative z-10 container mx-auto px-4 py-40 md:py-48 lg:py-56">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
+      <div className="relative z-10 container mx-auto px-4 lg:mt-24 py-20 md:py-32 lg:py-40">
+        <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8">
           {/* Main Heading */}
-          <div className="space-y-6">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-balance leading-tight">
+          <div className="space-y-4 md:space-y-6">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-balance leading-tight">
               <span className="text-foreground">Innovation Club of </span>
               <span className="bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">Ruhuna Engineering</span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto text-pretty leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto text-pretty leading-relaxed">
               The Innovation Club of Ruhuna Engineering empowers students to explore creativity, develop technologies,
               and build solutions that make an impact.
             </p>
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 md:pt-6">
             <Button size="lg" className="px-8 py-3 text-base font-semibold" >
               <Link href="/projects">
                 Explore Projects

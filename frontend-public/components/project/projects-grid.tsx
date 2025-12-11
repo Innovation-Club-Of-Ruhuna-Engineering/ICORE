@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { ProjectCard } from "@/components/shared/project-card";
 import { PublicProjectsResponse } from "@/lib/projects/projectMethods";
-import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
