@@ -396,10 +396,11 @@ const StudentRegStepOne = () => {
             </Label>
             <div className="flex flex-wrap gap-3 mt-1">
               {[
+                { id: "FIRST YEAR", name: "First Year - Not Assigned" }, 
                 { id: "DEIE", name: "Electrical & Information Engineering" },
-                { id: "DMENA", name: "Mechanical & Manufacturing Engineering" },
+                { id: "DMME", name: "Mechanical & Manufacturing Engineering" },
                 { id: "DCEE", name: "Civil & Environmental Engineering" },
-                { id: "DMME", name: "Marine Engineering & Naval Architecture" }
+                { id: "DMENA", name: "Marine Engineering & Naval Architecture" }
               ].map((dept) => (
                 <label
                   key={dept.id}
