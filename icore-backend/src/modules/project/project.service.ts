@@ -76,7 +76,7 @@ export class ProjectService {
           photos: projectData.photos || [],
           documents: projectData.documents || [],
           isVisible: projectData.isVisible || false,
-          status: projectData.status || Status.PENDING,
+          status: projectData.status || Status.ACTIVE,
           owner: { connect: { id: ownerId } },
         },
       });

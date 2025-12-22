@@ -27,7 +27,6 @@ import {
   AddGuestMemberInput,
   UpdateMemberRoleInput,
 } from './dto/member.input';
-import { MemberResponse, GuestMemberResponse } from './dto/member.response';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
