@@ -79,8 +79,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -125,6 +124,34 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+.animated-gradient-text {
+  background: linear-gradient(
+    45deg,
+    rgb(5 86 250),
+    rgb(5, 5, 5),
+    rgb(56, 0, 119),
+    rgb(30, 181, 255)
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  animation: gradientMove 15s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
