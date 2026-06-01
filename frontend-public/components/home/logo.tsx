@@ -3,10 +3,15 @@
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 
+const SCALE = 6.0;
+const END_SCALE = 15.0; // new scale after background turns black
+
 function Logo() {
   const containerRef = useRef<HTMLDivElement>(null);
+
   const [scale, setScale] = useState(2.9);
-  const [rotate, setRotate] = useState(-90);
+  const [isEnd, setIsEnd] = useState(false);
+  const [rotation, setRotation] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,11 +27,19 @@ function Logo() {
         1
       );
 
-      const newScale = 2.9 - scrollProgress * (2.9 - 1);
-      const newRotate = 0 - scrollProgress * 90;
+      const newScale = SCALE - scrollProgress * (SCALE - 1);
 
-      setScale(newScale);
-      setRotate(newRotate);
+      if (scrollProgress < 1) {
+        setScale(newScale);
+        setRotation(0);
+        setIsEnd(false);
+      } else {
+        setIsEnd(true);
+
+        // rotate anticlockwise and zoom further
+        setRotation(-90); // degrees
+        setScale(END_SCALE);
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -38,17 +51,21 @@ function Logo() {
   return (
     <div
       ref={containerRef}
-      className="flex h-screen items-center justify-center bg-[#0556fa] overflow-hidden"
+      className={`flex h-screen items-center justify-center overflow-hidden transition-colors duration-500 ${
+        isEnd ? "bg-black" : "bg-[#0556fa]"
+      }`}
     >
       <Image
         src="/white.png"
         alt="ICORE Logo"
-        width={600}
-        height={600}
+        width={300}
+        height={300}
         style={{
-          transform: `scale(${scale}) rotate(${rotate}deg)`,
+          transform: `scale(${scale}) rotate(${rotation}deg)`,
           transformOrigin: "center",
-          transition: "transform 0.05s linear",
+          transition: isEnd
+            ? "transform 1s ease-in-out"
+            : "transform 0.05s linear",
           willChange: "transform",
         }}
       />

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 
-const TOTAL_FRAMES = 120; // ← set to your actual frame count
+const TOTAL_FRAMES = 96; // set to your actual frame count
 const FRAMES_DIR = "/ai";
 
 const frameSrc = (index: number) =>
@@ -89,8 +89,16 @@ function AI() {
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-black flex items-center justify-center">
         <canvas ref={canvasRef} className="w-full h-full object-contain" />
 
+        {/* OVERLAY TEXT */}
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+            <h1 className="text-white text-6xl md:text-8xl font-bold tracking-tight text-center">
+            Artificial Intelligence and Data Engineering
+            </h1>
+        </div>
+
+        {/* LOADING UI stays above everything */}
         {!loaded && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black text-white gap-4">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black text-white gap-4 z-20">
             <div className="w-48 h-1 bg-white/20 rounded-full overflow-hidden">
               <div
                 className="h-full bg-white transition-all duration-150 rounded-full"
