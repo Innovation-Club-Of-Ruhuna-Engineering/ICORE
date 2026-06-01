@@ -4,9 +4,9 @@ import React from 'react'
 function Logo() {
   return (
     <div>
-        <div className="flex h-screen items-center justify-center bg-[#0556fa]">
+        <div className="flex h-screen items-center justify-center">
             <Image
-                src="/white.png"
+                src="/blue.png"
                 alt="ICORE Logo"
                 width={600}
                 height={600}

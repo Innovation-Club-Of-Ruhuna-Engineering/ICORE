@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/userAuthContext";
 import { Toaster } from "react-hot-toast";
 import { Navigation } from "@/components/shared/navigation";
 import Header from "@/components/shared/header";
+import Link from "next/link";
 
 const inter = Inter({
   subsets: ["latin"],

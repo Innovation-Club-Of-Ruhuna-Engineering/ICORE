@@ -5,7 +5,6 @@ import Image from "next/image";
 export default function Page() {
   return (
     <div className="min-h-screen">
-      <Navigation />
 
       <section className="bg-gradient-to-b from-blue-50 to-white pt-28">
         <div className="container mx-auto px-4">

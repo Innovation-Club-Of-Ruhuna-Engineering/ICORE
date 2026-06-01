@@ -3,6 +3,7 @@ import { LogIn } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import Menu from "./menu";
+import Link from "next/link";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -11,7 +12,7 @@ function Header() {
     <>
       <header
         className={`h-[80px] fixed top-0 left-0 w-full flex items-center justify-center z-50 transition-colors duration-300 ${
-          menuOpen ? "bg-black" : "bg-white"
+          menuOpen ? "bg-transparent" : "bg-white"
         }`}
       >
         {/* Menu Toggle */}
@@ -45,24 +46,27 @@ function Header() {
         </button>
 
         {/* Logo */}
-        <Image
-          src={menuOpen ? "/text white.png" : "/text black.png"}
-          alt="Logo"
-          height={80}
-          width={200}
-          className="my-4"
-        />
+        <Link href="/">
+          <Image
+            src={menuOpen ? "/text white.png" : "/text black.png"}
+            alt="Logo"
+            height={80}
+            width={200}
+            className="my-4"
+            onClick={() => setMenuOpen(false)}
+          />
+        </Link>
 
         {/* Button */}
-        <button className="absolute right-4 bg-[#0556fa] text-white px-6 py-4">
-          Sign in
-          <LogIn className="inline-block ml-2" />
-        </button>
+        <Link href="/signin" className="absolute right-4 bg-[#0556fa] text-white px-6 py-4">
+            Sign in
+            <LogIn className="inline-block ml-2" />
+        </Link>
       </header>
 
       {/* Menu Overlay */}
       {menuOpen && (
-        <div className="fixed inset-0 z-40 pt-[80px]">
+        <div className="fixed inset-0 z-40">
           <Menu onClose={() => setMenuOpen(false)} />
         </div>
       )}

@@ -13,9 +13,19 @@ function Menu({ onClose }: { onClose: () => void }) {
   }, []);
 
   return (
-    <div className="flex h-full items-center justify-center bg-black">
-      <canvas id="canvas" className="absolute inset-0" />
-      Hello
+    <div className="fixed inset-0 flex items-center bg-black">
+      <canvas id="canvas" className="absolute inset-0 h-full" />
+      <div className="relative z-10 flex flex-col gap-6 pl-48">
+        <Link href="/about" className="text-white text-[72px] font-medium" onClick={onClose}>
+          About
+        </Link>
+        <Link href="/projects" className="text-white text-[72px] font-medium" onClick={onClose}>
+          Projects
+        </Link>
+        <Link href="/news" className="text-white text-[72px] font-medium" onClick={onClose}>
+          News
+        </Link>
+      </div>
     </div>
   )
 }
