@@ -32,6 +32,7 @@ async function bootstrap() {
       'https://theicore.org',
       'https://dev-portal.theicore.org',
       'https://icore-steel.vercel.app',
+      'https://innovation.eng.ruh.ac.lk'
     ], // Allow only your Next.js app to access the API
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
