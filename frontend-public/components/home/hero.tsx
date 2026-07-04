@@ -13,8 +13,8 @@ function Hero() {
     }
 
     checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
   }, [])
 
   useEffect(() => {
@@ -35,7 +35,7 @@ function Hero() {
 
           const distance = Math.sqrt((x - dotX) ** 2 + (y - dotY) ** 2)
 
-          const isDark = document.documentElement.classList.contains('dark')
+          const isDark = document.documentElement.classList.contains("dark")
           if (distance < 100) {
             dotElement.style.backgroundColor = isDark ? "#ffffff" : "#000000"
             const scale = 1.2 - distance / 100
@@ -76,8 +76,10 @@ function Hero() {
             const intensity = 1 - distance / maxDistance
 
             setTimeout(() => {
-              dotElement.style.transform = `scale(${1 + intensity * 0.8}) translate(${(dotX - x) * intensity * 0.1}px, ${(dotY - y) * intensity * 0.1}px)`
-              const isDark = document.documentElement.classList.contains('dark')
+              dotElement.style.transform = `scale(${1 + intensity * 0.8}) translate(${
+                (dotX - x) * intensity * 0.1
+              }px, ${(dotY - y) * intensity * 0.1}px)`
+              const isDark = document.documentElement.classList.contains("dark")
               dotElement.style.backgroundColor = isDark ? "#60a5fa" : "#1d4ed8"
 
               setTimeout(() => {
@@ -103,7 +105,7 @@ function Hero() {
 
   return (
     <div>
-    {/* <section ref={heroRef}  id="home"> */}
+      {/* <section ref={heroRef} id="home"> */}
       {/* {!isMobile && (
         <div className="absolute inset-0 opacity-60 hidden md:block">
           {Array.from({ length: 800 }).map((_, i) => (
@@ -119,8 +121,8 @@ function Hero() {
           ))}
         </div>
       )} */}
-      <div className="flex h-[85vh] items-center justify-center">
-        <h1 className="text-[120px] font-medium text-center animated-gradient-text">
+      <div className="flex min-h-[70vh] md:h-[85vh] items-center justify-center px-4 sm:px-6 lg:px-8 py-16 md:py-0">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-[120px] font-medium text-center leading-tight animated-gradient-text">
           <span className="block">INNOVATION CLUB of</span>
           <span className="block">Ruhuna Engineering</span>
         </h1>

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { LogIn } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
@@ -29,7 +29,7 @@ function Header() {
   return (
     <>
       <header
-        className={`h-[80px] fixed top-0 left-0 w-full flex items-center justify-center z-50 
+        className={`h-[64px] md:h-[80px] fixed top-0 left-0 w-full flex items-center justify-center z-50 
         transition-transform duration-300
         ${showHeader ? "translate-y-0" : "-translate-y-full"}
         ${menuOpen ? "bg-transparent" : "bg-white"}`}
@@ -37,9 +37,9 @@ function Header() {
         {/* Menu Toggle */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-3 group cursor-pointer"
+          className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 flex items-center gap-3 group cursor-pointer"
         >
-          <div className="relative w-10 h-4 flex flex-col justify-between">
+          <div className="relative w-8 h-4 md:w-10 md:h-4 flex flex-col justify-between">
             <span
               className={`block h-[1.5px] transition-all duration-300 origin-center ${
                 menuOpen
@@ -57,7 +57,7 @@ function Header() {
           </div>
 
           <span
-            className={`text-sm tracking-wide font-medium transition-colors duration-300 ${
+            className={`hidden md:inline text-sm tracking-wide font-medium transition-colors duration-300 ${
               menuOpen ? "text-white" : "text-black"
             }`}
           >
@@ -69,16 +69,16 @@ function Header() {
         <Link
           href="/"
           onClick={() => setMenuOpen(false)}
-          className="group relative block w-[200px] h-[80px]"
+          className="group relative block w-[130px] h-[52px] md:w-[200px] md:h-[80px]"
         >
           {/* Default logo */}
           <Image
             src={menuOpen ? "/text white.png" : "/text black.png"}
             alt="Logo"
             fill
-            className={`object-contain transition-opacity duration-300 ${
-              menuOpen ? "opacity-100" : "opacity-100"
-            }`}
+            sizes="(min-width: 768px) 200px, 130px"
+            className="object-contain transition-opacity duration-300"
+            priority
           />
 
           {/* Hover logo */}
@@ -87,6 +87,7 @@ function Header() {
               src="/text blue.png"
               alt="Logo Hover"
               fill
+              sizes="(min-width: 768px) 200px, 130px"
               className="object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             />
           )}
@@ -95,10 +96,11 @@ function Header() {
         {/* Button */}
         <Link
           href="/signin"
-          className="absolute right-4 bg-[#0556fa] text-white px-6 py-4 rounded-sm"
+          aria-label="Sign in"
+          className="absolute right-3 sm:right-4 bg-[#0556fa] text-white p-3 md:px-6 md:py-4 rounded-sm flex items-center"
         >
-          Sign in
-          <LogIn className="inline-block ml-2" />
+          <span className="hidden md:inline">Sign in</span>
+          <LogIn className="inline-block md:ml-2 w-5 h-5 md:w-4 md:h-4" />
         </Link>
       </header>
 

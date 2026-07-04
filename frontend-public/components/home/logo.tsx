@@ -73,9 +73,7 @@ function Logo() {
       className="relative flex h-screen items-center justify-center overflow-hidden"
       style={{
         zIndex: 10,
-        backgroundImage: isEnd
-          ? "none"
-          : "url('/cgpt.png')", // Place image in /public
+        backgroundImage: isEnd ? "none" : "url('/cgpt.png')", // Place image in /public
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -92,6 +90,7 @@ function Logo() {
         alt="ICORE Logo"
         width={300}
         height={300}
+        className="w-[180px] h-[180px] md:w-[240px] md:h-[240px] lg:w-[300px] lg:h-[300px]"
         style={{
           transform: `scale(${scale}) rotate(${rotation}deg)`,
           transformOrigin: "center",
