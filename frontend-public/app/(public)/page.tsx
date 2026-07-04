@@ -8,8 +8,11 @@ export default function Home() {
     <main className="min-h-screen">
       <Hero />
       <Logo />
-      <AI />
-      <Footer/>
+      {/* Pull AI up to overlap with Logo's bottom — Logo fades out, AI is already there */}
+      {/* <div style={{ marginTop: "-100vh" }}>
+        <AI />
+      </div> */}
+      <Footer />
     </main>
   );
 }

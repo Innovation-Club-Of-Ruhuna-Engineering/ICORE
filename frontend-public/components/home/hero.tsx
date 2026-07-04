@@ -119,7 +119,7 @@ function Hero() {
           ))}
         </div>
       )} */}
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-[85vh] items-center justify-center">
         <h1 className="text-[120px] font-medium text-center animated-gradient-text">
           <span className="block">INNOVATION CLUB of</span>
           <span className="block">Ruhuna Engineering</span>
